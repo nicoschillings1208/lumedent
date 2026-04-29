@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LumeDent – Rechtliches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #08111F; --navy-mid: #0F1E35; --navy-card: #112033;
+  --gold: #C9A84C; --white: #FFFFFF; --muted: #6E849E;
+  --border-w: rgba(255,255,255,0.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); line-height: 1.7; }
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 18px 48px; display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,17,31,0.95); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-w);
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 32px; height: 32px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.logo em { color: var(--gold); font-style: normal; }
+.nav-back { color: var(--muted); text-decoration: none; font-size: 14px; }
+.nav-back:hover { color: var(--gold); }
+
+.container { max-width: 800px; margin: 0 auto; padding: 120px 48px 80px; }
+.page-tabs { display: flex; gap: 4px; margin-bottom: 48px; background: var(--navy-card); border-radius: 10px; padding: 4px; }
+.tab { flex: 1; padding: 10px; border-radius: 7px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; color: var(--muted); transition: all .2s; border: none; background: none; }
+.tab.active { background: var(--gold); color: var(--navy); }
+.tab:hover:not(.active) { color: var(--white); }
+
+.section { display: none; }
+.section.active { display: block; }
+
+h1 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border-w); }
+h2 { font-size: 16px; font-weight: 700; color: var(--gold); margin: 32px 0 10px; text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; }
+p { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 14px; line-height: 1.8; }
+a { color: var(--gold); }
+ul { padding-left: 20px; margin-bottom: 14px; }
+ul li { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 6px; line-height: 1.7; }
+.divider { height: 1px; background: var(--border-w); margin: 28px 0; }
+.highlight-box { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.15); border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+.highlight-box p { margin: 0; }
+
+footer-legal { display: block; margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border-w); text-align: center; }
+footer-legal p { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 600px) {
+  nav { padding: 14px 20px; }
+  .container { padding: 100px 20px 60px; }
+  .page-tabs { flex-wrap: wrap; }
+  h1 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+  <a href="/" class="nav-back">← Zurück zur Startseite</a>
+</nav>
+
+<div class="container">
+  <div class="page-tabs">
+    <button class="tab active" onclick="showTab('impressum')">Impressum</button>
+    <button class="tab" onclick="showTab('datenschutz')">Datenschutz</button>
+    <button class="tab" onclick="showTab('agb')">AGB</button>
+    <button class="tab" onclick="showTab('haftung')">Haftungsausschluss</button>
+  </div>
+
+  <!-- IMPRESSUM -->
+  <div class="section active" id="impressum">
+    <h1>Impressum</h1>
+    <p class="subtitle">Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</p>
+
+    <h2>Anbieter</h2>
+    <p>
+      Nico Mario Schillings<br>
+      Sonderburger Str. 18<br>
+      13357 Berlin<br>
+      Deutschland
+    </p>
+
+    <h2>Kontakt</h2>
+    <p>
+      E-Mail: <a href="mailto:info@lumedent.de">info@lumedent.de</a>
+    </p>
+
+    <h2>Umsatzsteuer-ID</h2>
+    <p>
+      Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br>
+      DE459752430
+    </p>
+
+    <h2>Wirtschafts-Identifikationsnummer</h2>
+    <p>
+      Die Wirtschafts-Identifikationsnummer (W-IdNr.) wird nach § 139c AO ab Dezember 2026 Pflichtangabe im Impressum. Diese wird nach erfolgter Zuteilung durch das Bundeszentralamt für Steuern hier ergänzt.
+    </p>
+
+    <h2>Berufsbezeichnung & Berufsrecht</h2>
+    <p>
+      Einzelunternehmer · Softwareentwicklung und digitale Dienstleistungen<br>
+      Zuständige Behörde: Gewerbeamt Berlin
+    </p>
+
+    <div class="divider"></div>
+
+    <h2>Hinweis zur Online-Streitbeilegung</h2>
+    <p>
+      Die EU-Kommission hat die Plattform zur Online-Streitbeilegung (OS-Plattform) zum 20. März 2025 abgeschaltet. Eine alternative Möglichkeit zur Online-Streitbeilegung steht derzeit nicht zur Verfügung.<br>
+      Wir sind nicht verpflichtet und nicht bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+    </p>
+
+    <h2>Haftung für Inhalte</h2>
+    <p>
+      Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+    </p>
+
+    <h2>Haftung für Links</h2>
+    <p>
+      Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+    </p>
+
+    <h2>Urheberrecht</h2>
+    <p>
+      Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+    </p>
+  </div>
+
+  <!-- DATENSCHUTZ -->
+  <div class="section" id="datenschutz">
+    <h1>Datenschutzerklärung</h1>
+    <p class="subtitle">Zuletzt aktualisiert: April 2026</p>
+
+    <h2>1. Verantwortlicher</h2>
+    <p>
+      Nico Mario Schillings<br>
+      Sonderburger Str. 18, 13357 Berlin<br>
+      E-Mail: <a href="mailto:info@lumedent.de">info@lumedent.de</a>
+    </p>
+
+    <h2>2. Grundsatz: Keine Patientendaten</h2>
+    <div class="highlight-box">
+      <p>LumeDent verarbeitet <strong>keinerlei Patientendaten</strong>. Die Anwendung arbeitet ausschließlich mit Zahnpositionen, Falltypen und abstrakten Befundkürzeln. Es werden keine Namen, Versicherungsnummern oder sonstige personenbezogene Daten von Patienten gespeichert oder verarbeitet.</p>
+    </div>
+
+    <h2>3. Erhobene Daten beim Website-Besuch</h2>
+    <p>Beim Besuch von lumedent.de werden folgende Daten automatisch erhoben:</p>
+    <ul>
+      <li>IP-Adresse (anonymisiert)</li>
+      <li>Datum und Uhrzeit des Zugriffs</li>
+      <li>Browser-Typ und -Version</li>
+      <li>Betriebssystem</li>
+      <li>Referrer-URL</li>
+    </ul>
+    <p>Diese Daten werden ausschließlich zur technischen Bereitstellung der Website verwendet und nach 7 Tagen automatisch gelöscht.</p>
+
+    <h2>4. Nutzerkonto & Subscription</h2>
+    <p>Bei Registrierung und Nutzung von LumeDent erheben wir folgende Daten:</p>
+    <ul>
+      <li>E-Mail-Adresse (für Login und Kommunikation)</li>
+      <li>Zahlungsdaten (ausschließlich über Stripe – wir selbst speichern keine Kartendaten)</li>
+      <li>Nutzungsdaten der Anwendung (Profileinstellungen, Regelstudio-Konfigurationen)</li>
+    </ul>
+    <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung)</p>
+
+    <h2>5. Zahlungsabwicklung (Stripe)</h2>
+    <p>
+      Zahlungen werden über Stripe, Inc. (510 Townsend Street, San Francisco, CA 94103, USA) abgewickelt. Stripe ist nach dem EU-US Data Privacy Framework zertifiziert. Stripe verarbeitet Zahlungsdaten gemäß dessen eigener Datenschutzerklärung: <a href="https://stripe.com/de/privacy" target="_blank">stripe.com/de/privacy</a>
+    </p>
+
+    <h2>6. Hosting (Vercel)</h2>
+    <p>
+      Die Website wird bei Vercel Inc. (340 S Lemon Ave #4133, Walnut, CA 91789, USA) gehostet. Vercel verarbeitet Server-Logs zur Bereitstellung des Dienstes. Datenschutzerklärung: <a href="https://vercel.com/legal/privacy-policy" target="_blank">vercel.com/legal/privacy-policy</a>
+    </p>
+
+    <h2>7. E-Mail-Kommunikation</h2>
+    <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre Angaben zur Bearbeitung der Anfrage und für mögliche Rückfragen bei uns gespeichert. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse).</p>
+
+    <h2>8. Ihre Rechte</h2>
+    <p>Sie haben das Recht auf:</p>
+    <ul>
+      <li>Auskunft über Ihre gespeicherten Daten (Art. 15 DSGVO)</li>
+      <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
+      <li>Löschung Ihrer Daten (Art. 17 DSGVO)</li>
+      <li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+      <li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
+      <li>Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
+    </ul>
+    <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="mailto:info@lumedent.de">info@lumedent.de</a></p>
+
+    <h2>9. Beschwerderecht</h2>
+    <p>Sie haben das Recht, sich bei der zuständigen Aufsichtsbehörde zu beschweren. Zuständig für Berlin: Berliner Beauftragte für Datenschutz und Informationsfreiheit, Friedrichstr. 219, 10969 Berlin.</p>
+
+    <h2>10. Cookies</h2>
+    <p>LumeDent verwendet ausschließlich technisch notwendige Cookies für die Authentifizierung (Session-Cookies). Es werden keine Tracking- oder Werbe-Cookies eingesetzt.</p>
+
+    <h2>11. Änderungen</h2>
+    <p>Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf anzupassen. Die jeweils aktuelle Version ist auf dieser Seite abrufbar.</p>
+  </div>
+
+  <!-- AGB -->
+  <div class="section" id="agb">
+    <h1>Allgemeine Geschäftsbedingungen</h1>
+    <p class="subtitle">Stand: April 2026</p>
+
+    <h2>§ 1 Geltungsbereich</h2>
+    <p>Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge zwischen Nico Mario Schillings (nachfolgend „Anbieter") und den Nutzern der Software LumeDent (nachfolgend „Nutzer" oder „Kunde"). LumeDent ist eine webbasierte Software zur Generierung von Abrechnungskomplexen für Zahnarztpraxen.</p>
+
+    <h2>§ 2 Vertragsschluss</h2>
+    <p>Der Vertrag kommt zustande, wenn der Nutzer sich registriert, ein Abonnement-Paket auswählt und ein gültiges Zahlungsmittel hinterlegt. Mit Abschluss der Registrierung bestätigt der Nutzer, diese AGB gelesen und akzeptiert zu haben.</p>
+
+    <h2>§ 3 Leistungsbeschreibung</h2>
+    <p>LumeDent stellt folgende Kernfunktionen bereit:</p>
+    <ul>
+      <li>Generierung von GKV- und PKV-Abrechnungskomplexen</li>
+      <li>Befundbasierte Positionslogik</li>
+      <li>Regelstudio zur individuellen Konfiguration</li>
+      <li>Verwaltung von Behandlerprofilen</li>
+    </ul>
+    <p>Der Anbieter behält sich vor, den Funktionsumfang durch Updates zu erweitern oder anzupassen.</p>
+
+    <h2>§ 4 Testphase & Abonnement</h2>
+    <p>Neue Nutzer erhalten einen <strong>14-tägigen kostenlosen Testzeitraum</strong>. Nach Ablauf der Testphase wird das gewählte Abonnement automatisch kostenpflichtig. Das Abonnement verlängert sich monatlich automatisch, sofern es nicht rechtzeitig gekündigt wird.</p>
+    <p><strong>Preise:</strong></p>
+    <ul>
+      <li>Solo: 49 €/Monat (1 Nutzer)</li>
+      <li>Praxis: 79 €/Monat (bis 3 Nutzer)</li>
+      <li>Team/MVZ: 149 €/Monat (unbegrenzte Nutzer)</li>
+    </ul>
+    <p>Alle Preise zzgl. der gesetzlichen Umsatzsteuer.</p>
+
+    <h2>§ 5 Zahlung</h2>
+    <p>Die Zahlung erfolgt monatlich im Voraus per Zahlungsmittel. Die Abrechnung erfolgt über den Zahlungsdienstleister Stripe. Der Anbieter behält sich vor, Preise mit einer Ankündigungsfrist von 30 Tagen anzupassen.</p>
+
+    <h2>§ 6 Kündigung</h2>
+    <p>Das Abonnement kann jederzeit mit Wirkung zum Ende des laufenden Abrechnungszeitraums gekündigt werden. Bei Kündigung endet der Zugang zur Software mit Ablauf des bezahlten Zeitraums. Bereits geleistete Zahlungen werden nicht erstattet.</p>
+
+    <h2>§ 7 Nutzungsrecht</h2>
+    <p>Der Anbieter gewährt dem Nutzer ein nicht-exklusives, nicht übertragbares Recht zur Nutzung von LumeDent im Rahmen des gewählten Abonnements. Jegliche Vervielfältigung, Weitergabe oder Reverse-Engineering der Software ist untersagt.</p>
+
+    <h2>§ 8 Pflichten des Nutzers</h2>
+    <p>Der Nutzer verpflichtet sich:</p>
+    <ul>
+      <li>Zugangsdaten vertraulich zu behandeln</li>
+      <li>Die Software ausschließlich für legale Zwecke zu nutzen</li>
+      <li>Keine Patientendaten in das System einzugeben</li>
+      <li>Den Anbieter unverzüglich über Sicherheitsvorfälle zu informieren</li>
+    </ul>
+
+    <h2>§ 9 Verfügbarkeit</h2>
+    <p>Der Anbieter strebt eine Verfügbarkeit der Software von 99 % im Jahresdurchschnitt an. Geplante Wartungsarbeiten werden nach Möglichkeit angekündigt. Ein Rechtsanspruch auf ununterbrochene Verfügbarkeit besteht nicht.</p>
+
+    <h2>§ 10 Haftung</h2>
+    <p>Für die Korrektheit der generierten Abrechnungskomplexe wird keine Gewähr übernommen. Die Software dient als Hilfsmittel — die fachliche Prüfung und Verantwortung für eingereichte Abrechnungen verbleibt beim Nutzer. Der Anbieter haftet nicht für Schäden, die durch fehlerhafte Abrechnungen entstehen.</p>
+    <p>Die Haftung des Anbieters ist auf Vorsatz und grobe Fahrlässigkeit beschränkt, soweit gesetzlich zulässig.</p>
+
+    <h2>§ 11 Änderung der AGB</h2>
+    <p>Der Anbieter behält sich vor, diese AGB mit einer Ankündigungsfrist von 30 Tagen zu ändern. Änderungen werden per E-Mail mitgeteilt. Widerspricht der Nutzer nicht innerhalb von 30 Tagen, gelten die geänderten AGB als akzeptiert.</p>
+
+    <h2>§ 12 Anwendbares Recht & Gerichtsstand</h2>
+    <p>Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts. Gerichtsstand ist Berlin, sofern der Nutzer Kaufmann ist.</p>
+  </div>
+
+  <!-- HAFTUNGSAUSSCHLUSS -->
+  <div class="section" id="haftung">
+    <h1>Haftungsausschluss</h1>
+    <p class="subtitle">Wichtige rechtliche Hinweise zur Nutzung von LumeDent</p>
+
+    <div class="highlight-box">
+      <p><strong>Wichtiger Hinweis:</strong> LumeDent ist ein digitales Hilfsmittel zur Unterstützung bei der Erstellung von Abrechnungskomplexen. Die Software ersetzt keine fachkundige Prüfung durch qualifiziertes zahnärztliches oder abrechnungstechnisches Personal.</p>
+    </div>
+
+    <h2>Keine Gewähr für Abrechnungskorrektheit</h2>
+    <p>Trotz sorgfältiger Entwicklung und Pflege der Software übernimmt der Anbieter keine Gewähr dafür, dass die generierten Abrechnungskomplexe in jedem Einzelfall korrekt, vollständig oder den jeweils geltenden Bestimmungen entsprechend sind. Abrechnungsregeln können sich ändern; regionale Besonderheiten sowie individuelle Fallkonstellationen können zu Abweichungen führen.</p>
+
+    <h2>Eigenverantwortung des Nutzers</h2>
+    <p>Die fachliche Verantwortung für eingereichte Abrechnungen liegt ausschließlich beim Nutzer. Jeder generierte Abrechnungskomplex sollte vor der Einreichung durch qualifiziertes Personal geprüft werden. Der Nutzer haftet selbst für alle rechtlichen und finanziellen Konsequenzen, die aus der Verwendung der Software entstehen.</p>
+
+    <h2>Haftungsbeschränkung</h2>
+    <p>Der Anbieter haftet nicht für:</p>
+    <ul>
+      <li>Fehler in generierten Abrechnungskomplexen</li>
+      <li>Rückforderungen durch Krankenkassen oder andere Kostenträger</li>
+      <li>Verluste durch fehlerhafte oder unvollständige Abrechnungen</li>
+      <li>Systemausfälle oder Datenverluste</li>
+      <li>Schäden durch unsachgemäße Nutzung der Software</li>
+    </ul>
+    <p>Diese Haftungsbeschränkung gilt nicht für Schäden aus der Verletzung des Lebens, des Körpers oder der Gesundheit sowie für Schäden, die auf vorsätzlichem oder grob fahrlässigem Handeln des Anbieters beruhen.</p>
+
+    <h2>Externe Links</h2>
+    <p>Diese Website enthält Links zu externen Websites. Für den Inhalt dieser externen Seiten ist ausschließlich der jeweilige Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung wurden keine rechtswidrigen Inhalte festgestellt. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar.</p>
+
+    <h2>Änderungen der Rechtslage</h2>
+    <p>Abrechnungsregeln für GKV und PKV (BEMA, GOZ) können sich durch Gesetzgebung oder Beschlüsse der zuständigen Körperschaften ändern. Der Anbieter bemüht sich, die Software entsprechend aktuell zu halten, übernimmt jedoch keine Gewähr für die jederzeitige Aktualität aller Positionen und Regeln.</p>
+
+    <h2>Kontakt bei Fragen</h2>
+    <p>Bei Fragen zu diesem Haftungsausschluss wenden Sie sich bitte an: <a href="mailto:info@lumedent.de">info@lumedent.de</a></p>
+  </div>
+
+  <footer-legal>
+    <p>© 2026 Nico Mario Schillings · LumeDent · <a href="/">Startseite</a></p>
+  </footer-legal>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  // Handle URL hash
+  window.location.hash = id;
+}
+// Load from hash
+window.addEventListener('load', () => {
+  const hash = window.location.hash.replace('#','');
+  if(['impressum','datenschutz','agb','haftung'].includes(hash)) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(hash).classList.add('active');
+    document.querySelector(`[onclick="showTab('${hash}')"]`).classList.add('active');
+  }
+});
+</script>
+</body>
+</html>

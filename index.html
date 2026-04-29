@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LumeDent – Abrechnungskomplexe für Z1 in Sekunden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #08111F;
+  --navy-mid: #0F1E35;
+  --navy-card: #112033;
+  --gold: #C9A84C;
+  --gold-light: #E4C46A;
+  --gold-pale: rgba(201,168,76,0.10);
+  --cream: #F0EBE0;
+  --white: #FFFFFF;
+  --muted: #6E849E;
+  --border: rgba(201,168,76,0.14);
+  --border-w: rgba(255,255,255,0.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); overflow-x: hidden; line-height: 1.6; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 18px 48px; display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,17,31,0.9); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-w);
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 32px; height: 32px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.logo em { color: var(--gold); font-style: normal; }
+.nav-r { display: flex; align-items: center; gap: 28px; }
+.nav-r a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+.nav-r a:hover { color: var(--white); }
+.nav-btn { background: var(--gold); color: var(--navy) !important; padding: 10px 22px; border-radius: 7px; font-weight: 700 !important; transition: background .2s, transform .2s !important; }
+.nav-btn:hover { background: var(--gold-light) !important; transform: translateY(-1px) !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh; padding: 140px 48px 100px;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero-glow {
+  position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+  width: 1000px; height: 700px;
+  background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 820px; position: relative; z-index: 1; }
+
+.hero-tag {
+  display: inline-block; margin-bottom: 30px;
+  background: var(--gold-pale); border: 1px solid var(--border);
+  border-radius: 100px; padding: 7px 18px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--gold);
+  animation: up .6s ease both;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 6.5vw, 76px); font-weight: 900; line-height: 1.06;
+  letter-spacing: -0.02em; margin-bottom: 22px;
+  animation: up .6s .08s ease both;
+}
+h1 .gold { color: var(--gold); }
+h1 em { font-style: italic; }
+
+.hero-lead {
+  font-size: clamp(16px, 1.8vw, 19px); color: var(--muted); line-height: 1.75;
+  max-width: 580px; margin: 0 auto 18px;
+  animation: up .6s .15s ease both;
+}
+.hero-resolve {
+  font-size: clamp(16px, 1.8vw, 18px); color: var(--cream); line-height: 1.7;
+  max-width: 560px; margin: 0 auto 40px;
+  animation: up .6s .2s ease both;
+}
+.hero-resolve strong { color: var(--gold); }
+
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: up .6s .27s ease both; }
+.btn-g { background: var(--gold); color: var(--navy); padding: 15px 32px; border-radius: 8px; font-size: 15px; font-weight: 700; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-g:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 14px 44px rgba(201,168,76,0.28); }
+.btn-o { background: transparent; color: var(--white); padding: 15px 32px; border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1px solid var(--border-w); transition: all .2s; }
+.btn-o:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-nums { margin-top: 60px; padding-top: 44px; border-top: 1px solid var(--border-w); display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; animation: up .6s .34s ease both; }
+.hnum { text-align: center; }
+.hnum-n { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 900; color: var(--gold); line-height: 1; }
+.hnum-l { font-size: 13px; color: var(--muted); margin-top: 5px; }
+
+/* PAIN */
+.pain { padding: 110px 48px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%); }
+.pain-inner { max-width: 1080px; margin: 0 auto; }
+.kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; display: block; margin-bottom: 12px; }
+.kicker-red { color: #E07070; }
+.kicker-gold { color: var(--gold); }
+.sec-h { font-family: 'Playfair Display', serif; font-size: clamp(26px, 3.8vw, 46px); font-weight: 900; line-height: 1.12; margin-bottom: 14px; }
+.sec-sub { font-size: 16px; color: var(--muted); line-height: 1.75; max-width: 520px; margin-bottom: 52px; }
+
+.pain-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; }
+.pain-card { background: var(--navy-card); padding: 34px 28px; position: relative; overflow: hidden; }
+.pain-card:first-child { border-radius: 14px 0 0 14px; }
+.pain-card:last-child { border-radius: 0 14px 14px 0; }
+.pain-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, rgba(224,112,112,0.6), transparent); }
+.pc-num { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 900; color: rgba(224,112,112,0.18); line-height: 1; margin-bottom: 14px; }
+.pc-title { font-size: 16px; font-weight: 700; margin-bottom: 9px; }
+.pc-text { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+/* BRIDGE */
+.bridge { padding: 70px 48px; text-align: center; }
+.bridge-q { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 36px); font-style: italic; color: var(--cream); line-height: 1.4; }
+.bridge-q span { color: var(--gold); font-style: normal; font-weight: 900; }
+
+/* FEATURES */
+.features { padding: 0 48px 110px; }
+.features-inner { max-width: 1140px; margin: 0 auto; }
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+.fc { background: var(--navy-card); padding: 34px 28px; position: relative; overflow: hidden; transition: background .25s; }
+.fc:hover { background: #14273F; }
+.fc:first-child { border-radius: 14px 0 0 0; }
+.fc:nth-child(3) { border-radius: 0 14px 0 0; }
+.fc:nth-child(4) { border-radius: 0 0 0 14px; }
+.fc:last-child { border-radius: 0 0 14px 0; }
+.fc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); opacity: 0; transition: opacity .25s; }
+.fc:hover::before { opacity: 1; }
+.fc-icon { width: 40px; height: 40px; background: var(--gold-pale); border: 1px solid var(--border); border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.fc-t { font-size: 15px; font-weight: 700; margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+.fc-d { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+/* OUTPUT PREVIEW */
+.preview-section { padding: 110px 48px; background: var(--navy-mid); }
+.preview-inner { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.1fr; gap: 72px; align-items: center; }
+.prev-text .sec-h { margin-bottom: 18px; }
+.prev-bullet { display: flex; gap: 12px; margin-bottom: 14px; font-size: 14px; color: var(--muted); align-items: flex-start; }
+.prev-bullet span { color: var(--gold); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+.output-window {
+  background: #0A1825;
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  font-family: 'DM Mono', 'Courier New', monospace;
+}
+.ow-bar { background: rgba(0,0,0,0.35); padding: 12px 16px; display: flex; gap: 7px; align-items: center; }
+.ow-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ow-title { font-size: 11px; color: var(--muted); margin-left: 6px; font-family: 'DM Sans', sans-serif; }
+.ow-body { padding: 18px 20px; }
+.ow-meta { font-size: 10px; color: var(--muted); font-family: 'DM Sans', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.ow-line { display: flex; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.ow-line:last-of-type { border: none; }
+.ow-c { font-size: 13px; font-weight: 600; color: #E8E0D0; flex: 1; letter-spacing: .01em; }
+.ow-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 3px; letter-spacing: .05em; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
+.b-area { background: rgba(96,165,250,.15); color: #93C5FD; }
+.b-fill { background: rgba(201,168,76,.15); color: #D4A84E; }
+.b-once { background: rgba(52,211,153,.15); color: #6EE7B7; }
+.b-nb   { background: rgba(251,146,60,.15); color: #FCA36E; }
+.b-clean{ background: rgba(192,132,252,.15); color: #DDB0FF; }
+.ow-btns { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.06); }
+.ow-btn { flex: 1; padding: 9px; border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; font-family: 'DM Sans', sans-serif; }
+.owb-main { background: var(--gold); color: var(--navy); }
+.owb-sec { background: rgba(255,255,255,.04); color: var(--muted); border: 1px solid rgba(255,255,255,.08); }
+
+/* HOW */
+.how { padding: 110px 48px; max-width: 1080px; margin: 0 auto; }
+.how-header { margin-bottom: 64px; }
+.steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; position: relative; }
+.steps::before { content: ''; position: absolute; top: 26px; left: calc(16.7% + 14px); right: calc(16.7% + 14px); height: 1px; background: linear-gradient(to right, var(--gold), transparent 50%, var(--gold)); opacity: .2; }
+.step { padding: 0 22px; }
+.step-n { width: 52px; height: 52px; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; color: var(--gold); margin-bottom: 20px; background: var(--navy-mid); }
+.step-t { font-size: 16px; font-weight: 700; margin-bottom: 9px; }
+.step-d { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+/* FAQ */
+.faq { padding: 110px 48px; max-width: 760px; margin: 0 auto; }
+.faq-header { margin-bottom: 44px; }
+.faq-item { border-bottom: 1px solid var(--border-w); }
+.faq-q { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; cursor: pointer; padding: 22px 0; }
+.faq-qt { font-size: 15px; font-weight: 600; line-height: 1.5; }
+.faq-ic { color: var(--gold); font-size: 22px; font-weight: 300; flex-shrink: 0; transition: transform .3s; line-height: 1; margin-top: 2px; }
+.faq-a { font-size: 14px; color: var(--muted); line-height: 1.85; padding-bottom: 20px; display: none; }
+.faq-item.open .faq-a { display: block; }
+.faq-item.open .faq-ic { transform: rotate(45deg); }
+
+/* PRICING */
+.pricing { padding: 110px 48px; background: var(--navy-mid); }
+.pricing-inner { max-width: 980px; margin: 0 auto; }
+.pricing-header { text-align: center; margin-bottom: 52px; }
+.pr-note { font-size: 14px; color: var(--muted); margin-top: 10px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+
+.plan { background: var(--navy-card); border: 1px solid var(--border-w); border-radius: 16px; padding: 36px 28px; position: relative; transition: transform .2s, box-shadow .2s; }
+.plan:hover { transform: translateY(-3px); box-shadow: 0 20px 56px rgba(0,0,0,.4); }
+.plan.hot { border-color: var(--gold); }
+.hot-tag { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--navy); font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
+.plan-tier { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.plan-price { font-family: 'Playfair Display', serif; font-size: 54px; font-weight: 900; line-height: 1; margin-bottom: 3px; }
+.plan-price sup { font-size: 22px; vertical-align: top; margin-top: 11px; display: inline-block; }
+.plan-mo { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.plan-users { font-size: 13px; color: var(--gold); font-weight: 600; margin-bottom: 24px; }
+.plan-div { height: 1px; background: var(--border-w); margin-bottom: 22px; }
+.plan-feats { list-style: none; margin-bottom: 30px; }
+.plan-feats li { display: flex; gap: 10px; padding: 7px 0; font-size: 13px; color: var(--muted); align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,.04); }
+.plan-feats li:last-child { border: none; }
+.plan-feats li .ck { color: var(--gold); flex-shrink: 0; }
+.p-btn { display: block; text-align: center; padding: 13px; border-radius: 8px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .2s; }
+.p-out { border: 1px solid var(--border-w); color: var(--white); }
+.p-out:hover { border-color: var(--gold); color: var(--gold); }
+.p-gld { background: var(--gold); color: var(--navy); }
+.p-gld:hover { background: var(--gold-light); }
+
+.pricing-incl { margin-top: 40px; padding: 24px 28px; background: var(--gold-pale); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+.pricing-incl p { font-size: 14px; color: var(--cream); line-height: 1.7; }
+.pricing-incl strong { color: var(--gold); }
+
+/* CTA */
+.cta { padding: 110px 48px; text-align: center; position: relative; overflow: hidden; }
+.cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(201,168,76,.06), transparent); }
+.cta-inner { max-width: 620px; margin: 0 auto; position: relative; z-index: 1; }
+.cta-h { font-family: 'Playfair Display', serif; font-size: clamp(28px, 4.5vw, 52px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+.cta-sub { font-size: 16px; color: var(--muted); line-height: 1.75; margin-bottom: 34px; }
+.cta-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.cta-input { padding: 14px 18px; background: rgba(255,255,255,.05); border: 1px solid var(--border-w); border-radius: 8px; color: var(--white); font-size: 15px; font-family: 'DM Sans', sans-serif; width: 260px; outline: none; transition: border-color .2s; }
+.cta-input::placeholder { color: var(--muted); }
+.cta-input:focus { border-color: var(--gold); }
+.cta-note { font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+/* FOOTER */
+footer { padding: 60px 48px 36px; border-top: 1px solid var(--border-w); }
+.foot-inner { max-width: 1140px; margin: 0 auto; }
+.foot-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; margin-bottom: 44px; }
+.foot-brand p { font-size: 13px; color: var(--muted); max-width: 210px; margin-top: 10px; line-height: 1.7; }
+.foot-col h5 { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.foot-col a { display: block; color: var(--muted); text-decoration: none; font-size: 14px; padding: 4px 0; transition: color .2s; }
+.foot-col a:hover { color: var(--white); }
+.foot-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.05); flex-wrap: wrap; gap: 12px; }
+.foot-copy { font-size: 12px; color: rgba(255,255,255,.2); }
+.foot-links { display: flex; gap: 20px; }
+.foot-links a { font-size: 12px; color: rgba(255,255,255,.2); text-decoration: none; }
+.foot-links a:hover { color: var(--muted); }
+
+/* UTILS */
+@keyframes up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 860px) {
+  nav { padding: 14px 20px; }
+  .nav-r a:not(.nav-btn) { display: none; }
+  .hero, .pain, .bridge, .features, .preview-section, .how, .faq, .pricing, .cta, footer { padding-left: 20px; padding-right: 20px; }
+  .pain-grid, .feat-grid, .steps, .pricing-grid { grid-template-columns: 1fr; }
+  .pain-card, .fc { border-radius: 0 !important; }
+  .pain-card:first-child, .fc:first-child { border-radius: 12px 12px 0 0 !important; }
+  .pain-card:last-child, .fc:last-child { border-radius: 0 0 12px 12px !important; }
+  .steps::before { display: none; }
+  .preview-inner { grid-template-columns: 1fr; }
+  h1 { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+  <div class="nav-r">
+    <a href="#features">Features</a>
+    <a href="#preise">Preise</a>
+    <a href="#faq">FAQ</a>
+    <a href="#preise" class="nav-btn">Kostenlos starten</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-tag" style="animation: up .6s ease both;">Speziell für Z1</div>
+    <h1>
+      Abrechnungskomplexe<br>
+      die sich <em>selbst</em><br>
+      <span class="gold">schreiben.</span>
+    </h1>
+    <p class="hero-lead">
+      Du behandelst. LumeDent rechnet ab. Vollständiger GKV- oder PKV-Komplex mit korrekten Positionen, befundbasiert — fertig in Sekunden.
+    </p>
+    <p class="hero-resolve">
+      <strong>Kein manuelles Tippen. Keine vergessenen Positionen. Direkt kopierfertig für Z1.</strong>
+    </p>
+    <div class="hero-ctas">
+      <a href="#preise" class="btn-g">Jetzt kostenlos starten →</a>
+      <a href="#wie" class="btn-o">Wie es funktioniert</a>
+    </div>
+    <div class="hero-nums">
+      <div class="hnum"><div class="hnum-n">&lt; 5 Sek.</div><div class="hnum-l">Komplex generiert</div></div>
+      <div class="hnum"><div class="hnum-n">GKV + PKV</div><div class="hnum-l">Alle Kassentypen</div></div>
+      <div class="hnum"><div class="hnum-n">0</div><div class="hnum-l">Vergessene Positionen</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="pain-inner">
+    <span class="kicker kicker-red reveal">Das Problem</span>
+    <h2 class="sec-h reveal">Abrechnungskomplexe kosten<br>täglich wertvolle Behandlungszeit.</h2>
+    <p class="sec-sub reveal">Was Routine sein sollte, ist in der Praxis ein ständiger Zeitfresser — mit unnötigem Fehlerrisiko.</p>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="pc-num">01</div>
+        <div class="pc-title">Manuell tippen, Position für Position</div>
+        <p class="pc-text">Für jeden Patienten die richtigen GOZ- oder BEMA-Positionen heraussuchen, eintippen und prüfen. Bei 20 Patienten am Tag summiert sich das schnell auf eine Stunde oder mehr.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pc-num">02</div>
+        <div class="pc-title">Befundabhängige Positionen vergessen</div>
+        <p class="pc-text">Nachbarzahn hat eine Krone? Dann gehört 2320 + 8229 dazu. WF vorhanden? 0725 nicht vergessen. An einem langen Behandlungstag passiert genau das — und kostet Geld.</p>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pc-num">03</div>
+        <div class="pc-title">Keine einheitliche Vorlage, die wirklich passt</div>
+        <p class="pc-text">Jede Praxis hat ihren eigenen Abrechnungsstil. Eine starre Vorlage passt nie zu 100 % — also tippt am Ende doch wieder jeder selbst nach.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRIDGE -->
+<div class="bridge">
+  <div class="bridge-q reveal">
+    Es gibt einen besseren Weg — <span>LumeDent übernimmt das für dich.</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <span class="kicker kicker-gold reveal">Die Lösung</span>
+    <h2 class="sec-h reveal">Alles drin. Nichts Überflüssiges.</h2>
+    <p class="sec-sub reveal">LumeDent macht genau eine Sache — und die richtig.</p>
+    <div class="feat-grid">
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="fc-t">Komplex in Sekunden</div>
+        <p class="fc-d">Zahn, Befund, Falltyp — fertig. Der vollständige Abrechnungskomplex erscheint sofort, inklusive aller befundabhängigen Positionen.</p>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg></div>
+        <div class="fc-t">Befundlogik automatisch</div>
+        <p class="fc-d">LumeDent kennt die Regeln. Krone beim Nachbar, WF im Kanal, Frontzahn vs. Seitenzahn — die richtigen Positionen erscheinen ohne dass du daran denken musst.</p>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="fc-t">GKV & PKV abgedeckt</div>
+        <p class="fc-d">Füllungen, Präparationen, Zementierungen, Inlays, Brücken — alle Falltypen für Kasse und Privat in einem Tool.</p>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div>
+        <div class="fc-t">Vollständig konfigurierbar</div>
+        <p class="fc-d">Im Regelstudio bestimmst du für jeden Falltyp genau welche Positionen erscheinen — und in welcher Reihenfolge. Deine Praxis, dein Standard.</p>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="fc-t">Profile pro Behandler</div>
+        <p class="fc-d">Jeder Behandler arbeitet anders. Individuelle Profile stellen sicher, dass jeder genau seinen Abrechnungsstil findet — auf Knopfdruck wechselbar.</p>
+      </div>
+      <div class="fc reveal">
+        <div class="fc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+        <div class="fc-t">Kopierfertig für Z1</div>
+        <p class="fc-d">Einzeilig — exakt so formatiert wie Z1 es erwartet. Kopieren, einfügen, fertig. Kein Nacharbeiten, kein Anpassen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUT PREVIEW -->
+<section class="preview-section">
+  <div class="preview-inner">
+    <div class="prev-text">
+      <span class="kicker kicker-gold reveal">Output</span>
+      <h2 class="sec-h reveal">So sieht der<br>Komplex aus.</h2>
+      <p style="font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 28px;" class="reveal">
+        Beispiel: GKV-Füllung F1 · Zahn 36 · Nachbar 37 hat Krone.
+        LumeDent erkennt den Befund und gibt 14 korrekte Positionen aus — vollständig, in der richtigen Reihenfolge.
+      </p>
+      <div class="prev-bullet reveal"><span>✓</span> Alle relevanten Positionen — keine vergessen</div>
+      <div class="prev-bullet reveal"><span>✓</span> Korrekte Bereichs- und Nachbarzahnangaben</div>
+      <div class="prev-bullet reveal"><span>✓</span> Ein Klick kopieren, direkt in Z1 einfügen</div>
+    </div>
+    <div class="output-window reveal">
+      <div class="ow-bar">
+        <div class="ow-dot" style="background:#FF5F57"></div>
+        <div class="ow-dot" style="background:#FEBC2E"></div>
+        <div class="ow-dot" style="background:#28C840"></div>
+        <span class="ow-title">LumeDent · GKV · Zahn 36 · F1</span>
+      </div>
+      <div class="ow-body">
+        <div class="ow-meta">GKV · Zahn 36 · F1 · Nachbar 37 = Krone</div>
+        <div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px 16px;margin-bottom:14px;font-size:13px;line-height:2.1;color:#E8E0D0;letter-spacing:0.01em;">
+OK,UK 4020F<br>
+OK,UK 2040o<br>
+35-37 0080<br>
+35 4050<br>
+36-37 4055<br>
+35-37 2030<br>
+35-37 2040<br>
+t0203<br>
+36 2060-f<br>
+35-37 8010<br>
+0521<br>
+6484<br>
+35-37 1020<br>
+0708
+        </div>
+        <div class="ow-btn owb-main" style="display:block;text-align:center;padding:10px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;background:var(--gold);color:var(--navy);">Kopieren</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="how" id="wie">
+  <div class="how-header">
+    <span class="kicker kicker-gold reveal">So einfach</span>
+    <h2 class="sec-h reveal">In 3 Schritten zum<br>fertigen Komplex.</h2>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-n">1</div>
+      <div class="step-t">Zahn & Befund</div>
+      <p class="step-d">Wähle den Behandlungszahn auf der Zahnkarte und trage den Befund ein — Krone, WF, Nachbarbefund.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-n">2</div>
+      <div class="step-t">Falltyp wählen</div>
+      <p class="step-d">GKV oder PKV, Füllung, Präparation, Zementierung oder Inlay — LumeDent berechnet den vollständigen Komplex.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-n">3</div>
+      <div class="step-t">Kopieren & in Z1</div>
+      <p class="step-d">Ein Klick kopieren, in Z1 einfügen — fertig. Was früher Minuten gekostet hat, dauert jetzt Sekunden.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="faq-header">
+    <span class="kicker kicker-gold reveal">FAQ</span>
+    <h2 class="sec-h reveal">Häufige Fragen.</h2>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Funktioniert LumeDent nur mit Z1?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Aktuell ist LumeDent auf Z1 ausgerichtet — Formatierung und Positions-Logik sind speziell für Z1 optimiert. Weitere Praxisverwaltungssysteme sind in Entwicklung. Falls du ein anderes System nutzt, melde dich gerne — wir nehmen das als Feature-Request auf.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Werden Patientendaten gespeichert?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Nein. LumeDent arbeitet ausschließlich mit Zahnpositionen, Falltypen und Befundkürzeln. Es gibt keine Patientennamen, keine Versicherungsnummern und keine personenbezogenen Daten. Die Anwendung ist DSGVO-konform konzipiert.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Kann ich eigene Positionen und Regeln ergänzen?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Ja — das Regelstudio erlaubt es, für jeden Falltyp Positionen hinzuzufügen, zu entfernen, umzusortieren und eigene Befundregeln zu definieren. Etwa: "Wenn Nachbar = Implantat → dann Position 4025 ergänzen." Deine Einstellungen bleiben in deinem Profil gespeichert.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Hilft ihr bei der Einrichtung?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Ja — bei allen Paketen ist ein persönlicher Einrichtungs-Call inklusive. Wir richten LumeDent gemeinsam mit dir auf deine Praxis ein, konfigurieren das Regelstudio nach euren Wünschen und stehen für Fragen bereit. So startest du vom ersten Tag an mit einem System, das zu euch passt.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Wie lange dauert die Einrichtung?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Die Basisfunktion läuft sofort — LumeDent ist intuitiv und in wenigen Minuten verstanden. Die Einrichtung des Regelstudios im Onboarding-Call hängt von der Komplexität eurer Abrechnungspräferenzen ab. Einfache Anpassungen sind in wenigen Minuten erledigt; wer tiefer konfigurieren möchte, nimmt sich etwas mehr Zeit. Wir begleiten euch dabei.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Gibt es eine kostenlose Testphase?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Ja. Nach der Registrierung und Hinterlegung deines Zahlungsmittels erhältst du sofort vollen Zugang — kostenlos für 14 Tage. Danach wird automatisch abgebucht. Falls es nichts für dich ist, einfach vorher kündigen — kein Aufwand, kein Risiko.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggle(this)"><span class="faq-qt">Kann ich monatlich kündigen?</span><span class="faq-ic">+</span></div>
+    <div class="faq-a">Ja, alle Pakete sind monatlich kündbar. Keine Mindestlaufzeit, keine versteckten Kosten.</div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="preise">
+  <div class="pricing-inner">
+    <div class="pricing-header">
+      <span class="kicker kicker-gold reveal">Preise</span>
+      <h2 class="sec-h reveal">Einfach. Transparent. Fair.</h2>
+      <p class="pr-note reveal">14 Tage kostenlos · Danach ab 49 €/Monat · Jederzeit kündbar · Einrichtungs-Call inklusive</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="plan reveal">
+        <div class="plan-tier">Solo</div>
+        <div class="plan-price"><sup>€</sup>49</div>
+        <div class="plan-mo">pro Monat</div>
+        <div class="plan-users">1 Nutzer</div>
+        <div class="plan-div"></div>
+        <ul class="plan-feats">
+          <li><span class="ck">✓</span> GKV & PKV Komplexe</li>
+          <li><span class="ck">✓</span> Alle Falltypen</li>
+          <li><span class="ck">✓</span> Befundlogik</li>
+          <li><span class="ck">✓</span> Vollständiges Regelstudio</li>
+          <li><span class="ck">✓</span> Unbegrenzte Profile</li>
+          <li><span class="ck">✓</span> Einrichtungs-Call inklusive</li>
+          <li><span class="ck">✓</span> Einrichtung vor Ort auf Anfrage</li>
+        </ul>
+        <a href="#demo" class="p-btn p-out">14 Tage kostenlos starten</a>
+      </div>
+      <div class="plan hot reveal">
+        <div class="hot-tag">Empfohlen</div>
+        <div class="plan-tier">Praxis</div>
+        <div class="plan-price"><sup>€</sup>79</div>
+        <div class="plan-mo">pro Monat</div>
+        <div class="plan-users">Bis 3 Nutzer</div>
+        <div class="plan-div"></div>
+        <ul class="plan-feats">
+          <li><span class="ck">✓</span> GKV & PKV Komplexe</li>
+          <li><span class="ck">✓</span> Alle Falltypen</li>
+          <li><span class="ck">✓</span> Befundlogik</li>
+          <li><span class="ck">✓</span> Vollständiges Regelstudio</li>
+          <li><span class="ck">✓</span> Unbegrenzte Profile</li>
+          <li><span class="ck">✓</span> Einrichtungs-Call inklusive</li>
+          <li><span class="ck">✓</span> Einrichtung vor Ort auf Anfrage</li>
+        </ul>
+        <a href="#demo" class="p-btn p-gld">14 Tage kostenlos starten</a>
+      </div>
+      <div class="plan reveal">
+        <div class="plan-tier">Team / MVZ</div>
+        <div class="plan-price"><sup>€</sup>149</div>
+        <div class="plan-mo">pro Monat</div>
+        <div class="plan-users">Unbegrenzte Nutzer</div>
+        <div class="plan-div"></div>
+        <ul class="plan-feats">
+          <li><span class="ck">✓</span> GKV & PKV Komplexe</li>
+          <li><span class="ck">✓</span> Alle Falltypen</li>
+          <li><span class="ck">✓</span> Befundlogik</li>
+          <li><span class="ck">✓</span> Vollständiges Regelstudio</li>
+          <li><span class="ck">✓</span> Unbegrenzte Profile</li>
+          <li><span class="ck">✓</span> Einrichtungs-Call inklusive</li>
+          <li><span class="ck">✓</span> Einrichtung vor Ort inklusive</li>
+        </ul>
+        <a href="#demo" class="p-btn p-out">14 Tage kostenlos starten</a>
+      </div>
+    </div>
+    <div class="pricing-incl reveal">
+      <p>
+  <strong>Bei allen Paketen inklusive:</strong><br>
+  Persönlicher Einrichtungs-Call &nbsp;·&nbsp; Regelstudio-Konfiguration nach euren Wünschen<br>
+  14 Tage kostenlos &nbsp;·&nbsp; Danach ab 49 €/Monat &nbsp;·&nbsp; Jederzeit kündbar
+</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="demo">
+  <div class="cta-inner">
+    <span class="kicker kicker-gold reveal">Jetzt starten</span>
+    <h2 class="cta-h reveal">Bereit, Zeit zu sparen?</h2>
+    <p class="cta-sub reveal">Konto anlegen, Zahlungsmittel hinterlegen — die ersten 14 Tage sind kostenlos. Danach ab 49 €/Monat, jederzeit kündbar. Wir melden uns proaktiv für einen Einrichtungs-Call.</p>
+    <a href="#preise" class="btn-g" style="font-size:16px;padding:18px 44px;display:inline-flex;margin-bottom:40px;">Jetzt kostenlos starten →</a>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;">14 Tage kostenlos · Danach ab 49 €/Monat · Jederzeit kündbar</p>
+    <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:32px;">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Fragen vor dem Start? Schreib uns direkt.</p>
+      <form class="cta-form" onsubmit="submitContact(event)">
+        <input type="email" class="cta-input" placeholder="deine@praxis.de" required id="mail">
+        <button type="submit" class="btn-o" id="sbtn" style="white-space:nowrap;">Nachricht senden</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+        <p>Abrechnungskomplexe für Z1 — schnell, korrekt, individuell konfigurierbar.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Produkt</h5>
+        <a href="#features">Features</a>
+        <a href="#wie">Wie es funktioniert</a>
+        <a href="#preise">Preise</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h5>Rechtliches</h5>
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutzerklärung</a>
+        <a href="#">AGB</a>
+        <a href="#">Haftungsausschluss</a>
+      </div>
+      <div class="foot-col">
+        <h5>Kontakt</h5>
+        <a href="mailto:hallo@lumedent.de">hallo@lumedent.de</a>
+        <a href="#demo">14 Tage kostenlos starten</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span class="foot-copy">© 2025 LumeDent. Alle Rechte vorbehalten.</span>
+      <div class="foot-links"><a href="#">Impressum</a><a href="#">Datenschutz</a><a href="#">AGB</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggle(el) {
+  const item = el.parentElement;
+  const open = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!open) item.classList.add('open');
+}
+function submitContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('sbtn');
+  btn.textContent = '✓ Gesendet — wir melden uns!'
+  btn.style.background = '#3DB87A';
+  document.getElementById('mail').value = '';
+  setTimeout(() => { btn.textContent = '14 Tage kostenlos starten →'; btn.style.background = ''; }, 5000);
+}
+const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), {threshold:.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

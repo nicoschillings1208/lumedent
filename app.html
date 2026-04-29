@@ -6933,9 +6933,9 @@ function renderRsFallTabs(){
   if(!_rsActiveFall) _rsActiveFall = "PF1";
 
   let tabsHtml = "";
-  RS_FALL_GRUPPEN.forEach(gruppe => {
-    tabsHtml += `<span class="rs-fall-group-label">${gruppe.label}</span>`;
-    gruppe.falls.forEach(fall => {
+  Object.entries(FALL_GRUPPEN).forEach(([gruppeLabel, falls]) => {
+    tabsHtml += `<span class="rs-fall-group-label">${gruppeLabel}</span>`;
+    falls.forEach(fall => {
       const isActive = fall === _rsActiveFall;
       const hasOverride = rsGetOverride(fall) && (
         (rsGetOverride(fall).removePositions||[]).length > 0 ||
@@ -6944,7 +6944,7 @@ function renderRsFallTabs(){
       );
       tabsHtml += `<button class="rs-fall-tab${isActive?" active":""}" 
         onclick="rs_selectFall('${fall}')">
-        ${RS_FALL_LABELS[fall]||fall}${hasOverride?` <span style="color:var(--accent);font-size:10px">●</span>`:""}
+        ${FALL_LABELS[fall]||fall}${hasOverride?` <span style="color:var(--accent);font-size:10px">●</span>`:""}
       </button>`;
     });
   });
@@ -7014,7 +7014,7 @@ function renderRsFallContent(){
   el.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div>
-        <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${RS_FALL_LABELS[fall]||fall}</span>
+        <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${FALL_LABELS[fall]||fall}</span>
         <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${positions.filter(p=>p.active).length}/${positions.length} aktiv</span>
       </div>
       <div style="display:flex;gap:6px">

@@ -742,6 +742,55 @@ footer{text-align:center;font-size:9px;color:var(--brown-200);letter-spacing:.14
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .ani{animation:fadeIn .28s ease forwards}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  const SUPABASE_URL = 'https://tsweacifoxqpphvnwire.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2VhY2lmb3hxcHBodm53aXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODU1NjAsImV4cCI6MjA5MTI2MTU2MH0.X81LpvGrhB_G8alB_iXus1wd28FZSTM0ZLR6GeGmKDc';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  // Checkout success Banner
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'success') {
+    window.addEventListener('DOMContentLoaded', () => {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#3DB87A;color:white;text-align:center;padding:14px;font-family:DM Sans,sans-serif;font-weight:600;z-index:9999;font-size:15px;';
+      banner.textContent = '✓ Willkommen bei LumeDent! Deine 14 Tage Testphase hat begonnen.';
+      document.body.prepend(banner);
+      setTimeout(() => banner.remove(), 6000);
+      history.replaceState({}, '', '/app.html');
+    });
+  }
+
+  // Auth Check
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (!session) {
+      window.location.href = '/auth.html';
+      return;
+    }
+    // Subscription Check
+    sb.from('subscriptions').select('status,plan').eq('user_id', session.user.id).single().then(({ data: sub }) => {
+      if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
+        window.location.href = '/auth.html';
+      }
+    });
+  });
+
+  // Logout Button in Nav einfügen
+  window.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('nav') || document.querySelector('header');
+    if (nav) {
+      const btn = document.createElement('button');
+      btn.textContent = 'Abmelden';
+      btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:#6E849E;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-family:DM Sans,sans-serif;';
+      btn.onclick = async () => { await sb.auth.signOut(); window.location.href = '/auth.html'; };
+      nav.appendChild(btn);
+    }
+  });
+})();
+</script>
+
 </head>
 <body>
 

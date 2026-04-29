@@ -770,6 +770,12 @@ footer{text-align:center;font-size:9px;color:var(--brown-200);letter-spacing:.14
       return;
     }
     // Subscription Check
+    // Admin Bypass
+    const ADMIN_EMAILS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
+    if (ADMIN_EMAILS.includes(session.user.email)) {
+      console.log('Admin access granted');
+      return;
+    }
     sb.from('subscriptions').select('status,plan').eq('user_id', session.user.id).single().then(({ data: sub }) => {
       if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
         window.location.href = '/auth.html';

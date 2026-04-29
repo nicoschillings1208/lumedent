@@ -6313,7 +6313,14 @@ function selectProfil(id){
   document.getElementById("profil-btn-label").textContent = name;
   document.getElementById("profil-menu").style.display="none";
   updateAktivBadge();
+  // Regelstudio neu rendern wenn aktiv
+  if(typeof renderRegelstudio === 'function'){
+    try { renderRegelstudio(); } catch(e){}
+  } else if(typeof renderRsProfileTabs === 'function'){
+    try { renderRsProfileTabs(); } catch(e){}
+  }
 }
+
 
 function updateAktivBadge(){
   const badge = document.getElementById("aktiv-profil-badge");
@@ -6747,27 +6754,26 @@ let _rsDragSrc = null;
 
 // ── Storage ──────────────────────────────────────────────────────
 function rsLoadProfiles(){
-  try {
-    const d = localStorage.getItem("ld_rs_profiles");
-    const fromStorage = d ? JSON.parse(d) : null;
-    // Nutze Storage wenn vorhanden, sonst Memory
-    if(fromStorage && fromStorage.length > 0) return fromStorage;
-    return _rsProfiles.length > 0 ? _rsProfiles : (fromStorage||[]);
-  } catch { return _rsProfiles; }
+  // Nutze immer die Behandler-Profile (kein separates RS-Profil-System)
+  const behandler = loadProfile();
+  // Konvertiere Behandler-Profile ins RS-Format falls nötig
+  const rsFromBehandler = [{id: '__basis', name: 'Praxis-Standard'}];
+  behandler.forEach(p => rsFromBehandler.push({id: p.id, name: p.name}));
+  return rsFromBehandler;
+} catch(e) { return _rsProfiles; }
 }
 function rsSaveProfiles(profiles){
   _rsProfiles = profiles;
-  try { localStorage.setItem("ld_rs_profiles", JSON.stringify(profiles)); } catch {}
+  try { localStorage.setItem("ld_rs_profiles", JSON.stringify(profiles)); } catch(e){}
 }
 function rsGetActiveId(){
-  try {
-    const v = localStorage.getItem("ld_rs_active");
-    return (v && v !== "") ? v : _rsActiveId;
-  } catch { return _rsActiveId; }
+  // Immer das aktive Behandler-Profil oben rechts verwenden
+  return getActiveProfileId();
+} catch(e) { return _rsActiveId; }
 }
 function rsSetActiveId(id){
   _rsActiveId = id;
-  try { localStorage.setItem("ld_rs_active", id||""); } catch {}
+  try { localStorage.setItem("ld_rs_active", id||""); } catch(e){}
 }
 
 // ── Profil-Operationen ───────────────────────────────────────────
@@ -6894,37 +6900,17 @@ function renderRegelstudio(){
 function renderRsProfileTabs(){
   const el = document.getElementById("rs-profile-tabs");
   if(!el) return;
-  const profiles = rsLoadProfiles();
   const activeId = rsGetActiveId();
-
-  if(profiles.length === 0){
-    el.innerHTML = `<span style="font-size:12px;color:var(--text-muted);font-style:italic">Noch kein Profil — klicke "+ Neues Profil"</span>`;
-    return;
-  }
-
-  el.innerHTML = profiles.map(p=>`
-    <button class="rs-profile-tab${p.id===activeId?" active":""}"
-      onclick="rs_selectProfile('${p.id}')">
-      ${escHtml(p.name)}
-    </button>`).join("");
+  const profiles = rsLoadProfiles();
+  const active = profiles.find(p => p.id === activeId);
+  const name = active ? active.name : 'Praxis-Standard';
+  // Nur aktuell aktives Profil anzeigen — kein separates Tab-System
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:13px;color:var(--text-muted);">Regelkonfig für:</span>
+    <span style="font-size:13px;font-weight:600;color:var(--text-primary);background:var(--surface-2);padding:4px 12px;border-radius:20px;border:1px solid var(--border)">👤 ${name}</span>
+    <span style="font-size:11px;color:var(--text-muted);margin-left:4px;">Profil oben rechts wechseln ↗</span>
+  </div>`;
 }
-
-const RS_FALL_GRUPPEN = [
-  { label:"GKV", falls:["F1","F2","F3","F4"] },
-  { label:"PKV Füllung", falls:["PF1","PF2","PF3","PF4"] },
-  { label:"Präparation", falls:["PRAEP-K","PRAEP-TK","PRAEP-IN","PRAEP-B"] },
-  { label:"Zementierung", falls:["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"] },
-  { label:"Präp+Zem", falls:["PZ-K","PZ-TK","PZ-IN1","PZ-IN2","PZ-IN3","PZ-B"] },
-];
-const RS_FALL_LABELS = {
-  "F1":"F1","F2":"F2","F3":"F3","F4":"F4",
-  "PF1":"PF1","PF2":"PF2","PF3":"PF3","PF4":"PF4",
-  "PRAEP-K":"Präp K","PRAEP-TK":"Präp TK","PRAEP-IN":"Präp Inlay","PRAEP-B":"Präp Brücke",
-  "ZEM-K":"Zem K","ZEM-TK":"Zem TK","ZEM-IN1":"Zem IN1","ZEM-IN2":"Zem IN2",
-  "ZEM-IN3":"Zem IN3","ZEM-B":"Zem Brücke",
-  "PZ-K":"P+Z K","PZ-TK":"P+Z TK","PZ-IN1":"P+Z IN1","PZ-IN2":"P+Z IN2",
-  "PZ-IN3":"P+Z IN3","PZ-B":"P+Z Brücke",
-};
 
 function renderRsFallTabs(){
   const tabsEl = document.getElementById("rs-fall-tabs");
@@ -7252,13 +7238,9 @@ function rs_selectFall(fall){
 }
 
 function rs_newProfile(){
-  // Inline-Formular statt prompt
-  const container = document.getElementById("rs-new-profile-form");
-  if(container){
-    container.style.display = container.style.display==="none"?"flex":"none";
-    if(container.style.display==="flex"){
-      setTimeout(()=>document.getElementById("rs-new-name-input")?.focus(), 50);
-    }
+  // Profile werden oben rechts über den Profil-Button erstellt
+  alert('Profile werden oben rechts über den 👤 Button erstellt und verwaltet.');
+}
     return;
   }
 }
@@ -7713,7 +7695,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     </div>
     <div style="display:flex;gap:8px">
       <div style="display:flex;flex-direction:column;gap:8px">
-      <button onclick="rs_newProfile()" class="bp" style="font-size:12px;padding:9px 18px">+ Neues Profil</button>
+      <button onclick="rs_newProfile()" class="bp" style="font-size:12px;padding:9px 18px;display:none">+ Neues Profil</button>
       <div id="rs-new-profile-form" style="display:none;align-items:center;gap:8px;flex-wrap:wrap">
         <input id="rs-new-name-input" type="text" placeholder="z.B. Dr. Müller, Premium …"
           onkeydown="if(event.key==='Enter')rs_confirmNewProfile()"

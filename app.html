@@ -744,57 +744,110 @@ footer{text-align:center;font-size:9px;color:var(--brown-200);letter-spacing:.14
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-(function() {
-  const SUPABASE_URL = 'https://tsweacifoxqpphvnwire.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2VhY2lmb3hxcHBodm53aXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODU1NjAsImV4cCI6MjA5MTI2MTU2MH0.X81LpvGrhB_G8alB_iXus1wd28FZSTM0ZLR6GeGmKDc';
-  const { createClient } = supabase;
-  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-  
-  // Checkout success Banner
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('checkout') === 'success') {
-    window.addEventListener('DOMContentLoaded', () => {
-      const banner = document.createElement('div');
-      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#3DB87A;color:white;text-align:center;padding:14px;font-family:DM Sans,sans-serif;font-weight:600;z-index:9999;font-size:15px;';
-      banner.textContent = '✓ Willkommen bei LumeDent! Deine 14 Tage Testphase hat begonnen.';
-      document.body.prepend(banner);
-      setTimeout(() => banner.remove(), 6000);
-      history.replaceState({}, '', '/app.html');
-    });
-  }
+// ═══════════════════════════════════════════════════════
+// LUMEDENT SUPABASE SYNC
+// ═══════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://tsweacifoxqpphvnwire.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2VhY2lmb3hxcHBodm53aXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODU1NjAsImV4cCI6MjA5MTI2MTU2MH0.X81LpvGrhB_G8alB_iXus1wd28FZSTM0ZLR6GeGmKDc';
+const ADMIN_EMAILS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
 
-  // Auth Check
-  sb.auth.getSession().then(({ data: { session } }) => {
-    if (!session) {
-      window.location.href = '/auth.html';
-      return;
-    }
-    // Subscription Check
-    // Admin Bypass
-    const ADMIN_EMAILS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
-    if (ADMIN_EMAILS.includes(session.user.email)) {
-      console.log('Admin access granted');
-      return;
-    }
-    sb.from('subscriptions').select('status,plan').eq('user_id', session.user.id).single().then(({ data: sub }) => {
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+let _currentUserId = null;
+let _saveTimeout = null;
+
+// ── AUTH GUARD ──────────────────────────────────────────
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (!session) { window.location.href = '/auth.html'; return; }
+  _currentUserId = session.user.id;
+  if (!ADMIN_EMAILS.includes(session.user.email)) {
+    sb.from('subscriptions').select('status').eq('user_id', session.user.id).single().then(({ data: sub }) => {
       if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
         window.location.href = '/auth.html';
       }
     });
-  });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => loadUserData(session.user.id));
+  } else {
+    setTimeout(() => loadUserData(session.user.id), 200);
+  }
+});
 
-  // Logout Button in Nav einfügen
-  window.addEventListener('DOMContentLoaded', () => {
-    const nav = document.querySelector('nav') || document.querySelector('header');
-    if (nav) {
-      const btn = document.createElement('button');
-      btn.textContent = 'Abmelden';
-      btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:#6E849E;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-family:DM Sans,sans-serif;';
-      btn.onclick = async () => { await sb.auth.signOut(); window.location.href = '/auth.html'; };
-      nav.appendChild(btn);
+// ── LOGOUT BUTTON ───────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const nav = document.querySelector('header');
+  if (nav) {
+    const btn = document.createElement('button');
+    btn.textContent = 'Abmelden';
+    btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
+    btn.onclick = async () => { await sb.auth.signOut(); window.location.href = '/auth.html'; };
+    nav.appendChild(btn);
+  }
+});
+
+// ── LADEN ───────────────────────────────────────────────
+async function loadUserData(userId) {
+  try {
+    const { data: settings } = await sb.from('user_settings').select('*').eq('user_id', userId).single();
+    if (settings) {
+      if (settings.basis && Object.keys(settings.basis).length > 0)
+        localStorage.setItem('ld_basis', JSON.stringify(settings.basis));
+      if (settings.active_profile) localStorage.setItem('ld_active_profile', settings.active_profile);
+      if (settings.rs_active) localStorage.setItem('ld_rs_active', settings.rs_active);
     }
-  });
-})();
+    const { data: profiles } = await sb.from('user_profiles').select('*').eq('user_id', userId).single();
+    if (profiles?.profile_data?.length > 0)
+      localStorage.setItem('ld_profiles', JSON.stringify(profiles.profile_data));
+    const { data: rsProfiles } = await sb.from('user_rs_profiles').select('*').eq('user_id', userId).single();
+    if (rsProfiles?.rs_data && Object.keys(rsProfiles.rs_data).length > 0)
+      localStorage.setItem('ld_rs_profiles', JSON.stringify(rsProfiles.rs_data));
+    // App neu rendern mit geladenen Daten
+    setTimeout(() => {
+      if (typeof renderProfilListe === 'function') renderProfilListe();
+      if (typeof renderRsProfileTabs === 'function') renderRsProfileTabs();
+      if (typeof applyBasis === 'function') applyBasis();
+    }, 100);
+    console.log('LumeDent: Daten geladen');
+  } catch(e) {
+    console.log('LumeDent: Standard-Einstellungen');
+  }
+}
+
+// ── SPEICHERN (debounced 1.5s) ──────────────────────────
+function scheduleSave() {
+  if (!_currentUserId) return;
+  clearTimeout(_saveTimeout);
+  _saveTimeout = setTimeout(saveUserData, 1500);
+}
+
+async function saveUserData() {
+  if (!_currentUserId) return;
+  try {
+    await sb.from('user_settings').upsert({
+      user_id: _currentUserId,
+      basis: JSON.parse(localStorage.getItem('ld_basis') || '{}'),
+      active_profile: localStorage.getItem('ld_active_profile') || 'Standard',
+      rs_active: localStorage.getItem('ld_rs_active') || 'Standard'
+    }, { onConflict: 'user_id' });
+    await sb.from('user_profiles').upsert({
+      user_id: _currentUserId,
+      profile_data: JSON.parse(localStorage.getItem('ld_profiles') || '[]')
+    }, { onConflict: 'user_id' });
+    await sb.from('user_rs_profiles').upsert({
+      user_id: _currentUserId,
+      rs_data: JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}')
+    }, { onConflict: 'user_id' });
+    console.log('LumeDent: Daten gespeichert');
+  } catch(e) { console.error('Speichern fehlgeschlagen:', e); }
+}
+
+// ── localStorage patchen ─────────────────────────────────
+const _origSetItem = localStorage.setItem.bind(localStorage);
+localStorage.setItem = function(key, value) {
+  _origSetItem(key, value);
+  if (key.startsWith('ld_')) scheduleSave();
+};
 </script>
 
 </head>

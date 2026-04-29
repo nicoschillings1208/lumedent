@@ -220,6 +220,12 @@ async function doLogin() {
     return;
   }
   
+  // Admin Bypass
+  const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
+  if (ADMINS.includes(data.user.email)) {
+    window.location.href = '/app.html';
+    return;
+  }
   // Check subscription
   const { data: sub } = await sb.from('subscriptions').select('status').eq('user_id', data.user.id).single();
   if (sub && (sub.status === 'active' || sub.status === 'trialing')) {

@@ -6184,29 +6184,29 @@ function _lsOk(){
 function loadProfile(){
   if(_lsOk()){
     try { return JSON.parse(localStorage.getItem("ld_profiles"))||_memProfiles; }
-    catch { return _memProfiles; }
+    catch(e){ return _memProfiles; }
   }
   return _memProfiles;
 }
 function saveProfiles(profiles){
   _memProfiles = profiles;
-  if(_lsOk()){ try { localStorage.setItem("ld_profiles", JSON.stringify(profiles)); } catch{} }
+  if(_lsOk()){ try { localStorage.setItem("ld_profiles", JSON.stringify(profiles)); } catch(e){} }
 }
 function getActiveProfileId(){
-  if(_lsOk()){ try { return localStorage.getItem("ld_active_profile")||_memActiveId; } catch{} }
+  if(_lsOk()){ try { return localStorage.getItem("ld_active_profile")||_memActiveId; } catch(e){} }
   return _memActiveId;
 }
 function setActiveProfileId(id){
   _memActiveId = id;
-  if(_lsOk()){ try { localStorage.setItem("ld_active_profile", id); } catch{} }
+  if(_lsOk()){ try { localStorage.setItem("ld_active_profile", id); } catch(e){} }
 }
 function getBasisKonfig(){
-  if(_lsOk()){ try { return JSON.parse(localStorage.getItem("ld_basis"))||_memBasis; } catch{} }
+  if(_lsOk()){ try { return JSON.parse(localStorage.getItem("ld_basis"))||_memBasis; } catch(e){} }
   return _memBasis;
 }
 function saveBasisKonfig(data){
   _memBasis = data;
-  if(_lsOk()){ try { localStorage.setItem("ld_basis", JSON.stringify(data)); } catch{} }
+  if(_lsOk()){ try { localStorage.setItem("ld_basis", JSON.stringify(data)); } catch(e){} }
 }
 
 // Standard-Positionsliste für einen Falltyp (hardcoded defaults)
@@ -6724,7 +6724,7 @@ function importProfil(event){
         alert(`✓ Profil "${data.data?.name}" importiert`);
       }
       renderPeBody();
-    } catch{ alert("❌ Ungültige Datei"); }
+    } catch(e){ alert("❌ Ungültige Datei"); }
   };
   reader.readAsText(file);
 }
@@ -6754,22 +6754,24 @@ let _rsDragSrc = null;
 
 // ── Storage ──────────────────────────────────────────────────────
 function rsLoadProfiles(){
+  try {
   // Nutze immer die Behandler-Profile (kein separates RS-Profil-System)
   const behandler = loadProfile();
   // Konvertiere Behandler-Profile ins RS-Format falls nötig
   const rsFromBehandler = [{id: '__basis', name: 'Praxis-Standard'}];
   behandler.forEach(p => rsFromBehandler.push({id: p.id, name: p.name}));
   return rsFromBehandler;
-} catch(e) { return _rsProfiles; }
+  } catch(e) { return _rsProfiles; }
 }
 function rsSaveProfiles(profiles){
   _rsProfiles = profiles;
   try { localStorage.setItem("ld_rs_profiles", JSON.stringify(profiles)); } catch(e){}
 }
 function rsGetActiveId(){
+  try {
   // Immer das aktive Behandler-Profil oben rechts verwenden
   return getActiveProfileId();
-} catch(e) { return _rsActiveId; }
+  } catch(e) { return _rsActiveId; }
 }
 function rsSetActiveId(id){
   _rsActiveId = id;
@@ -7241,9 +7243,6 @@ function rs_newProfile(){
   // Profile werden oben rechts über den Profil-Button erstellt
   alert('Profile werden oben rechts über den 👤 Button erstellt und verwaltet.');
 }
-    return;
-  }
-}
 
 function rs_confirmNewProfile(){
   const input = document.getElementById("rs-new-name-input");
@@ -7680,8 +7679,6 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
 });
 </script>
-</body>
-</html>
 
 <!-- ══ REGELSTUDIO ══ -->
 <div class="view" id="view-regelstudio">
@@ -7735,3 +7732,5 @@ document.addEventListener("DOMContentLoaded",()=>{
 </main>
 </div>
 
+</body>
+</html>

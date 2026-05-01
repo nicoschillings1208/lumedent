@@ -177,9 +177,12 @@ function getStripe() { if (!stripe) stripe = Stripe(STRIPE_PK); return stripe; }
 let selectedPriceId = 'price_1TRex6Q9LTpaOTHCJ4aL2IBd';
 let selectedPlan = 'solo';
 
-// Check if already logged in
+// Check if already logged in — skip redirect if registering
 sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = '/app.html';
+  const params = new URLSearchParams(window.location.search);
+  if (session && params.get('tab') !== 'register') {
+    window.location.href = '/app.html';
+  }
 });
 
 function switchTab(tab, clickedBtn) {
@@ -189,37 +192,6 @@ function switchTab(tab, clickedBtn) {
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
   clearMsg();
 }
-
-// ── URL-Parameter: Tab + Plan vorauswählen ───────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const tab = params.get('tab');
-  const plan = params.get('plan');
-
-  if (tab === 'register') {
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(b => b.classList.remove('active'));
-    if (tabs[1]) tabs[1].classList.add('active');
-    document.getElementById('form-login').style.display = 'none';
-    document.getElementById('form-register').style.display = 'block';
-  }
-
-  if (plan) {
-    const planMap = {
-      solo:   { id: 'price_1TRex6Q9LTpaOTHCJ4aL2IBd', idx: 0 },
-      praxis: { id: 'price_1TRex7Q9LTpaOTHCiGy2QGAC', idx: 1 },
-      team:   { id: 'price_1TRex7Q9LTpaOTHCQxuhBixX', idx: 2 }
-    };
-    const match = planMap[plan];
-    if (match) {
-      document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
-      const opts = document.querySelectorAll('.plan-opt');
-      if (opts[match.idx]) opts[match.idx].classList.add('selected');
-      selectedPriceId = match.id;
-      selectedPlan = plan;
-    }
-  }
-});
 
 function selectPlan(el, priceId, plan) {
   document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
@@ -391,6 +363,35 @@ async function getPlanForUser(userId) {
   if (sub && (sub.status === 'active' || sub.status === 'trialing')) return sub.plan || 'solo';
   return null;
 }
+
+// ── URL-Parameter: Tab + Plan vorauswählen ───────────────
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  const plan = params.get('plan');
+
+  if (tab === 'register') {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(b => b.classList.remove('active'));
+    if (tabs[1]) tabs[1].classList.add('active');
+    document.getElementById('form-login').style.display = 'none';
+    document.getElementById('form-register').style.display = 'block';
+  }
+
+  const planMap = {
+    solo:   { id: 'price_1TRex6Q9LTpaOTHCJ4aL2IBd', idx: 0 },
+    praxis: { id: 'price_1TRex7Q9LTpaOTHCiGy2QGAC', idx: 1 },
+    team:   { id: 'price_1TRex7Q9LTpaOTHCQxuhBixX', idx: 2 }
+  };
+  if (plan && planMap[plan]) {
+    const { id, idx } = planMap[plan];
+    document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
+    const opts = document.querySelectorAll('.plan-opt');
+    if (opts[idx]) opts[idx].classList.add('selected');
+    selectedPriceId = id;
+    selectedPlan = plan;
+  }
+});
 </script>
 </body>
 </html>

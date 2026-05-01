@@ -222,9 +222,11 @@ if (_urlPlan && PLAN_PRICES[_urlPlan]) {
   selectedPlan = _urlPlan;
 }
 
-// ── 2. Session prüfen — nur weiterleiten wenn KEIN register-Tab ──
+// ── 2. Session prüfen — nur weiterleiten wenn KEIN register-Tab und KEIN Reset ──
+let _isPasswordRecovery = false;
+
 sb.auth.getSession().then(({ data: { session } }) => {
-  if (session && _urlTab !== 'register') {
+  if (session && _urlTab !== 'register' && !_isPasswordRecovery) {
     window.location.href = '/app.html';
   }
 });
@@ -392,6 +394,7 @@ async function doReset() {
 // ── NEUES PASSWORT (nach Reset-Link) ──────────────────────
 sb.auth.onAuthStateChange((event, session) => {
   if (event === 'PASSWORD_RECOVERY') {
+    _isPasswordRecovery = true;
     document.querySelector('.tabs').style.display = 'none';
     document.getElementById('form-login').style.display = 'none';
     document.getElementById('form-register').style.display = 'none';
@@ -400,6 +403,11 @@ sb.auth.onAuthStateChange((event, session) => {
     document.getElementById('card-sub').textContent = 'Vergib jetzt dein neues Passwort';
     document.getElementById('msg').className = 'msg';
     document.getElementById('msg').textContent = '';
+  }
+  // SIGNED_IN nach PASSWORD_RECOVERY ignorieren — sonst landet man in der App
+  // ohne das Passwort gesetzt zu haben
+  if (event === 'SIGNED_IN' && _isPasswordRecovery) {
+    return;
   }
 });
 

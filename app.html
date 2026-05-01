@@ -755,24 +755,83 @@ const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let _currentUserId = null;
 let _saveTimeout = null;
+let _sessionToken = null;
+let _heartbeatInterval = null;
 
-// ── AUTH GUARD ──────────────────────────────────────────
-sb.auth.getSession().then(({ data: { session } }) => {
+// ── AUTH GUARD + SESSION CONCURRENCY CONTROL ─────────────
+sb.auth.getSession().then(async ({ data: { session } }) => {
   if (!session) { window.location.href = '/auth.html'; return; }
+
   _currentUserId = session.user.id;
-  if (!ADMIN_EMAILS.includes(session.user.email)) {
-    sb.from('subscriptions').select('status').eq('user_id', session.user.id).single().then(({ data: sub }) => {
-      if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
-        window.location.href = '/auth.html';
-      }
-    });
+  _sessionToken = sessionStorage.getItem('ld_session_token');
+
+  if (!_sessionToken) {
+    window.location.href = '/auth.html';
+    return;
   }
+
+  // Session in DB validieren
+  const { data: mySession } = await sb
+    .from('active_sessions')
+    .select('id, last_seen')
+    .eq('user_id', _currentUserId)
+    .eq('session_token', _sessionToken)
+    .single();
+
+  if (!mySession) {
+    await sb.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = '/auth.html?reason=session_kicked';
+    return;
+  }
+
+  if (!ADMIN_EMAILS.includes(session.user.email)) {
+    const { data: sub } = await sb.from('subscriptions').select('status').eq('user_id', session.user.id).single();
+    if (!sub || (sub.status !== 'active' && sub.status !== 'trialing')) {
+      window.location.href = '/auth.html';
+      return;
+    }
+  }
+
+  // Heartbeat alle 60 Sek.
+  async function heartbeat() {
+    if (!_sessionToken || !_currentUserId) return;
+    const { error } = await sb
+      .from('active_sessions')
+      .update({ last_seen: new Date().toISOString() })
+      .eq('user_id', _currentUserId)
+      .eq('session_token', _sessionToken);
+    if (error) {
+      clearInterval(_heartbeatInterval);
+      await sb.auth.signOut();
+      sessionStorage.clear();
+      showKickedOverlay();
+    }
+  }
+
+  heartbeat();
+  _heartbeatInterval = setInterval(heartbeat, 60 * 1000);
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => loadUserData(session.user.id));
   } else {
     setTimeout(() => loadUserData(session.user.id), 200);
   }
 });
+
+function showKickedOverlay() {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(8,17,31,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;font-family:var(--font,sans-serif);';
+  el.innerHTML = `
+    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+    <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Sitzung beendet</div>
+    <div style="font-size:15px;color:#6E849E;margin-bottom:28px;text-align:center;max-width:340px;line-height:1.6;">
+      Du wurdest abgemeldet, weil sich ein anderes Gerät mit deinem Konto angemeldet hat.
+    </div>
+    <button onclick="window.location.href='/auth.html'" style="background:#C9A84C;color:#08111F;border:none;padding:13px 32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">Neu anmelden</button>
+  `;
+  document.body.appendChild(el);
+}
 
 // ── LOGOUT BUTTON ───────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -781,7 +840,17 @@ window.addEventListener('DOMContentLoaded', () => {
     const btn = document.createElement('button');
     btn.textContent = 'Abmelden';
     btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
-    btn.onclick = async () => { await sb.auth.signOut(); window.location.href = '/auth.html'; };
+    btn.onclick = async () => {
+      if (_sessionToken && _currentUserId) {
+        await sb.from('active_sessions').delete()
+          .eq('user_id', _currentUserId)
+          .eq('session_token', _sessionToken);
+      }
+      clearInterval(_heartbeatInterval);
+      sessionStorage.clear();
+      await sb.auth.signOut();
+      window.location.href = '/auth.html';
+    };
     nav.appendChild(btn);
   }
 });

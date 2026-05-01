@@ -32,9 +32,10 @@ nav {
   background: rgba(8,17,31,0.9); backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-w);
 }
-.logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-.logo-mark { width: 32px; height: 32px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-.logo em { color: var(--gold); font-style: normal; }
+.logo { text-decoration: none; display: flex; align-items: baseline; gap: 0; }
+.logo-lume { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -0.5px; }
+.logo-dent { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 300; color: var(--white); letter-spacing: 2px; }
+
 .nav-r { display: flex; align-items: center; gap: 28px; }
 .nav-r a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
 .nav-r a:hover { color: var(--white); }
@@ -269,7 +270,7 @@ footer { padding: 60px 48px 36px; border-top: 1px solid var(--border-w); }
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+  <a href="#" class="logo"><span class="logo-lume">Lume</span><span class="logo-dent">DENT</span></a>
   <div class="nav-r">
     <a href="#features">Features</a>
     <a href="#preise">Preise</a>
@@ -494,7 +495,7 @@ t0203<br>
       <span class="kicker kicker-gold reveal">Preise</span>
       <h2 class="sec-h reveal">Einfach. Transparent. Fair.</h2>
       <p class="pr-note reveal">14 Tage kostenlos · Danach ab 49 €/Monat zzgl. MwSt. · Jederzeit kündbar · Einrichtungs-Call inklusive</p>
-    <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:8px;">Nur für Unternehmer i.S.d. § 14 BGB · Alle Preise zzgl. 19% MwSt.</p></div>
+    </div>
     <div class="pricing-grid">
       <div class="plan reveal">
         <div class="plan-tier">Solo</div>
@@ -573,9 +574,10 @@ t0203<br>
     <p style="font-size:13px;color:var(--muted);margin-bottom:28px;">14 Tage kostenlos · Danach ab 49 €/Monat zzgl. 19 % MwSt. · Jederzeit kündbar</p>
     <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:32px;">
       <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Fragen vor dem Start? Schreib uns direkt.</p>
-      <form class="cta-form" onsubmit="submitContact(event)">
-        <input type="email" class="cta-input" placeholder="deine@praxis.de" required id="mail">
-        <button type="submit" class="btn-o" id="sbtn" style="white-space:nowrap;">Nachricht senden</button>
+            <form class="cta-form" onsubmit="submitContact(event)" style="flex-direction:column;align-items:center;gap:10px;max-width:480px;margin:0 auto;">
+        <input type="email" id="mail" placeholder="deine@praxis.de" required style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;padding:14px 18px;border-radius:8px;font-size:14px;font-family:var(--font);outline:none;">
+        <textarea id="mail-msg" placeholder="Deine Nachricht (optional)" rows="3" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;padding:14px 18px;border-radius:8px;font-size:14px;font-family:var(--font);outline:none;resize:vertical;"></textarea>
+        <button type="submit" class="btn-o" id="sbtn" style="white-space:nowrap;width:100%;">Nachricht senden</button>
       </form>
     </div>
   </div>
@@ -586,7 +588,7 @@ t0203<br>
   <div class="foot-inner">
     <div class="foot-top">
       <div class="foot-brand">
-        <a href="#" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+        <a href="#" class="logo"><span class="logo-lume">Lume</span><span class="logo-dent">DENT</span></a>
         <p>Abrechnungskomplexe für Z1 — schnell, korrekt, individuell konfigurierbar.</p>
       </div>
       <div class="foot-col">
@@ -623,30 +625,37 @@ function toggle(el) {
   document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
   if (!open) item.classList.add('open');
 }
-function submitContact(e) {
+async function submitContact(e) {
   e.preventDefault();
   const btn = document.getElementById('sbtn');
-  btn.textContent = '✓ Gesendet — wir melden uns!'
-  btn.style.background = '#3DB87A';
-  document.getElementById('mail').value = '';
-  setTimeout(() => { btn.textContent = '14 Tage kostenlos starten →'; btn.style.background = ''; }, 5000);
+  const email = document.getElementById('mail').value.trim();
+  const msg = document.getElementById('mail-msg')?.value.trim() || '';
+  btn.textContent = 'Wird gesendet...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, message: msg })
+    });
+    if (res.ok) {
+      btn.textContent = '✓ Gesendet — wir melden uns!';
+      btn.style.background = '#3DB87A';
+      document.getElementById('mail').value = '';
+      if (document.getElementById('mail-msg')) document.getElementById('mail-msg').value = '';
+      setTimeout(() => { btn.textContent = 'Nachricht senden'; btn.style.background = ''; btn.disabled = false; }, 5000);
+    } else {
+      throw new Error('Fehler beim Senden');
+    }
+  } catch(err) {
+    btn.textContent = 'Fehler — bitte direkt mailen';
+    btn.style.background = '#E05252';
+    setTimeout(() => { btn.textContent = 'Nachricht senden'; btn.style.background = ''; btn.disabled = false; }, 4000);
+  }
 }
 const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), {threshold:.1});
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-</script>
-
-<!-- Cookie Banner -->
-<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0F1E35;border-top:1px solid rgba(201,168,76,0.2);padding:14px 24px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-  <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;">
-    Diese Website verwendet ausschließlich technisch notwendige Dienste (Supabase, Stripe) zur Authentifizierung und Zahlungsabwicklung. Es werden keine Tracking- oder Werbe-Cookies eingesetzt.
-    <a href="/legal.html#datenschutz" style="color:#C9A84C;text-decoration:none;margin-left:6px;">Mehr erfahren</a>
-  </p>
-  <button onclick="document.getElementById('cookie-banner').style.display='none';localStorage.setItem('ld_cookie','1')" style="background:#C9A84C;color:#08111F;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">OK, verstanden</button>
-</div>
-<script>
-if (!localStorage.getItem('ld_cookie')) {
-  document.getElementById('cookie-banner').style.display = 'flex';
-}
 </script>
 </body>
 </html>

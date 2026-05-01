@@ -171,7 +171,8 @@ const STRIPE_PK = 'pk_live_51TK3SiQ9LTpaOTHCtLbp6lNiLns1qFOtUi7OZw6xdZhYeKjixIHP
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-const stripe = Stripe(STRIPE_PK);
+let stripe = null;
+function getStripe() { if (!stripe) stripe = Stripe(STRIPE_PK); return stripe; }
 
 let selectedPriceId = 'price_1TRex6Q9LTpaOTHCJ4aL2IBd';
 let selectedPlan = 'solo';
@@ -180,6 +181,54 @@ let selectedPlan = 'solo';
 sb.auth.getSession().then(({ data: { session } }) => {
   if (session) window.location.href = '/app.html';
 });
+
+// ── URL-Parameter auslesen (tab + plan) ─────────────────
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const tab = params.get('tab');
+  const plan = params.get('plan');
+
+  if (tab === 'register') {
+    // Warten bis DOM bereit
+    const activate = () => {
+      // Tab auf Registrieren umschalten
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const regBtn = document.querySelectorAll('.tab-btn')[1];
+      if (regBtn) regBtn.classList.add('active');
+      document.getElementById('form-login').style.display = 'none';
+      document.getElementById('form-register').style.display = 'block';
+
+      // Plan vorauswählen
+      if (plan) {
+        const planMap = {
+          solo:   'price_1TRex6Q9LTpaOTHCJ4aL2IBd',
+          praxis: 'price_1TRex7Q9LTpaOTHCiGy2QGAC',
+          team:   'price_1TRex7Q9LTpaOTHCQxuhBixX'
+        };
+        const priceId = planMap[plan];
+        if (priceId) {
+          // Alle deselektieren
+          document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
+          // Den richtigen Plan selektieren
+          const planOpts = document.querySelectorAll('.plan-opt');
+          const planOrder = ['solo', 'praxis', 'team'];
+          const idx = planOrder.indexOf(plan);
+          if (idx >= 0 && planOpts[idx]) {
+            planOpts[idx].classList.add('selected');
+          }
+          selectedPriceId = priceId;
+          selectedPlan = plan;
+        }
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', activate);
+    } else {
+      activate();
+    }
+  }
+})();
 
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -276,7 +325,7 @@ async function doRegister() {
         email: email
       })
     });
-    const { sessionId, url } = await res.json();
+    const { url } = await res.json();
     if (url) {
       window.location.href = url;
     } else {

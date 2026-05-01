@@ -78,6 +78,8 @@ module.exports = async (req, res) => {
       cancel_url: 'https://lumedent.de/auth.html',
       'metadata[user_id]': userId || 'unknown',
       payment_method_collection: 'always',
+      'automatic_tax[enabled]': 'true',
+      'tax_id_collection[enabled]': 'true',
     });
 
     if (session.error) {

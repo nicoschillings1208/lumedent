@@ -20,10 +20,9 @@ const WELCOME_TEMPLATE = `<!DOCTYPE html>
   body { background:#F0F2F5; font-family:'Helvetica Neue',Arial,sans-serif; padding:40px 16px; }
   .wrap { max-width:560px; margin:0 auto; }
   .card { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
-  .header { background:#08111F; padding:36px 40px; text-align:center; }
-  .logo-mark { display:inline-block; width:34px; height:34px; background:#C9A84C; border-radius:8px; font-size:16px; line-height:34px; text-align:center; color:#08111F; }
-  .logo-text { display:inline-block; font-size:22px; font-weight:900; color:#fff; margin-left:10px; vertical-align:middle; }
-  .logo-text em { color:#C9A84C; font-style:normal; }
+  .header { background:#08111F; padding:36px 40px; display:flex; align-items:center; }
+  .logo-lume { font-family:Georgia,serif; font-size:26px; font-weight:900; color:#C9A84C; letter-spacing:-0.5px; }
+  .logo-dent { font-family:Georgia,serif; font-size:26px; font-weight:300; color:#fff; letter-spacing:2px; }
   .hero { background:linear-gradient(135deg,#0F1E35,#112033); padding:32px 40px; text-align:center; border-bottom:1px solid rgba(201,168,76,0.2); }
   .hero-icon { font-size:52px; margin-bottom:12px; }
   .hero-title { font-size:26px; font-weight:700; color:#fff; margin-bottom:6px; }
@@ -62,8 +61,7 @@ const WELCOME_TEMPLATE = `<!DOCTYPE html>
 
     <!-- Header -->
     <div class="header">
-      <span class="logo-mark">✦</span>
-      <span class="logo-text">Lume<em>Dent</em></span>
+      <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
     </div>
 
     <!-- Hero -->

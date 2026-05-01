@@ -73,18 +73,11 @@ header{
   border-bottom:1px solid rgba(255,255,255,.05);
   backdrop-filter:blur(12px);
 }
-.logo{display:flex;align-items:center;gap:12px}
-.logo-mark{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent-dark),var(--accent-light));
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
-}
-.logo-name{
-  font-family:var(--font-h);font-size:18px;font-weight:700;
-  color:#fff;letter-spacing:-.01em;
-}
-.logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:1px}
+.logo{display:flex;align-items:baseline;gap:0}
+.logo-lume{font-family:Georgia,serif;font-size:19px;font-weight:900;color:var(--gold);letter-spacing:-0.5px}
+.logo-dent{font-family:Georgia,serif;font-size:19px;font-weight:300;color:var(--white);letter-spacing:1.5px}
+
+.logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:2px}
 .hpill{
   font-size:10px;color:var(--dark-muted);
   border:1px solid rgba(255,255,255,.1);border-radius:20px;
@@ -942,11 +935,7 @@ localStorage.setItem = function(key, value) {
 
 <header>
   <div class="logo">
-    <div class="logo-mark">🦷</div>
-    <div>
-      <div class="logo-name">LumeDent</div>
-      <div class="logo-tag">Abrechnungs-Generator</div>
-    </div>
+    <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
   </div>
   <div class="hpill"></div>
   <div style="display:flex;align-items:center;gap:8px">

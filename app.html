@@ -73,17 +73,9 @@ header{
   border-bottom:1px solid rgba(255,255,255,.05);
   backdrop-filter:blur(12px);
 }
-.logo{display:flex;align-items:center;gap:12px}
-.logo-mark{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent-dark),var(--accent-light));
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
-}
-.logo-name{
-  font-family:var(--font-h);font-size:18px;font-weight:700;
-  color:#fff;letter-spacing:-.01em;
-}
+.logo{display:flex;align-items:baseline;gap:0;text-decoration:none}
+.logo-lume{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:900;color:var(--accent);letter-spacing:-0.5px}
+.logo-dent{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:300;color:#fff;letter-spacing:2px}
 .logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:1px}
 .hpill{
   font-size:10px;color:var(--dark-muted);
@@ -93,20 +85,20 @@ header{
 
 /* ── NAV ───────────────────────────────────────────────────── */
 .nav-tabs{
-  background:var(--dark-2);
+  background:var(--dark);
   display:flex;gap:0;padding:0 32px;
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .nav-tab{
-  padding:0 20px;height:44px;display:flex;align-items:center;
+  padding:0 22px;height:42px;display:flex;align-items:center;gap:6px;
   font-family:var(--font);font-size:12px;font-weight:500;
-  color:var(--dark-muted);letter-spacing:.02em;
+  color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;
   border:none;background:transparent;cursor:pointer;
   transition:color .15s;
   border-bottom:2px solid transparent;margin-bottom:-1px;
 }
-.nav-tab:hover{color:rgba(255,255,255,.7)}
-.nav-tab.on{color:#fff;border-bottom-color:var(--accent);font-weight:600}
+.nav-tab:hover{color:rgba(255,255,255,.65)}
+.nav-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
 .view{display:none}.view.on{display:block}
 
 /* ── LAYOUT ────────────────────────────────────────────────── */
@@ -175,7 +167,7 @@ main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-dire
 /* ── BEHANDLUNGSFÄLLE ──────────────────────────────────────── */
 .cases-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .case-row{
-  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:nowrap;
   background:var(--surface-2);border:1px solid var(--border);
   border-radius:var(--r);padding:14px 16px;
   transition:border-color .15s,box-shadow .15s;
@@ -186,7 +178,7 @@ main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-dire
   letter-spacing:.08em;text-transform:uppercase;
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
-.case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
+.case-tooth-select{display:flex;gap:3px;flex-wrap:nowrap;flex:1;min-width:0;overflow-x:auto;padding-bottom:2px}
 .case-tooth-btn{
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
@@ -199,7 +191,7 @@ main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-dire
   box-shadow:0 0 0 2px var(--accent-glow);
 }
 .case-tooth-btn.miss{border-color:var(--red)!important;color:var(--red)!important}
-.case-fall-btns{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.case-fall-btns{display:flex;gap:5px;flex-wrap:nowrap;flex-shrink:0;overflow-x:auto}
 .case-fall-btn{
   padding:5px 13px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-secondary);
@@ -849,31 +841,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnAbo = document.createElement('button');
     btnAbo.textContent = '⚙ Abo verwalten';
     btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
-    btnAbo.onclick = async () => {
-      btnAbo.textContent = '⏳ Wird geladen...';
-      btnAbo.disabled = true;
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        const userId = session?.user?.id;
-        if (!userId) { window.location.href = '/auth.html'; return; }
-        const res = await fetch('/api/customer-portal', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-        const { url, error } = await res.json();
-        if (url) {
-          window.location.href = url;
-        } else {
-          alert('Fehler: ' + (error || 'Portal konnte nicht geöffnet werden'));
-          btnAbo.textContent = '⚙ Abo verwalten';
-          btnAbo.disabled = false;
-        }
-      } catch(e) {
-        alert('Fehler: ' + e.message);
-        btnAbo.textContent = '⚙ Abo verwalten';
-        btnAbo.disabled = false;
-      }
+    btnAbo.onclick = () => {
+      window.open('https://billing.stripe.com/p/login/4gM28tekjcoJfGy5mJao800', '_blank');
     };
     nav.appendChild(btnAbo);
 
@@ -965,11 +934,7 @@ localStorage.setItem = function(key, value) {
 
 <header>
   <div class="logo">
-    <div class="logo-mark">🦷</div>
-    <div>
-      <div class="logo-name">LumeDent</div>
-      <div class="logo-tag">Abrechnungs-Generator</div>
-    </div>
+    <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
   </div>
   <div class="hpill"></div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -992,34 +957,10 @@ localStorage.setItem = function(key, value) {
   </div>
 </header>
 
-<!-- ── CHECKOUT SUCCESS OVERLAY ───────────────────────── -->
-<div id="checkout-overlay" style="display:none;position:fixed;inset:0;background:rgba(8,17,31,0.85);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#0F1E35;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:48px 44px;max-width:460px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
-    <div style="font-size:48px;margin-bottom:20px;">🎉</div>
-    <div style="font-family:Georgia,serif;font-size:28px;font-weight:900;color:#C9A84C;letter-spacing:-0.5px;margin-bottom:4px;">Lume<span style="font-weight:300;color:#fff;letter-spacing:2px;">DENT</span></div>
-    <div style="font-size:20px;font-weight:700;color:#fff;margin:16px 0 8px;">Willkommen!</div>
-    <div style="font-size:14px;color:#6E849E;line-height:1.6;margin-bottom:32px;">Deine 14-tägige Testphase hat begonnen.<br>Du hast vollen Zugriff auf alle Funktionen.</div>
-    <button onclick="document.getElementById('checkout-overlay').style.display='none'" style="background:#C9A84C;color:#08111F;border:none;padding:14px 40px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;">Los geht's →</button>
-  </div>
-</div>
-
-<script>
-// Checkout Success Overlay
-(function() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('checkout') === 'success') {
-    document.getElementById('checkout-overlay').style.display = 'flex';
-    // URL sauber halten
-    window.history.replaceState({}, '', '/app.html');
-  }
-})();
-</script>
-
-
 <nav class="nav-tabs">
-  <button class="nav-tab on" onclick="switchView('generator',this)">⬡ Generator</button>
-  <button class="nav-tab" onclick="switchView('katalog',this)">◈ Abrechnungskatalog</button>
-  <button class="nav-tab" onclick="switchView('regelstudio',this)">⚙ Regelstudio</button>
+  <button class="nav-tab on" onclick="switchView('generator',this)">Generator</button>
+  <button class="nav-tab" onclick="switchView('katalog',this)">Katalog</button>
+  <button class="nav-tab" onclick="switchView('regelstudio',this)">Regelstudio</button>
 
 </nav>
 

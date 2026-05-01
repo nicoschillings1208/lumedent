@@ -765,24 +765,30 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   _currentUserId = session.user.id;
   _sessionToken = sessionStorage.getItem('ld_session_token');
 
+  // Kein Token = noch nie eingeloggt oder anderer Browser
+  // Admins dürfen ohne Token rein
   if (!_sessionToken) {
-    window.location.href = '/auth.html';
-    return;
-  }
+    if (!ADMIN_EMAILS.includes(session.user.email)) {
+      window.location.href = '/auth.html';
+      return;
+    }
+  } else {
+    // Session in DB validieren (maybeSingle vermeidet Fehler bei 0 Results)
+    const { data: mySession, error: sessionError } = await sb
+      .from('active_sessions')
+      .select('id, last_seen')
+      .eq('user_id', _currentUserId)
+      .eq('session_token', _sessionToken)
+      .maybeSingle();
 
-  // Session in DB validieren
-  const { data: mySession } = await sb
-    .from('active_sessions')
-    .select('id, last_seen')
-    .eq('user_id', _currentUserId)
-    .eq('session_token', _sessionToken)
-    .single();
-
-  if (!mySession) {
-    await sb.auth.signOut();
-    sessionStorage.clear();
-    window.location.href = '/auth.html?reason=session_kicked';
-    return;
+    if (!sessionError && mySession === null) {
+      // Session existiert nicht mehr → wurde gekickt
+      await sb.auth.signOut();
+      sessionStorage.clear();
+      window.location.href = '/auth.html?reason=session_kicked';
+      return;
+    }
+    // Bei sessionError: Fehler ignorieren, User darf drin bleiben
   }
 
   if (!ADMIN_EMAILS.includes(session.user.email)) {
@@ -796,12 +802,14 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   // Heartbeat alle 60 Sek.
   async function heartbeat() {
     if (!_sessionToken || !_currentUserId) return;
-    const { error } = await sb
+    const { data: updated, error } = await sb
       .from('active_sessions')
       .update({ last_seen: new Date().toISOString() })
       .eq('user_id', _currentUserId)
-      .eq('session_token', _sessionToken);
-    if (error) {
+      .eq('session_token', _sessionToken)
+      .select();
+    // Wenn Update 0 Rows betrifft = Session wurde gelöscht = gekickt
+    if (!error && updated && updated.length === 0) {
       clearInterval(_heartbeatInterval);
       await sb.auth.signOut();
       sessionStorage.clear();

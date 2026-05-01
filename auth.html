@@ -20,9 +20,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(-
 
 /* NAV */
 nav { padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-w); }
-.logo { text-decoration: none; display: flex; align-items: baseline; gap: 0; }
-.logo-lume { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -0.5px; }
-.logo-dent { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 300; color: var(--white); letter-spacing: 1.5px; }
+.logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 30px; height: 30px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.logo em { color: var(--gold); font-style: normal; }
 .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
 .nav-link:hover { color: var(--white); }
 
@@ -95,7 +95,7 @@ input::placeholder { color: var(--muted); }
 <body>
 
 <nav>
-  <a href="/" class="logo"><span class="logo-lume">Lume</span><span class="logo-dent">DENT</span></a>
+  <a href="/" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
   <a href="/" class="nav-link">← Zur Startseite</a>
 </nav>
 
@@ -157,24 +157,11 @@ input::placeholder { color: var(--muted); }
       </div>
       <button class="btn" onclick="doRegister()" id="btn-register">14 Tage kostenlos starten →</button>
       <div class="trial-note">
-        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat<br>
-        Zahlungsmittel wird nach Registrierung hinterlegt · Jederzeit kündbar
+        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat zzgl. 19% MwSt.<br>
+        Zahlungsmittel wird nach Registrierung hinterlegt · Jederzeit kündbar<br>
+        <span style="font-size:11px;opacity:0.7;">Mit dem Start der Testphase stimmen Sie der Vertragsausführung zu und bestätigen den Verlust des Widerrufsrechts bei Nutzungsbeginn. Nur für Unternehmer i.S.d. § 14 BGB.</span>
       </div>
     </div>
-
-    <!-- NEUES PASSWORT -->
-    <div id="form-newpw" style="display:none">
-      <div class="form-group">
-        <label>Neues Passwort</label>
-        <input type="password" id="new-pw" placeholder="Mindestens 8 Zeichen">
-      </div>
-      <div class="form-group">
-        <label>Passwort wiederholen</label>
-        <input type="password" id="new-pw2" placeholder="Mindestens 8 Zeichen" onkeydown="if(event.key==='Enter')doNewPassword()">
-      </div>
-      <button class="btn" onclick="doNewPassword()" id="btn-newpw">Passwort speichern →</button>
-    </div>
-
   </div>
 </main>
 
@@ -222,11 +209,9 @@ if (_urlPlan && PLAN_PRICES[_urlPlan]) {
   selectedPlan = _urlPlan;
 }
 
-// ── 2. Session prüfen — nur weiterleiten wenn KEIN register-Tab und KEIN Reset ──
-let _isPasswordRecovery = false;
-
+// ── 2. Session prüfen — nur weiterleiten wenn KEIN register-Tab ──
 sb.auth.getSession().then(({ data: { session } }) => {
-  if (session && _urlTab !== 'register' && !_isPasswordRecovery) {
+  if (session && _urlTab !== 'register') {
     window.location.href = '/app.html';
   }
 });
@@ -388,44 +373,7 @@ async function doReset() {
     redirectTo: window.location.origin + '/auth.html'
   });
   if (error) showMsg('Fehler: ' + error.message, 'error');
-  else showMsg('Passwort-Reset E-Mail wurde gesendet. Bitte prüfe dein Postfach.', 'success');
-}
-
-// ── NEUES PASSWORT (nach Reset-Link) ──────────────────────
-sb.auth.onAuthStateChange((event, session) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    _isPasswordRecovery = true;
-    document.querySelector('.tabs').style.display = 'none';
-    document.getElementById('form-login').style.display = 'none';
-    document.getElementById('form-register').style.display = 'none';
-    document.getElementById('form-newpw').style.display = 'block';
-    document.getElementById('card-title').textContent = 'Neues Passwort';
-    document.getElementById('card-sub').textContent = 'Vergib jetzt dein neues Passwort';
-    document.getElementById('msg').className = 'msg';
-    document.getElementById('msg').textContent = '';
-  }
-  // SIGNED_IN nach PASSWORD_RECOVERY ignorieren — sonst landet man in der App
-  // ohne das Passwort gesetzt zu haben
-  if (event === 'SIGNED_IN' && _isPasswordRecovery) {
-    return;
-  }
-});
-
-async function doNewPassword() {
-  const pw = document.getElementById('new-pw').value;
-  const pw2 = document.getElementById('new-pw2').value;
-  if (pw.length < 8) return showMsg('Passwort muss mindestens 8 Zeichen haben.', 'error');
-  if (pw !== pw2) return showMsg('Passwörter stimmen nicht überein.', 'error');
-  const btn = document.getElementById('btn-newpw');
-  btn.disabled = true; btn.textContent = 'Wird gespeichert...';
-  const { error } = await sb.auth.updateUser({ password: pw });
-  if (error) {
-    showMsg('Fehler: ' + error.message, 'error');
-    btn.disabled = false; btn.textContent = 'Passwort speichern →';
-  } else {
-    showMsg('Passwort erfolgreich gesetzt! Du wirst weitergeleitet...', 'success');
-    setTimeout(() => window.location.href = '/app.html', 2000);
-  }
+  else showMsg('Passwort-Reset E-Mail wurde gesendet.', 'success');
 }
 </script>
 
@@ -437,5 +385,19 @@ async function doNewPassword() {
     <a href="/legal.html#haftung" style="font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none;">Haftungsausschluss</a>
   </div>
 </footer>
+
+<!-- Cookie Banner -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0F1E35;border-top:1px solid rgba(201,168,76,0.2);padding:14px 24px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;">
+    Diese Website verwendet ausschließlich technisch notwendige Dienste (Supabase, Stripe) zur Authentifizierung und Zahlungsabwicklung. Es werden keine Tracking- oder Werbe-Cookies eingesetzt.
+    <a href="/legal.html#datenschutz" style="color:#C9A84C;text-decoration:none;margin-left:6px;">Mehr erfahren</a>
+  </p>
+  <button onclick="document.getElementById('cookie-banner').style.display='none';localStorage.setItem('ld_cookie','1')" style="background:#C9A84C;color:#08111F;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">OK, verstanden</button>
+</div>
+<script>
+if (!localStorage.getItem('ld_cookie')) {
+  document.getElementById('cookie-banner').style.display = 'flex';
+}
+</script>
 </body>
 </html>

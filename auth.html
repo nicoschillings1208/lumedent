@@ -165,29 +165,60 @@ input::placeholder { color: var(--muted); }
 </main>
 
 <script>
+// ═══════════════════════════════════════════════
+// LUMEDENT AUTH — komplett neu
+// ═══════════════════════════════════════════════
+
 const SUPABASE_URL = 'https://tsweacifoxqpphvnwire.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRzd2VhY2lmb3hxcHBodm53aXJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODU1NjAsImV4cCI6MjA5MTI2MTU2MH0.X81LpvGrhB_G8alB_iXus1wd28FZSTM0ZLR6GeGmKDc';
-const STRIPE_PK = 'pk_live_51TK3SiQ9LTpaOTHCtLbp6lNiLns1qFOtUi7OZw6xdZhYeKjixIHPEn1kCie2qSxd4kgUjTB3u6HuMO0b1dTLfoSq009mxX2YD9';
+const STRIPE_PK = 'pk_live_51TK3SiQ9LTpaOTHCtLbp6lNiLns1qFOtUi7OZw6xdZhYeKjixIHPEen1kCie2qSxd4kgUjTB3u6HuMO0b1dTLfoSq009mxX2YD9';
+const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
+const PLAN_LIMITS = { solo: 1, praxis: 3, team: Infinity };
+const PLAN_PRICES = {
+  solo:   { id: 'price_1TRex6Q9LTpaOTHCJ4aL2IBd', idx: 0 },
+  praxis: { id: 'price_1TRex7Q9LTpaOTHCiGy2QGAC', idx: 1 },
+  team:   { id: 'price_1TRex7Q9LTpaOTHCQxuhBixX', idx: 2 }
+};
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let stripe = null;
 function getStripe() { if (!stripe) stripe = Stripe(STRIPE_PK); return stripe; }
 
-let selectedPriceId = 'price_1TRex6Q9LTpaOTHCJ4aL2IBd';
+let selectedPriceId = PLAN_PRICES.solo.id;
 let selectedPlan = 'solo';
 
-// Check if already logged in — skip redirect if registering
+// ── 1. URL-Parameter SOFORT auslesen (DOM ist bereits da) ──
+const _params = new URLSearchParams(window.location.search);
+const _urlTab  = _params.get('tab');
+const _urlPlan = _params.get('plan');
+
+if (_urlTab === 'register') {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn')[1].classList.add('active');
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-register').style.display = 'block';
+}
+
+if (_urlPlan && PLAN_PRICES[_urlPlan]) {
+  const { id, idx } = PLAN_PRICES[_urlPlan];
+  document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
+  document.querySelectorAll('.plan-opt')[idx].classList.add('selected');
+  selectedPriceId = id;
+  selectedPlan = _urlPlan;
+}
+
+// ── 2. Session prüfen — nur weiterleiten wenn KEIN register-Tab ──
 sb.auth.getSession().then(({ data: { session } }) => {
-  const params = new URLSearchParams(window.location.search);
-  if (session && params.get('tab') !== 'register') {
+  if (session && _urlTab !== 'register') {
     window.location.href = '/app.html';
   }
 });
 
-function switchTab(tab, clickedBtn) {
+// ── UI FUNCTIONS ──────────────────────────────────────────
+function switchTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  if (clickedBtn) clickedBtn.classList.add('active');
+  btn.classList.add('active');
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
   clearMsg();
@@ -209,33 +240,76 @@ function clearMsg() {
   document.getElementById('msg').className = 'msg';
 }
 
+// ── SESSION CONCURRENCY ───────────────────────────────────
+function genToken() {
+  return (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now());
+}
+
+async function registerSession(userId, plan) {
+  const token = genToken();
+  const limit = PLAN_LIMITS[plan] || 1;
+  const cutoff = new Date(Date.now() - 4 * 60 * 1000).toISOString();
+
+  const { data: sessions } = await sb
+    .from('active_sessions')
+    .select('id, created_at')
+    .eq('user_id', userId)
+    .gte('last_seen', cutoff)
+    .order('created_at', { ascending: true });
+
+  const active = sessions || [];
+  if (active.length >= limit) {
+    const ids = active.slice(0, active.length - limit + 1).map(s => s.id);
+    await sb.from('active_sessions').delete().in('id', ids);
+  }
+
+  await sb.from('active_sessions').insert({
+    user_id: userId,
+    session_token: token,
+    plan: plan,
+    device_info: navigator.userAgent.slice(0, 120),
+    last_seen: new Date().toISOString()
+  });
+
+  sessionStorage.setItem('ld_session_token', token);
+  sessionStorage.setItem('ld_user_id', userId);
+  sessionStorage.setItem('ld_plan', plan);
+  return token;
+}
+
+async function getPlanForUser(userId) {
+  const { data: { user } } = await sb.auth.getUser();
+  if (user && ADMINS.includes(user.email)) return 'team';
+  const { data: sub } = await sb.from('subscriptions').select('plan,status').eq('user_id', userId).single();
+  if (sub && (sub.status === 'active' || sub.status === 'trialing')) return sub.plan || 'solo';
+  return null;
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pw = document.getElementById('login-pw').value;
   if (!email || !pw) return showMsg('Bitte E-Mail und Passwort eingeben.', 'error');
-  
+
   const btn = document.getElementById('btn-login');
   btn.disabled = true; btn.textContent = 'Anmelden...';
-  
+
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
   if (error) {
-    showMsg('Login fehlgeschlagen: ' + (error.message === 'Invalid login credentials' ? 'E-Mail oder Passwort falsch.' : error.message), 'error');
+    showMsg('E-Mail oder Passwort falsch.', 'error');
     btn.disabled = false; btn.textContent = 'Anmelden';
     return;
   }
 
-  const userId = data.user.id;
   btn.textContent = 'Session wird geprüft...';
+  const userId = data.user.id;
 
-  // Admin Bypass
-  const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
   if (ADMINS.includes(data.user.email)) {
     await registerSession(userId, 'team');
     window.location.href = '/app.html';
     return;
   }
 
-  // Plan ermitteln & prüfen
   const plan = await getPlanForUser(userId);
   if (!plan) {
     showMsg('Kein aktives Abonnement. Bitte wähle ein Paket.', 'error');
@@ -244,31 +318,29 @@ async function doLogin() {
     return;
   }
 
-  // Session registrieren (kickt ggf. älteste)
   await registerSession(userId, plan);
   window.location.href = '/app.html';
 }
 
+// ── REGISTER ──────────────────────────────────────────────
 async function doRegister() {
   const email = document.getElementById('reg-email').value.trim();
   const pw = document.getElementById('reg-pw').value;
   if (!email) return showMsg('Bitte E-Mail eingeben.', 'error');
   if (pw.length < 8) return showMsg('Passwort muss mindestens 8 Zeichen haben.', 'error');
-  
+
   const btn = document.getElementById('btn-register');
   btn.disabled = true; btn.textContent = 'Konto wird erstellt...';
-  
-  // 1. Supabase Registrierung
+
   const { data, error } = await sb.auth.signUp({ email, password: pw });
   if (error) {
     showMsg('Fehler: ' + error.message, 'error');
     btn.disabled = false; btn.textContent = '14 Tage kostenlos starten →';
     return;
   }
-  
+
   btn.textContent = 'Weiterleitung zu Stripe...';
-  
-  // 2. Stripe Checkout Session via Vercel Function
+
   try {
     const res = await fetch('/api/create-checkout', {
       method: 'POST',
@@ -292,6 +364,7 @@ async function doRegister() {
   }
 }
 
+// ── RESET ─────────────────────────────────────────────────
 async function doReset() {
   const email = document.getElementById('login-email').value.trim();
   if (!email) return showMsg('Bitte zuerst E-Mail eingeben.', 'error');
@@ -301,97 +374,6 @@ async function doReset() {
   if (error) showMsg('Fehler: ' + error.message, 'error');
   else showMsg('Passwort-Reset E-Mail wurde gesendet.', 'success');
 }
-
-// ═══════════════════════════════════════════════
-// SESSION CONCURRENCY CONTROL
-// ═══════════════════════════════════════════════
-
-const PLAN_LIMITS = { solo: 1, praxis: 3, team: Infinity };
-
-function genToken() {
-  return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
-}
-
-function getDeviceInfo() {
-  return navigator.userAgent.slice(0, 120);
-}
-
-async function registerSession(userId, plan) {
-  const token = genToken();
-  const limit = PLAN_LIMITS[plan] || 1;
-
-  // Aktive Sessions laden (letzte 4 Minuten = aktiv)
-  const cutoff = new Date(Date.now() - 4 * 60 * 1000).toISOString();
-  const { data: sessions } = await sb
-    .from('active_sessions')
-    .select('id, session_token, last_seen, created_at')
-    .eq('user_id', userId)
-    .gte('last_seen', cutoff)
-    .order('created_at', { ascending: true });
-
-  const activeSessions = sessions || [];
-
-  // Limit überschritten → älteste rauswerfen
-  if (activeSessions.length >= limit) {
-    const toRemove = activeSessions.slice(0, activeSessions.length - limit + 1);
-    const ids = toRemove.map(s => s.id);
-    await sb.from('active_sessions').delete().in('id', ids);
-  }
-
-  // Eigene Session registrieren
-  const { error } = await sb.from('active_sessions').insert({
-    user_id: userId,
-    session_token: token,
-    plan: plan,
-    device_info: getDeviceInfo(),
-    last_seen: new Date().toISOString()
-  });
-
-  if (!error) {
-    sessionStorage.setItem('ld_session_token', token);
-    sessionStorage.setItem('ld_user_id', userId);
-    sessionStorage.setItem('ld_plan', plan);
-  }
-  return token;
-}
-
-async function getPlanForUser(userId) {
-  const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
-  const { data: { user } } = await sb.auth.getUser();
-  if (user && ADMINS.includes(user.email)) return 'team';
-  const { data: sub } = await sb.from('subscriptions').select('plan, status').eq('user_id', userId).single();
-  if (sub && (sub.status === 'active' || sub.status === 'trialing')) return sub.plan || 'solo';
-  return null;
-}
-
-// ── URL-Parameter: Tab + Plan vorauswählen ───────────────
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  const tab = params.get('tab');
-  const plan = params.get('plan');
-
-  if (tab === 'register') {
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(b => b.classList.remove('active'));
-    if (tabs[1]) tabs[1].classList.add('active');
-    document.getElementById('form-login').style.display = 'none';
-    document.getElementById('form-register').style.display = 'block';
-  }
-
-  const planMap = {
-    solo:   { id: 'price_1TRex6Q9LTpaOTHCJ4aL2IBd', idx: 0 },
-    praxis: { id: 'price_1TRex7Q9LTpaOTHCiGy2QGAC', idx: 1 },
-    team:   { id: 'price_1TRex7Q9LTpaOTHCQxuhBixX', idx: 2 }
-  };
-  if (plan && planMap[plan]) {
-    const { id, idx } = planMap[plan];
-    document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
-    const opts = document.querySelectorAll('.plan-opt');
-    if (opts[idx]) opts[idx].classList.add('selected');
-    selectedPriceId = id;
-    selectedPlan = plan;
-  }
-});
 </script>
 </body>
 </html>

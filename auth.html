@@ -219,21 +219,30 @@ async function doLogin() {
     btn.disabled = false; btn.textContent = 'Anmelden';
     return;
   }
-  
+
+  const userId = data.user.id;
+  btn.textContent = 'Session wird geprüft...';
+
   // Admin Bypass
   const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
   if (ADMINS.includes(data.user.email)) {
+    await registerSession(userId, 'team');
     window.location.href = '/app.html';
     return;
   }
-  // Check subscription
-  const { data: sub } = await sb.from('subscriptions').select('status').eq('user_id', data.user.id).single();
-  if (sub && (sub.status === 'active' || sub.status === 'trialing')) {
-    window.location.href = '/app.html';
-  } else {
+
+  // Plan ermitteln & prüfen
+  const plan = await getPlanForUser(userId);
+  if (!plan) {
     showMsg('Kein aktives Abonnement. Bitte wähle ein Paket.', 'error');
+    await sb.auth.signOut();
     btn.disabled = false; btn.textContent = 'Anmelden';
+    return;
   }
+
+  // Session registrieren (kickt ggf. älteste)
+  await registerSession(userId, plan);
+  window.location.href = '/app.html';
 }
 
 async function doRegister() {
@@ -287,6 +296,68 @@ async function doReset() {
   });
   if (error) showMsg('Fehler: ' + error.message, 'error');
   else showMsg('Passwort-Reset E-Mail wurde gesendet.', 'success');
+}
+
+// ═══════════════════════════════════════════════
+// SESSION CONCURRENCY CONTROL
+// ═══════════════════════════════════════════════
+
+const PLAN_LIMITS = { solo: 1, praxis: 3, team: Infinity };
+
+function genToken() {
+  return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
+}
+
+function getDeviceInfo() {
+  return navigator.userAgent.slice(0, 120);
+}
+
+async function registerSession(userId, plan) {
+  const token = genToken();
+  const limit = PLAN_LIMITS[plan] || 1;
+
+  // Aktive Sessions laden (letzte 4 Minuten = aktiv)
+  const cutoff = new Date(Date.now() - 4 * 60 * 1000).toISOString();
+  const { data: sessions } = await sb
+    .from('active_sessions')
+    .select('id, session_token, last_seen, created_at')
+    .eq('user_id', userId)
+    .gte('last_seen', cutoff)
+    .order('created_at', { ascending: true });
+
+  const activeSessions = sessions || [];
+
+  // Limit überschritten → älteste rauswerfen
+  if (activeSessions.length >= limit) {
+    const toRemove = activeSessions.slice(0, activeSessions.length - limit + 1);
+    const ids = toRemove.map(s => s.id);
+    await sb.from('active_sessions').delete().in('id', ids);
+  }
+
+  // Eigene Session registrieren
+  const { error } = await sb.from('active_sessions').insert({
+    user_id: userId,
+    session_token: token,
+    plan: plan,
+    device_info: getDeviceInfo(),
+    last_seen: new Date().toISOString()
+  });
+
+  if (!error) {
+    sessionStorage.setItem('ld_session_token', token);
+    sessionStorage.setItem('ld_user_id', userId);
+    sessionStorage.setItem('ld_plan', plan);
+  }
+  return token;
+}
+
+async function getPlanForUser(userId) {
+  const ADMINS = ['info@lumedent.de', 'nico.schillings1208@googlemail.com'];
+  const { data: { user } } = await sb.auth.getUser();
+  if (user && ADMINS.includes(user.email)) return 'team';
+  const { data: sub } = await sb.from('subscriptions').select('plan, status').eq('user_id', userId).single();
+  if (sub && (sub.status === 'active' || sub.status === 'trialing')) return sub.plan || 'solo';
+  return null;
 }
 </script>
 </body>

@@ -14,154 +14,143 @@ const WELCOME_TEMPLATE = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Willkommen bei LumeDent</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#F0F2F5; font-family:'Helvetica Neue',Arial,sans-serif; padding:40px 16px; }
-  .wrap { max-width:560px; margin:0 auto; }
-  .card { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
-  .header { background:#08111F; padding:36px 40px; display:flex; align-items:center; }
-  .logo-lume { font-family:Georgia,serif; font-size:26px; font-weight:900; color:#C9A84C; letter-spacing:-0.5px; }
-  .logo-dent { font-family:Georgia,serif; font-size:26px; font-weight:300; color:#fff; letter-spacing:2px; }
-  .hero { background:linear-gradient(135deg,#0F1E35,#112033); padding:32px 40px; text-align:center; border-bottom:1px solid rgba(201,168,76,0.2); }
-  .hero-icon { font-size:52px; margin-bottom:12px; }
-  .hero-title { font-size:26px; font-weight:700; color:#fff; margin-bottom:6px; }
-  .hero-sub { font-size:14px; color:#6E849E; }
-  .body { padding:36px 40px; }
-  .text { font-size:15px; color:#4A5568; line-height:1.7; margin-bottom:20px; }
-  .booking-box { background:#08111F; border-radius:12px; padding:24px 28px; margin:24px 0; }
-  .booking-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6E849E; margin-bottom:16px; }
-  .booking-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
-  .booking-row:last-child { border-bottom:none; padding-bottom:0; }
-  .booking-label { font-size:13px; color:#6E849E; }
-  .booking-value { font-size:14px; color:#fff; font-weight:600; }
-  .booking-value.gold { color:#C9A84C; font-size:18px; }
-  .badge { display:inline-block; background:rgba(61,184,122,0.15); color:#3DB87A; font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px; }
-  .btn-wrap { text-align:center; margin:28px 0; }
-  .btn { display:inline-block; background:#C9A84C; color:#08111F !important; text-decoration:none; font-size:15px; font-weight:700; padding:16px 44px; border-radius:10px; }
-  .steps { margin:24px 0; }
-  .step { display:flex; gap:14px; margin-bottom:14px; align-items:flex-start; }
-  .step-num { width:26px; height:26px; min-width:26px; background:#C9A84C; border-radius:50%; color:#08111F; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:2px; }
-  .step-text { font-size:14px; color:#4A5568; line-height:1.5; }
-  .step-text strong { color:#0F1E35; }
-  .divider { border:none; border-top:1px solid #E8ECF0; margin:24px 0; }
-  .small { font-size:13px; color:#8A9BB0; line-height:1.6; }
-  .small a { color:#C9A84C; text-decoration:none; }
-  .legal-note { background:#F7F9FB; border:1px solid #E8ECF0; border-radius:8px; padding:14px 18px; margin-top:20px; }
-  .legal-note p { font-size:12px; color:#A0AEC0; line-height:1.7; }
-  .legal-note a { color:#C9A84C; text-decoration:none; }
-  .footer { background:#F7F9FB; padding:24px 40px; text-align:center; border-top:1px solid #E8ECF0; }
-  .footer p { font-size:12px; color:#A0AEC0; line-height:1.8; }
-  .footer a { color:#C9A84C; text-decoration:none; }
-</style>
 </head>
-<body>
-<div class="wrap">
-  <div class="card">
+<body style="margin:0;padding:0;background:#EDEEF0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#EDEEF0">
+<tr><td style="padding:40px 16px;" align="center">
+<table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
 
-    <!-- Header -->
-    <div class="header">
-      <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
-    </div>
+  <!-- LOGO -->
+  <tr><td style="padding:0 0 20px 4px;">
+    <span style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:900;color:#1A1A2E;letter-spacing:-0.5px;">Lume</span><span style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:300;color:#6B7280;letter-spacing:2px;">DENT</span>
+  </td></tr>
 
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-icon">🎉</div>
-      <div class="hero-title">Willkommen bei LumeDent!</div>
-      <div class="hero-sub">Deine 14-tägige Testphase hat begonnen</div>
-    </div>
+  <!-- CARD -->
+  <tr><td bgcolor="#ffffff" style="border-radius:12px;border:1px solid #E2E4E8;">
+    <!-- TITEL -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:36px 40px 0px;">
+      <p style="font-size:15px;color:#374151;line-height:1.75;margin:0 0 8px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;"><strong style="font-size:22px;color:#111827;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Willkommen bei LumeDent</strong></p>
+      <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Deine 14-tägige Testphase hat begonnen.</p>
+    </td></tr></table>
 
-    <div class="body">
-      <p class="text">
-        Schön, dass du dabei bist! Du hast jetzt vollen Zugriff auf LumeDent — den Abrechnungs-Generator für Z1-Komplexe, der dir täglich Zeit spart.
-      </p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0px 40px 0px;"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" bgcolor="#F3F4F6" style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>
 
-      <!-- Buchungsbestätigung -->
-      <div class="booking-box">
-        <div class="booking-title">📋 Buchungsbestätigung</div>
-        <div class="booking-row">
-          <span class="booking-label">Paket</span>
-          <span class="booking-value gold">{{PLAN_NAME}}</span>
-        </div>
-        <div class="booking-row">
-          <span class="booking-label">Testphase bis</span>
-          <span class="booking-value">{{TRIAL_END_DATE}}</span>
-        </div>
-        <div class="booking-row">
-          <span class="booking-label">Preis danach</span>
-          <span class="booking-value">{{PLAN_PRICE}} € / Monat zzgl. 19 % MwSt.</span>
-        </div>
-        <div class="booking-row">
-          <span class="booking-label">Abrechnung</span>
-          <span class="booking-value">Monatlich, jederzeit kündbar</span>
-        </div>
-        <div class="booking-row">
-          <span class="booking-label">Status</span>
-          <span class="badge">✓ Testphase aktiv</span>
-        </div>
-      </div>
+    <!-- INTRO TEXT -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:28px 40px 28px;"><p style="font-size:15px;color:#374151;line-height:1.75;margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Schön, dass du dabei bist! Du hast jetzt vollen Zugriff auf LumeDent &mdash; den Abrechnungs-Generator für Z1-Komplexe, der dir täglich Zeit spart.</p></td></tr></table>
 
-      <!-- CTA Button -->
-      <div class="btn-wrap">
-        <a href="https://lumedent.de/app.html" class="btn">Jetzt LumeDent öffnen →</a>
-      </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0px 40px 0px;"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" bgcolor="#F3F4F6" style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>
 
-      <!-- Quick Start -->
-      <p class="text" style="margin-bottom:14px;"><strong>So legst du am schnellsten los:</strong></p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-text"><strong>Zahnschema ausfüllen</strong> — Befunde der Zähne anklicken (F, KR, KE, KU, I, B, WF)</div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-text"><strong>Versicherungsart wählen</strong> — GKV / Kasse oder PKV / Privat und Behandlungsfall hinzufügen</div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-text"><strong>Generieren</strong> — LumeDent erstellt automatisch den vollständigen Abrechnungskomplex</div>
-        </div>
-      </div>
+    <!-- BUCHUNGSBOX -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:28px 40px 28px;"><table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#08111F" style="border-radius:10px;">
+      <tr><td style="padding:18px 24px 6px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#6E849E;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Buchungsbestätigung</div>
+      </td></tr>
+      <tr><td style="padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="font-size:13px;color:#6E849E;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Paket</td>
+        <td align="right" style="font-size:18px;font-weight:700;color:#C9A84C;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{PLAN_NAME}}</td>
+      </tr></table>
+    </td></tr>
+      <tr><td style="padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="font-size:13px;color:#6E849E;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Testphase bis</td>
+        <td align="right" style="font-size:14px;font-weight:600;color:#ffffff;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{TRIAL_END_DATE}}</td>
+      </tr></table>
+    </td></tr>
+      <tr><td style="padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="font-size:13px;color:#6E849E;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Preis danach</td>
+        <td align="right" style="font-size:14px;font-weight:600;color:#ffffff;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">{{PLAN_PRICE}} € / Monat zzgl. 19% MwSt.</td>
+      </tr></table>
+    </td></tr>
+      <tr><td style="padding:0 24px;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="font-size:13px;color:#6E849E;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Abrechnung</td>
+        <td align="right" style="font-size:14px;font-weight:600;color:#ffffff;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Monatlich, jederzeit kündbar</td>
+      </tr></table>
+    </td></tr>
+      <tr><td style="padding:0 24px 8px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="font-size:13px;color:#6E849E;padding:11px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Status</td>
+          <td align="right" style="padding:11px 0;">
+            <span style="background:rgba(61,184,122,0.15);color:#3DB87A;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Testphase aktiv</span>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table></td></tr></table>
 
-      <hr class="divider">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0px 40px 0px;"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" bgcolor="#F3F4F6" style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>
 
-      <p class="small">
-        <strong>Abo verwalten oder kündigen?</strong> Jederzeit im Profil unter „Abo verwalten" — oder direkt per Mail an <a href="mailto:info@lumedent.de">info@lumedent.de</a>.
-      </p>
+    <!-- CTA -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:28px 40px 28px;"><table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+  <tr><td bgcolor="#C9A84C" style="border-radius:8px;">
+    <a href="https://lumedent.de/app.html" style="display:inline-block;padding:14px 40px;color:#08111F;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:8px;">Jetzt LumeDent öffnen &rarr;</a>
+  </td></tr>
+</table></td></tr></table>
 
-      <!-- Rechtlicher Hinweis -->
-      <div class="legal-note">
-        <p>
-          Mit dem Abschluss deines Abonnements hast du unseren
-          <a href="https://lumedent.de/legal.html#agb">AGB</a> und der
-          <a href="https://lumedent.de/legal.html#datenschutz">Datenschutzerklärung</a> zugestimmt.
-          Das Widerrufsrecht erlischt bei digitalen Inhalten mit Beginn der Nutzung.
-          Rechnungen werden automatisch von Stripe ausgestellt und per E-Mail zugesandt.
-        </p>
-      </div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:0px 40px 0px;"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" bgcolor="#F3F4F6" style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>
 
-    <!-- Footer -->
-    <div class="footer">
-      <p>
-        LumeDent · Abrechnungs-Generator für Zahnärzte<br>
-        <a href="https://lumedent.de">lumedent.de</a> &nbsp;·&nbsp;
-        <a href="mailto:info@lumedent.de">info@lumedent.de</a>
-      </p>
-      <p style="margin-top:6px;">
-        <a href="https://lumedent.de/legal.html#impressum">Impressum</a> &nbsp;·&nbsp;
-        <a href="https://lumedent.de/legal.html#datenschutz">Datenschutz</a> &nbsp;·&nbsp;
-        <a href="https://lumedent.de/legal.html#agb">AGB</a> &nbsp;·&nbsp;
-        <a href="https://lumedent.de/legal.html#haftung">Haftungsausschluss</a>
-      </p>
-      <p style="margin-top:6px;">© 2026 Nico Mario Schillings · LumeDent. Alle Rechte vorbehalten.</p>
-    </div>
+    <!-- QUICK START -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:28px 40px 0px;">
+      <p style="font-size:14px;color:#111827;line-height:1.75;margin:0 0 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;"><strong>So legst du am schnellsten los:</strong></p>
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;width:100%"><tr>
+      <td width="26" valign="top" style="padding-top:1px;">
+        <div style="width:22px;height:22px;background:#C9A84C;border-radius:50%;text-align:center;font-size:11px;font-weight:700;color:#08111F;line-height:22px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">1</div>
+      </td>
+      <td style="padding-left:10px;font-size:13px;color:#4A5568;line-height:1.6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+        <strong style="color:#111827;">Zahnschema ausfüllen</strong> — Befunde der Zähne anklicken (F, KR, KE, KU, I, B, WF)
+      </td>
+    </tr></table>
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;width:100%"><tr>
+      <td width="26" valign="top" style="padding-top:1px;">
+        <div style="width:22px;height:22px;background:#C9A84C;border-radius:50%;text-align:center;font-size:11px;font-weight:700;color:#08111F;line-height:22px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">2</div>
+      </td>
+      <td style="padding-left:10px;font-size:13px;color:#4A5568;line-height:1.6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+        <strong style="color:#111827;">Versicherungsart wählen</strong> — GKV / Kasse oder PKV / Privat und Behandlungsfall hinzufügen
+      </td>
+    </tr></table>
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;width:100%"><tr>
+      <td width="26" valign="top" style="padding-top:1px;">
+        <div style="width:22px;height:22px;background:#C9A84C;border-radius:50%;text-align:center;font-size:11px;font-weight:700;color:#08111F;line-height:22px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">3</div>
+      </td>
+      <td style="padding-left:10px;font-size:13px;color:#4A5568;line-height:1.6;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+        <strong style="color:#111827;">Generieren</strong> — LumeDent erstellt automatisch den vollständigen Abrechnungskomplex
+      </td>
+    </tr></table>
+    </td></tr></table>
 
-  </div>
-</div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:16px 40px 0px;"><table cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" bgcolor="#F3F4F6" style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr></table>
+
+    <!-- LEGAL -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:20px 40px 28px;"><p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      Mit dem Abschluss deines Abonnements hast du unseren <a href="https://lumedent.de/legal.html#agb" style="color:#C9A84C;text-decoration:none;">AGB</a> und der <a href="https://lumedent.de/legal.html#datenschutz" style="color:#C9A84C;text-decoration:none;">Datenschutzerklärung</a> zugestimmt. Das Widerrufsrecht erlischt bei digitalen Inhalten mit Beginn der Nutzung.
+    </p></td></tr></table>
+</td></tr>
+</table>
+
+  <!-- FOOTER -->
+  <tr><td style="padding:24px 4px 0;" align="center">
+    <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 8px;">
+      <tr>
+        <td><a href="https://lumedent.de/legal.html#impressum" style="font-size:12px;color:#9CA3AF;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Impressum</a></td>
+        <td style="font-size:12px;color:#D1D5DB;padding:0 8px;">&middot;</td>
+        <td><a href="https://lumedent.de/legal.html#datenschutz" style="font-size:12px;color:#9CA3AF;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">Datenschutz</a></td>
+        <td style="font-size:12px;color:#D1D5DB;padding:0 8px;">&middot;</td>
+        <td><a href="https://lumedent.de/legal.html#agb" style="font-size:12px;color:#9CA3AF;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">AGB</a></td>
+        <td style="font-size:12px;color:#D1D5DB;padding:0 8px;">&middot;</td>
+        <td><a href="mailto:info@lumedent.de" style="font-size:12px;color:#9CA3AF;text-decoration:none;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">info@lumedent.de</a></td>
+      </tr>
+    </table>
+    <p style="font-size:12px;color:#9CA3AF;line-height:1.7;margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+      &copy; 2026 Nico Mario Schillings &middot; LumeDent &middot; <a href="https://lumedent.de" style="color:#9CA3AF;text-decoration:none;">lumedent.de</a>
+    </p>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
 </body>
-</html>
-`;
+</html>`;
 
 
 
@@ -276,7 +265,7 @@ module.exports = async (req, res) => {
       if (email) {
         await sendEmail(
           email,
-          `Willkommen bei LumeDent — deine Testphase hat begonnen 🎉`,
+          `Willkommen bei LumeDent — deine Testphase hat begonnen`,
           buildWelcomeMail(email, plan, trialEnd)
         );
       }

@@ -179,7 +179,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
 .case-tooth-select{display:flex;gap:3px;flex-wrap:nowrap;flex:1;min-width:0;overflow-x:auto;padding-bottom:2px}
-.case-tooth-btn{
+.case-tooth-btn{min-width:32px;width:32px;justify-content:center;
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
   font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
@@ -7699,7 +7699,7 @@ function renderKatalog(){
   countEl.textContent=`${items.length} Position${items.length!==1?"en":""}`;
   if(!items.length){ grid.innerHTML=`<div class="kat-no-results">Keine Positionen gefunden.</div>`; return; }
   grid.innerHTML=items.map(p=>{
-    const hintsHTML=(p.hints||[]).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
+    const hintsHTML=(p.hints||[]).filter(h=>!h.match(/Punkte:|fach:|€|\d+,\d+/)).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
     const fields=[
       {lbl:"Häufigkeit",val:p.frequency},{lbl:"Einschränkungen",val:p.restrictions},{lbl:"Kombinationen",val:p.combinations}
     ].map(f=>`<div class="kat-detail-field">

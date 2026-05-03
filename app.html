@@ -179,7 +179,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
 .case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
-.case-tooth-btn{min-width:32px;width:32px;justify-content:center;
+.case-tooth-btn{min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
   font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
@@ -841,8 +841,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnAbo = document.createElement('button');
     btnAbo.textContent = 'Abo verwalten';
     btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.25);color:rgba(201,168,76,0.65);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--font);letter-spacing:.02em;transition:all .14s;';
-    btnAbo.onclick = () => {
-      window.open('https://billing.stripe.com/p/login/4gM28tekjcoJfGy5mJao800', '_blank');
+    btnAbo.onclick = async () => {
+      btnAbo.textContent = 'Lädt...';
+      btnAbo.disabled = true;
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const userId = session?.user?.id;
+        if (!userId) { window.location.href = '/auth.html'; return; }
+        const res = await fetch('/api/customer-portal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+        const { url, error } = await res.json();
+        if (url) { window.location.href = url; }
+        else { alert('Fehler: ' + (error || 'Portal nicht verfügbar')); btnAbo.textContent = 'Abo verwalten'; btnAbo.disabled = false; }
+      } catch(e) { alert('Fehler: ' + e.message); btnAbo.textContent = 'Abo verwalten'; btnAbo.disabled = false; }
     };
     nav.appendChild(btnAbo);
 
@@ -1025,10 +1039,8 @@ localStorage.setItem = function(key, value) {
 
     <div class="slabel">Behandlungsfälle</div>
     <div class="cases-list" id="cases-list"></div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="case-add-btn" onclick="addCase()" style="flex:1;min-width:200px;">+ Fall hinzufügen</button>
-      <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid rgba(201,168,76,0.2);color:rgba(201,168,76,0.5);padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;" onmouseover="this.style.color='rgba(201,168,76,0.8)';this.style.borderColor='rgba(201,168,76,0.4)'" onmouseout="this.style.color='rgba(201,168,76,0.5)';this.style.borderColor='rgba(201,168,76,0.2)'">✦ Behandlungsfall vorschlagen</button>
-    </div>
+    <button class="case-add-btn" onclick="addCase()">+ Fall hinzufügen</button>
+    <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,0.6)';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.borderColor='rgba(255,255,255,0.1)'">Behandlungsfall vorschlagen</button>
   </div>
 
   <!-- AKTIONEN -->
@@ -5578,7 +5590,7 @@ function buildPrivatGlobalOutput(results){
         _rsOvPriv.customRules.forEach(rule => {
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
-          const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
+          const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
           codes.forEach(code => {
             if(allLines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             allLines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
@@ -6898,14 +6910,14 @@ let _rsDragSrc = null;
 // ── Storage ──────────────────────────────────────────────────────
 function rsLoadProfiles(){
   try {
+  // Behandler-Profile laden
   const behandler = loadProfile();
+  // Gespeicherte RS-Overrides aus localStorage laden
   let savedRS = {};
-  try {
-    const raw = JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}');
-    // Alten Array-Bug abfangen
-    savedRS = Array.isArray(raw) ? {} : raw;
-  } catch(e) {}
+  try { savedRS = JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}'); } catch(e) {}
+  // Basis-Profil mit gespeicherten Overrides
   const rsFromBehandler = [{id: '__basis', name: 'Standard', overrides: savedRS['__basis']?.overrides || {}}];
+  // Behandler-Profile mit ihren gespeicherten Overrides zusammenführen
   behandler.forEach(p => rsFromBehandler.push({
     id: p.id,
     name: p.name,
@@ -6955,6 +6967,7 @@ function rsEnsureOverride(fallKey){
 }
 
 function rsSaveOverride(profiles){
+  // Overrides als eigenes Objekt in ld_rs_profiles speichern
   const rsData = {};
   profiles.forEach(p => {
     if (p.overrides && Object.keys(p.overrides).length > 0) {
@@ -6962,7 +6975,7 @@ function rsSaveOverride(profiles){
     }
   });
   try { localStorage.setItem('ld_rs_profiles', JSON.stringify(rsData)); } catch(e) {}
-  _rsProfiles = profiles;
+  rsSaveProfiles(profiles);
 }
 
 // ── Positions-Liste für einen Fall (mit Overrides) ───────────────
@@ -6994,15 +7007,15 @@ function rsGetEffectivePositions(fallKey){
     "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
     "PRAEP-IN":"fuellung_inlay_1"};
   const activeInlayTyp = INLAY_FILL_MAP[fallKey];
-  // PF-Fälle: keine Präp/Befund-spezifischen Positionen
-  const PRAEP_TYPS = new Set(["befund_praep","befund_wf"]);
-  const IS_PF_FALL = ["PF1","PF2","PF3","PF4"].includes(fallKey);
+  const PRAEP_BEFUND_TYPS = new Set(["befund_praep","befund_wf"]);
+  const ZEM_FALLS_SET = new Set(["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"]);
+  const IS_NON_PRAEP = ["PF1","PF2","PF3","PF4"].includes(fallKey) || ZEM_FALLS_SET.has(fallKey);
 
   let positions = baseListe
     .filter(p => p.typ !== "fuellung" || !activeFill || p.code === activeFill)
     .filter(p => !INLAY_FILL_TYPES.has(p.typ) || !activeInlayTyp || p.typ === activeInlayTyp)
     .filter(p => !FILL_ONLY_FALLS.has(fallKey) || (p.typ !== "temp_seite" && p.typ !== "temp_front"))
-    .filter(p => !IS_PF_FALL || !PRAEP_TYPS.has(p.typ))
+    .filter(p => !IS_NON_PRAEP || !PRAEP_BEFUND_TYPS.has(p.typ))
     .map(p => ({
       code: p.code,
       key: CODE_TO_OPT_KEY[p.code] || null,
@@ -7118,44 +7131,21 @@ function renderRsFallTabs(){
 function renderRsFallContent(){
   const el = document.getElementById("rs-fall-content");
   if(!el || !_rsActiveFall) return;
-
   const fall = _rsActiveFall;
   const positions = rsGetEffectivePositions(fall);
   const override = rsGetOverride(fall);
   const stdRules = getStandardRules(fall);
   const customRules = override?.customRules || [];
-  const hasOverride = override && (
-    (override.removePositions||[]).length > 0 ||
-    (override.addPositions||[]).length > 0 ||
-    (override.reorder||[]).length > 0 ||
-    customRules.length > 0
-  );
+  const hasOverride = override && ((override.removePositions||[]).length > 0 || (override.addPositions||[]).length > 0 || (override.reorder||[]).length > 0 || customRules.length > 0);
 
-  // Map: code → Regel (für WENN-Badge)
+  // Map: code → Regel für WENN-Badge
   const ruleByCode = {};
   stdRules.forEach(rule => {
-    rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => {
-      ruleByCode[code] = rule;
-    });
+    rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => { ruleByCode[code] = rule; });
   });
 
-  const TYP_OPTIONS = [
-    ["behandlung","Behandlungszahn"],["bereich","Bereich"],
-    ["einmalig","Einmalig"],["global","Global"],
-    ["nachbar","Nachbarzahn"],["kiefer","Kiefer"],
-  ];
-
-  const COND_OPTIONS = [
-    ["","— keine Bedingung —"],
-    ["neighborKrone","Nachbar = Krone/Keramik"],
-    ["neighborKunststoff","Nachbar = Kunststoff"],
-    ["neighborImplantat","Nachbar = Implantat"],
-    ["neighborFehlt","Nachbar = fehlt"],
-    ["zahnWF","Zahn = WF vorhanden"],
-    ["zahnKrone","Zahn = Krone vorhanden"],
-    ["zahnFront","Zahn = Frontzahn"],
-    ["zahnSeite","Zahn = Seitenzahn"],
-  ];
+  const TYP_OPTIONS = [["behandlung","Behandlungszahn"],["bereich","Bereich"],["einmalig","Einmalig"],["global","Global"],["nachbar","Nachbarzahn"],["kiefer","Kiefer"]];
+  const COND_OPTIONS = [["","— keine Bedingung —"],["neighborKrone","Nachbar = Krone/Keramik"],["neighborKunststoff","Nachbar = Kunststoff"],["neighborImplantat","Nachbar = Implantat"],["neighborFehlt","Nachbar = fehlt"],["zahnWF","Zahn = WF vorhanden"],["zahnKrone","Zahn = Krone vorhanden"],["zahnFront","Zahn = Frontzahn"],["zahnSeite","Zahn = Seitenzahn"]];
 
   function conditionMet(cond){
     if(!cond) return null;
@@ -7163,98 +7153,63 @@ function renderRsFallContent(){
     if(!firstCase) return null;
     const teeth = [...(firstCase.teeth||new Set())];
     if(!teeth.length) return null;
-    return teeth.some(tooth => {
-      const ctx = { tooth, neighborLeft:{tooth:tooth-1}, neighborRight:{tooth:tooth+1} };
-      return rsCheckCondition(cond, ctx, findings);
-    });
+    return teeth.some(tooth => rsCheckCondition(cond, {tooth, neighborLeft:{tooth:tooth-1}, neighborRight:{tooth:tooth+1}}, findings));
   }
 
-  // ── ALLE POSITIONEN in Originalreihenfolge ──────────────
-  // Jede Position bekommt WENN-Badge wenn sie in stdRules vorkommt
   const allRows = positions.map((p, i) => {
     const rule = ruleByCode[p.code];
     const isWenn = !!rule;
     const cond = isWenn ? ruleCondFromLabel(rule.label) : null;
     const met = isWenn ? conditionMet(cond) : null;
-    const metColor = met === true ? "#3DB87A" : met === false ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.06)";
-    const isDisabled = isWenn
-      ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr)
-      : !p.active;
-
+    const metColor = met === true ? "#3DB87A" : "rgba(0,0,0,0.08)";
+    const isDisabled = isWenn ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr) : !p.active;
     if(isWenn) {
-      // WENN-Badge Row
-      return `<div class="rs-pos-row${isDisabled?" disabled":""}"
-        draggable="true" data-code="${p.code}" data-idx="${i}"
-        ondragstart="rsDragStart(event,'${p.code}')"
-        ondragover="rsDragOver(event,'${p.code}')"
-        ondrop="rsDrop(event,'${fall}','${p.code}')"
-        ondragend="rsDragEnd(event)"
+      return `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${p.code}" data-idx="${i}"
+        ondragstart="rsDragStart(event,'${p.code}')" ondragover="rsDragOver(event,'${p.code}')" ondrop="rsDrop(event,'${fall}','${p.code}')" ondragend="rsDragEnd(event)"
         style="border-left:3px solid ${metColor}">
         <span class="rs-drag">⠿</span>
         <span class="rs-code">${escHtml(p.code)}</span>
         <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
         <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-        ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`
-          :met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
-        <button class="rs-toggle ${isDisabled?"off":"on"}"
-          onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
+        ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
+        <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
       </div>`;
     } else {
-      // Normale Position
-      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)"
-        style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;
-        background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
+      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
         ${TYP_OPTIONS.map(([v,l])=>`<option value="${v}"${p.typ===v?" selected":""}>${l}</option>`).join("")}
       </select>`;
-      return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}"
-        draggable="true" data-code="${p.code}" data-idx="${i}"
-        ondragstart="rsDragStart(event,'${p.code}')"
-        ondragover="rsDragOver(event,'${p.code}')"
-        ondrop="rsDrop(event,'${fall}','${p.code}')"
-        ondragend="rsDragEnd(event)">
+      return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}" draggable="true" data-code="${p.code}" data-idx="${i}"
+        ondragstart="rsDragStart(event,'${p.code}')" ondragover="rsDragOver(event,'${p.code}')" ondrop="rsDrop(event,'${fall}','${p.code}')" ondragend="rsDragEnd(event)">
         <span class="rs-drag">⠿</span>
         <span class="rs-code">${escHtml(p.code)}</span>
         ${typSelect}
         <span style="flex:1"></span>
-        <button class="rs-toggle ${p.active?"on":"off"}"
-          onclick="rsTogglePos('${fall}','${p.code}',${!p.active})"></button>
-        <button class="rs-btn-del"
-          onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}')`:`rsRemoveCustomPos('${fall}','${p.code}')`}">✕</button>
+        <button class="rs-toggle ${p.active?"on":"off"}" onclick="rsTogglePos('${fall}','${p.code}',${!p.active})"></button>
+        <button class="rs-btn-del" onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}')`:`rsRemoveCustomPos('${fall}','${p.code}')`}">✕</button>
       </div>`;
     }
   });
 
-  // ── EIGENE BEFUNDREGELN (am Ende, nach Standard-Positionen) ──
   const customRuleRows = customRules.map((rule, idx) => {
     const isDisabled = (override?.rulesDisabled||[]).includes(rule.id);
     const met = conditionMet(rule.condition);
-    const metColor = met === true ? "#3DB87A" : met === false ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.06)";
+    const metColor = met === true ? "#3DB87A" : "rgba(0,0,0,0.08)";
     const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
-    return codes.map((code, ci) => `<div class="rs-pos-row custom${isDisabled?" disabled":""}"
-      draggable="true" data-code="custRule_${idx}_${ci}"
-      ondragstart="rsDragStart(event,'custRule_${idx}_${ci}')"
-      ondragover="rsDragOver(event,'custRule_${idx}_${ci}')"
-      ondragend="rsDragEnd(event)"
+    return codes.map((code, ci) => `<div class="rs-pos-row custom${isDisabled?" disabled":""}" draggable="true"
+      ondragstart="rsDragStart(event,'custRule_${idx}_${ci}')" ondragover="rsDragOver(event,'custRule_${idx}_${ci}')" ondragend="rsDragEnd(event)"
       style="border-left:3px solid ${metColor}">
       <span class="rs-drag">⠿</span>
       <span class="rs-code">${escHtml(code)}</span>
       <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
       <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-      ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`
-        :met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
-      <button class="rs-toggle ${isDisabled?"off":"on"}"
-        onclick="rsToggleRule('${fall}','${rule.id}',${!isDisabled})"></button>
+      ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
+      <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id}',${!isDisabled})"></button>
       ${ci===0?`<button class="rs-btn-del" onclick="rsRemoveCustomRule('${fall}',${idx})">✕</button>`:`<span style="width:20px"></span>`}
     </div>`).join("");
   });
 
   const allRowsHtml = [...allRows, ...customRuleRows].join("");
-  const activeCount = positions.filter(p => {
-    const rule = ruleByCode[p.code];
-    return rule
-      ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr)
-      : p.active;
-  }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
+  const activeCount = positions.filter(p => { const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
   const totalCount = positions.length + customRules.length;
 
   el.innerHTML = `
@@ -7265,82 +7220,79 @@ function renderRsFallContent(){
       </div>
       ${hasOverride?`<button class="rs-btn-sm" onclick="rsResetFall('${fall}')" style="color:var(--red)">↺ Zurücksetzen</button>`:""}
     </div>
-
     <div class="rs-section-title">Positionen</div>
     <div class="rs-pos-list" id="rs-pos-list">${allRowsHtml}</div>
-
-    <!-- Einziges Add-Panel -->
     <div class="rs-add-panel" style="margin-top:12px">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Position / Befundregel hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="flex-direction:column;display:flex;gap:4px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label>
           <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 2320" style="width:110px"/>
-          <datalist id="rs-code-datalist">
-            ${Object.keys(POSITIONEN||{}).sort().map(k=>`<option value="${k}">`).join("")}
-          </datalist>
+          <datalist id="rs-code-datalist">${Object.keys(POSITIONEN||{}).sort().map(k=>`<option value="${k}">`).join("")}</datalist>
         </div>
         <div style="flex-direction:column;display:flex;gap:4px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Kategorie</label>
           <select id="rs-add-typ">
-            <option value="behandlung">Behandlungszahn</option>
-            <option value="bereich">Bereich</option>
-            <option value="einmalig">Einmalig</option>
-            <option value="global">Global</option>
-            <option value="nachbar">Nachbarzahn</option>
-            <option value="kiefer">Kiefer</option>
+            <option value="behandlung">Behandlungszahn</option><option value="bereich">Bereich</option>
+            <option value="einmalig">Einmalig</option><option value="global">Global</option>
+            <option value="nachbar">Nachbarzahn</option><option value="kiefer">Kiefer</option>
           </select>
         </div>
         <div style="flex-direction:column;display:flex;gap:4px;min-width:160px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Nur wenn (optional)</label>
-          <select id="rs-add-cond">
-            ${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}
-          </select>
+          <select id="rs-add-cond">${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select>
         </div>
-        <button onclick="rsAddPositionOrRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">
-          Hinzufügen
-        </button>
+        <button onclick="rsAddPositionOrRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">Hinzufügen</button>
       </div>
     </div>
-
-    <!-- Info-Hinweise -->
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Erscheinen unter dem generierten Output.</div>
-    <div id="rs-hints-list" style="display:flex;flex-direction:column;gap:5px">
-      ${rsRenderHints(fall)}
-    </div>
+    <div id="rs-hints-list" style="display:flex;flex-direction:column;gap:5px">${rsRenderHints(fall)}</div>
     <div class="rs-add-panel" style="margin-top:8px">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Hinweis hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label>
-          <input id="rs-hint-code" placeholder="z.B. 0001" style="width:90px"/>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Beschreibung</label>
-          <input id="rs-hint-text" placeholder="z.B. Modell je Kiefer"/>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Anzahl</label>
-          <input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/>
-        </div>
-        <button onclick="rsAddHint(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
-          Hinzufügen
-        </button>
+        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label><input id="rs-hint-code" placeholder="z.B. 0001" style="width:90px"/></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Beschreibung</label><input id="rs-hint-text" placeholder="z.B. Modell je Kiefer"/></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Anzahl</label><input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/></div>
+        <button onclick="rsAddHint(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">Hinzufügen</button>
       </div>
     </div>
   `;
 }
-// Hilfsfunktion: Bedingung aus Standard-Regel-Label ableiten
+
 function ruleCondFromLabel(label){
   if(!label) return "";
-  if(label.includes("Krone/Keramik") || label.includes("Krone")) return "neighborKrone";
+  if(label.includes("Krone/Keramik")||label.includes("Krone")) return "neighborKrone";
   if(label.includes("Kunststoff")) return "neighborKunststoff";
   if(label.includes("Implantat")) return "neighborImplantat";
   if(label.includes("fehlt")) return "neighborFehlt";
-  if(label.includes("WF") || label.includes("Wurzelkanal")) return "zahnWF";
+  if(label.includes("WF")||label.includes("Wurzelkanal")) return "zahnWF";
   if(label.includes("vorhandene Krone")) return "zahnKrone";
   return "";
+}
+
+function rsAddPositionOrRule(fall){
+  const code = (document.getElementById("rs-add-code")?.value||"").trim();
+  const typ = document.getElementById("rs-add-typ")?.value || "behandlung";
+  const cond = document.getElementById("rs-add-cond")?.value || "";
+  if(!code){ alert("Bitte einen Code eingeben."); return; }
+  const ensured = rsEnsureOverride(fall);
+  if(!ensured) return;
+  const { profiles, override } = ensured;
+  if(cond) {
+    if(!override.customRules) override.customRules = [];
+    const label = {"neighborKrone":"Nachbar = Krone/Keramik","neighborKunststoff":"Nachbar = Kunststoff","neighborImplantat":"Nachbar = Implantat","neighborFehlt":"Nachbar = fehlt","zahnWF":"Zahn = WF vorhanden","zahnKrone":"Zahn = Krone vorhanden","zahnFront":"Zahn = Frontzahn","zahnSeite":"Zahn = Seitenzahn"}[cond] || cond;
+    override.customRules.push({ id:"custom_"+Date.now(), condition:cond, label, pos:code });
+  } else {
+    if(!override.addPositions) override.addPositions = [];
+    const existIdx = override.addPositions.findIndex(p=>p.code===code);
+    if(existIdx >= 0) override.addPositions[existIdx] = {code, typ};
+    else override.addPositions.push({code, typ});
+  }
+  rsSaveOverride(profiles);
+  document.getElementById("rs-add-code").value = "";
+  if(document.getElementById("rs-add-cond")) document.getElementById("rs-add-cond").value = "";
+  renderRsFallContent();
 }
 // Standard-Regeln global (mit Nummer)
 const STANDARD_RULES_BY_GRUPPE = {
@@ -7354,26 +7306,23 @@ const STANDARD_RULES_BY_GRUPPE = {
     { id:"2130",   nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
     { id:"2290",   nr:3, label:"Zahn hat vorhandene Krone",     pos:"2290" },
     { id:"0725",   nr:4, label:"Wurzelkanalfüllung vorhanden",  pos:"0725" },
-    { id:"Aufbau", nr:5, label:"Aufbaufüllung erforderlich",    pos:"Aufbau" },
-    { id:"tmlprov",nr:6, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
-    { id:"tmfront",nr:7, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
+    { id:"tmlprov",nr:5, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
+    { id:"tmfront",nr:6, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
   ],
   "pkv-zem": [
     { id:"2320",   nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
     { id:"2130",   nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
     { id:"0725",   nr:3, label:"Wurzelkanalfüllung vorhanden",  pos:"0725" },
-    { id:"Aufbau", nr:4, label:"Aufbaufüllung erforderlich",    pos:"Aufbau" },
-    { id:"tmlprov",nr:5, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
-    { id:"tmfront",nr:6, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
+    { id:"tmlprov",nr:4, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
+    { id:"tmfront",nr:5, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
   ],
   "pkv-bundle": [
     { id:"2320",   nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
     { id:"2130",   nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
     { id:"2290",   nr:3, label:"Zahn hat vorhandene Krone",     pos:"2290" },
     { id:"0725",   nr:4, label:"Wurzelkanalfüllung vorhanden",  pos:"0725" },
-    { id:"Aufbau", nr:5, label:"Aufbaufüllung erforderlich",    pos:"Aufbau" },
-    { id:"tmlprov",nr:6, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
-    { id:"tmfront",nr:7, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
+    { id:"tmlprov",nr:5, label:"Provisorium Seitenzahn",        pos:"tmlprov / 5120" },
+    { id:"tmfront",nr:6, label:"Provisorium Frontzahn",         pos:"tmfront / 5120" },
   ],
 };
 function getStandardRules(fall){
@@ -7595,47 +7544,23 @@ function rsTogglePos(fall, code, active){
 }
 
 function rsAddPosition(fall){
-  rsAddPositionOrRule(fall);
-}
-
-function rsAddPositionOrRule(fall){
   const code = (document.getElementById("rs-add-code")?.value||"").trim();
   const typ  = document.getElementById("rs-add-typ")?.value || "behandlung";
-  const cond = document.getElementById("rs-add-cond")?.value || "";
+  const regel= (document.getElementById("rs-add-regel")?.value||"").trim();
   if(!code){ alert("Bitte einen Code eingeben."); return; }
-  const ensured = rsEnsureOverride(fall);
-  if(!ensured) return;
-  const { profiles, override } = ensured;
-
-  if(cond) {
-    // Mit Bedingung → als customRule (WENN-Badge)
-    if(!override.customRules) override.customRules = [];
-    const label = {
-      "neighborKrone":"Nachbar = Krone/Keramik",
-      "neighborKunststoff":"Nachbar = Kunststoff",
-      "neighborImplantat":"Nachbar = Implantat",
-      "neighborFehlt":"Nachbar = fehlt",
-      "zahnWF":"Zahn = WF vorhanden",
-      "zahnKrone":"Zahn = Krone vorhanden",
-      "zahnFront":"Zahn = Frontzahn",
-      "zahnSeite":"Zahn = Seitenzahn",
-    }[cond] || cond;
-    const id = "custom_" + Date.now();
-    override.customRules.push({ id, condition: cond, label, pos: code });
+  const { profiles, prof, override } = rsEnsureOverride(fall);
+  if(!override) return;
+  if(!override.addPositions) override.addPositions = [];
+  // Wenn bereits in addPositions: Typ/Regel updaten
+  const existIdx = override.addPositions.findIndex(p=>p.code===code);
+  if(existIdx >= 0){
+    override.addPositions[existIdx] = { code, typ, regel };
   } else {
-    // Ohne Bedingung → normale Position
-    if(!override.addPositions) override.addPositions = [];
-    const existIdx = override.addPositions.findIndex(p=>p.code===code);
-    if(existIdx >= 0){
-      override.addPositions[existIdx] = { code, typ };
-    } else {
-      override.addPositions.push({ code, typ });
-    }
+    override.addPositions.push({ code, typ, regel });
   }
-
   rsSaveOverride(profiles);
   document.getElementById("rs-add-code").value = "";
-  if(document.getElementById("rs-add-cond")) document.getElementById("rs-add-cond").value = "";
+  document.getElementById("rs-add-regel").value = "";
   renderRsFallContent();
 }
 

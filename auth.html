@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LumeDent – Anmelden</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
@@ -20,9 +19,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(-
 
 /* NAV */
 nav { padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-w); }
-.logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-.logo-mark { width: 30px; height: 30px; background: var(--gold); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-.logo em { color: var(--gold); font-style: normal; }
+.logo { text-decoration: none; display: flex; align-items: baseline; gap: 0; }
+.logo-lume { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -0.5px; }
+.logo-dent { font-family: Georgia, 'Times New Roman', serif; font-size: 22px; font-weight: 300; color: var(--white); letter-spacing: 2px; }
+
 .nav-link { color: var(--muted); text-decoration: none; font-size: 14px; }
 .nav-link:hover { color: var(--white); }
 
@@ -55,6 +55,7 @@ input::placeholder { color: var(--muted); }
 
 /* Plan Auswahl */
 .plan-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 18px; }
+@media (max-width: 480px) { .plan-grid { grid-template-columns: 1fr; } .card { padding: 32px 20px !important; border-radius: 12px !important; } nav { padding: 16px 20px; } }
 .plan-opt {
   border: 2px solid var(--border-w); border-radius: 10px; padding: 12px 8px;
   text-align: center; cursor: pointer; transition: all .2s;
@@ -95,7 +96,7 @@ input::placeholder { color: var(--muted); }
 <body>
 
 <nav>
-  <a href="/" class="logo"><div class="logo-mark">✦</div>Lume<em>Dent</em></a>
+  <a href="/" class="logo"><span class="logo-lume">Lume</span><span class="logo-dent">DENT</span></a>
   <a href="/" class="nav-link">← Zur Startseite</a>
 </nav>
 
@@ -157,9 +158,8 @@ input::placeholder { color: var(--muted); }
       </div>
       <button class="btn" onclick="doRegister()" id="btn-register">14 Tage kostenlos starten →</button>
       <div class="trial-note">
-        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat zzgl. 19% MwSt.<br>
-        Zahlungsmittel wird nach Registrierung hinterlegt · Jederzeit kündbar<br>
-        <span style="font-size:11px;opacity:0.7;">Mit dem Start der Testphase stimmen Sie der Vertragsausführung zu und bestätigen den Verlust des Widerrufsrechts bei Nutzungsbeginn. Nur für Unternehmer i.S.d. § 14 BGB.</span>
+        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat<br>
+        Zahlungsmittel wird nach Registrierung hinterlegt · Jederzeit kündbar
       </div>
     </div>
   </div>
@@ -385,19 +385,5 @@ async function doReset() {
     <a href="/legal.html#haftung" style="font-size:12px;color:rgba(255,255,255,0.25);text-decoration:none;">Haftungsausschluss</a>
   </div>
 </footer>
-
-<!-- Cookie Banner -->
-<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0F1E35;border-top:1px solid rgba(201,168,76,0.2);padding:14px 24px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-  <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5;">
-    Diese Website verwendet ausschließlich technisch notwendige Dienste (Supabase, Stripe) zur Authentifizierung und Zahlungsabwicklung. Es werden keine Tracking- oder Werbe-Cookies eingesetzt.
-    <a href="/legal.html#datenschutz" style="color:#C9A84C;text-decoration:none;margin-left:6px;">Mehr erfahren</a>
-  </p>
-  <button onclick="document.getElementById('cookie-banner').style.display='none';localStorage.setItem('ld_cookie','1')" style="background:#C9A84C;color:#08111F;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">OK, verstanden</button>
-</div>
-<script>
-if (!localStorage.getItem('ld_cookie')) {
-  document.getElementById('cookie-banner').style.display = 'flex';
-}
-</script>
 </body>
 </html>

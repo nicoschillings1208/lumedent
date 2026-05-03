@@ -7180,7 +7180,7 @@ function renderRsFallContent(){
       <span class="rs-drag">⠿</span>
       <span class="rs-code">${escHtml(p.code)}</span>
       ${typSelect}
-      <span class="rs-desc" style="font-size:10px;color:var(--text-muted);flex:1">${escHtml(p.desc||"")}</span>
+      <span class="rs-desc" style="font-size:10px;color:var(--text-muted);flex:1">${p.desc && !p.desc.includes("_") ? escHtml(p.desc) : ""}</span>
       ${p.regel?`<span class="rs-rule-badge">▸ ${escHtml(p.regel)}</span>`:""}
       <button class="rs-toggle ${p.active?"on":"off"}"
         onclick="rsTogglePos('${fall}','${p.code}',${!p.active})"
@@ -7192,8 +7192,8 @@ function renderRsFallContent(){
   // Custom Rules als Positions-Rows mit Befund-Status
   const ruleRows = customRules.map((rule, idx) => {
     const met = conditionMet(rule.condition);
-    const metColor = met === true ? "var(--green,#3DB87A)" : met === false ? "var(--text-muted)" : "var(--accent)";
-    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "? kein Fall";
+    const metColor = met === true ? "var(--green,#3DB87A)" : met === false ? "var(--text-muted)" : "var(--border)";
+    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "";
     const isDisabled = override?.rulesDisabled?.includes(rule.id);
     return `<div class="rs-pos-row custom${isDisabled?" disabled":""}" style="border-left:3px solid ${metColor}">
       <span class="rs-drag" style="opacity:.3">⠿</span>
@@ -7244,7 +7244,6 @@ function renderRsFallContent(){
     <div class="rs-section-title">Positionen</div>
     <div class="rs-pos-list" id="rs-pos-list">
       ${posRows}
-      ${stdRuleRows}
       ${ruleRows}
     </div>
 

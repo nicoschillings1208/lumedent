@@ -5578,7 +5578,7 @@ function buildPrivatGlobalOutput(results){
         _rsOvPriv.customRules.forEach(rule => {
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
-          const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+          const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
           codes.forEach(code => {
             if(allLines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             allLines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
@@ -5779,7 +5779,7 @@ function buildGkvGlobalOutput(results){
         _rsOvFall.customRules.forEach(rule => {
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
-          const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+          const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
           codes.forEach(code => {
             if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             lines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
@@ -7129,7 +7129,7 @@ function renderRsFallContent(){
   // Codes die in Standard-Befundregeln vorkommen → nicht als normale Position
   // Jede pos einzeln splitten (2320 + 8229 → [2320, 8229])
   const ruleCodes = new Set();
-  stdRules.forEach(r => r.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => ruleCodes.add(code)));
+  stdRules.forEach(r => r.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => ruleCodes.add(code)));
 
   const TYP_OPTIONS = [
     ["behandlung","Behandlungszahn"],["bereich","Bereich"],
@@ -7195,7 +7195,7 @@ function renderRsFallContent(){
     const met = conditionMet(cond);
     const metColor = met === true ? "#3DB87A" : met === false ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.08)";
     // Jede pos einzeln als eigene Zeile
-    const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+    const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
     codes.forEach((code, ci) => {
       stdRuleRows.push(`<div class="rs-pos-row${isDisabled?" disabled":""}"
         draggable="true" data-code="stdRule_${ri}_${ci}"
@@ -7221,7 +7221,7 @@ function renderRsFallContent(){
     const isDisabled = (override?.rulesDisabled||[]).includes(rule.id);
     const met = conditionMet(rule.condition);
     const metColor = met === true ? "#3DB87A" : met === false ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.08)";
-    const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+    const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
     codes.forEach((code, ci) => {
       customRuleRows.push(`<div class="rs-pos-row custom${isDisabled?" disabled":""}"
         draggable="true" data-code="custRule_${idx}_${ci}"

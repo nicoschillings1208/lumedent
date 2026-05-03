@@ -7119,11 +7119,6 @@ function renderRsFallContent(){
   const override = rsGetOverride(fall);
   const stdRules = getStandardRules(fall);
   const customRules = override?.customRules || [];
-
-  // Codes die in Standard-Befundregeln vorkommen → aus Positions-Liste ausblenden
-  const ruleCodes = new Set();
-  stdRules.forEach(r => r.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => ruleCodes.add(code)));
-
   const hasOverride = override && (
     (override.removePositions||[]).length > 0 ||
     (override.addPositions||[]).length > 0 ||
@@ -7131,27 +7126,19 @@ function renderRsFallContent(){
     customRules.length > 0
   );
 
+  // Alle Codes die als Befundregeln hinterlegt sind → nicht als normale Position zeigen
+  const ruleCodes = new Set();
+  stdRules.forEach(r => r.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean).forEach(code => ruleCodes.add(code)));
+
   const TYP_OPTIONS = [
     ["behandlung","Behandlungszahn"],["bereich","Bereich"],
     ["einmalig","Einmalig"],["global","Global"],
     ["nachbar","Nachbarzahn"],["kiefer","Kiefer"],
   ];
 
-  const COND_OPTIONS = [
-    ["","— immer —"],
-    ["neighborKrone","Nachbar = Krone/Keramik"],
-    ["neighborKunststoff","Nachbar = Kunststoff"],
-    ["neighborImplantat","Nachbar = Implantat"],
-    ["neighborFehlt","Nachbar = fehlt"],
-    ["zahnWF","Zahn = WF vorhanden"],
-    ["zahnKrone","Zahn = Krone vorhanden"],
-    ["zahnFront","Zahn = Frontzahn"],
-    ["zahnSeite","Zahn = Seitenzahn"],
-  ];
-
   // Prüft ob Bedingung aktuell im Befund zutrifft
   function conditionMet(cond){
-    if(!cond) return true;
+    if(!cond) return null;
     const firstCase = treatmentCases?.[0];
     if(!firstCase) return null;
     const teeth = [...(firstCase.teeth||new Set())];
@@ -7166,10 +7153,10 @@ function renderRsFallContent(){
     });
   }
 
-  // ── POSITIONS-ROWS (ohne Befundregel-Codes) ──────────────
-  const posRows = positions
+  // ── NORMALE POSITIONEN (ohne Befundregel-Codes) ──────────
+  const normalRows = positions
     .filter(p => !ruleCodes.has(p.code))
-    .map((p,i) => {
+    .map((p, i) => {
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)"
         style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;
         background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
@@ -7184,88 +7171,93 @@ function renderRsFallContent(){
         <span class="rs-drag">⠿</span>
         <span class="rs-code">${escHtml(p.code)}</span>
         ${typSelect}
-        <span class="rs-desc" style="font-size:10px;color:var(--text-muted);flex:1">${p.desc && !p.desc.includes("_") ? escHtml(p.desc) : ""}</span>
+        <span style="flex:1"></span>
         <button class="rs-toggle ${p.active?"on":"off"}"
           onclick="rsTogglePos('${fall}','${p.code}',${!p.active})"
           title="${p.active?"Deaktivieren":"Aktivieren"}"></button>
-        <button class="rs-btn-del" onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}')`:`rsRemoveCustomPos('${fall}','${p.code}')`}" title="Entfernen">✕</button>
+        <button class="rs-btn-del"
+          onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}')`:`rsRemoveCustomPos('${fall}','${p.code}')`}"
+          title="Entfernen">✕</button>
       </div>`;
-    }).join("");
+    });
 
-  // ── BEFUNDREGELN-ROWS (Standard + eigene) ─────────────────
-  // Standard-Regeln (read-only toggle, mit Live-Status)
-  const stdRuleRows = stdRules.map(rule => {
+  // ── STANDARD-BEFUNDREGELN (WENN/DANN, read-only toggle) ──
+  const stdRuleRows = stdRules.map((rule, i) => {
     const isDisabled = (override?.rulesDisabled||[]).includes(rule.id||rule.nr);
     const cond = ruleCondFromLabel(rule.label);
     const met = conditionMet(cond);
-    const metColor = met === true ? "#3DB87A" : met === false ? "var(--border)" : "var(--border)";
-    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "";
+    const metColor = met === true ? "#3DB87A" : met === false ? "var(--border)" : "transparent";
+    const metLabel = met === true ? "✓" : met === false ? "✗" : "";
     return `<div class="rs-pos-row${isDisabled?" disabled":""}"
-      draggable="true"
-      ondragstart="rsDragStart(event,'rule_${rule.id||rule.nr}')"
-      ondragover="rsDragOver(event,'rule_${rule.id||rule.nr}')"
+      draggable="true" data-code="rule_std_${i}" data-idx="${positions.filter(p=>!ruleCodes.has(p.code)).length + i}"
+      ondragstart="rsDragStart(event,'rule_std_${i}')"
+      ondragover="rsDragOver(event,'rule_std_${i}')"
       ondragend="rsDragEnd(event)"
       style="border-left:3px solid ${metColor}">
       <span class="rs-drag">⠿</span>
-      <span class="rs-code" style="min-width:80px">${escHtml(rule.pos)}</span>
-      <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
+      <span class="rs-code" style="min-width:90px">${escHtml(rule.pos)}</span>
+      <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0;margin-right:8px">WENN</span>
       <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-      ${metLabel ? `<span style="font-size:10px;font-weight:600;color:${metColor};margin-right:8px;white-space:nowrap">${metLabel}</span>` : ""}
+      ${metLabel ? `<span style="font-size:11px;font-weight:700;color:${metColor};margin-right:6px">${metLabel}</span>` : ""}
       <button class="rs-toggle ${isDisabled?"off":"on"}"
         onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"
         title="${isDisabled?"Aktivieren":"Deaktivieren"}"></button>
     </div>`;
-  }).join("");
+  });
 
-  // Eigene Befundregeln (mit delete, Live-Status)
+  // ── EIGENE BEFUNDREGELN (WENN/DANN, mit Löschen) ─────────
   const customRuleRows = customRules.map((rule, idx) => {
     const isDisabled = (override?.rulesDisabled||[]).includes(rule.id);
     const met = conditionMet(rule.condition);
-    const metColor = met === true ? "#3DB87A" : met === false ? "var(--border)" : "var(--border)";
-    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "";
+    const metColor = met === true ? "#3DB87A" : met === false ? "var(--border)" : "transparent";
+    const metLabel = met === true ? "✓" : met === false ? "✗" : "";
     return `<div class="rs-pos-row custom${isDisabled?" disabled":""}"
-      draggable="true"
-      ondragstart="rsDragStart(event,'crule_${rule.id}')"
-      ondragover="rsDragOver(event,'crule_${rule.id}')"
+      draggable="true" data-code="rule_custom_${idx}"
+      ondragstart="rsDragStart(event,'rule_custom_${idx}')"
+      ondragover="rsDragOver(event,'rule_custom_${idx}')"
       ondragend="rsDragEnd(event)"
       style="border-left:3px solid ${metColor}">
       <span class="rs-drag">⠿</span>
-      <span class="rs-code" style="min-width:80px">${escHtml(rule.pos)}</span>
-      <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
+      <span class="rs-code" style="min-width:90px">${escHtml(rule.pos)}</span>
+      <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0;margin-right:8px">WENN</span>
       <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-      ${metLabel ? `<span style="font-size:10px;font-weight:600;color:${metColor};margin-right:8px;white-space:nowrap">${metLabel}</span>` : ""}
+      ${metLabel ? `<span style="font-size:11px;font-weight:700;color:${metColor};margin-right:6px">${metLabel}</span>` : ""}
       <button class="rs-toggle ${isDisabled?"off":"on"}"
         onclick="rsToggleRule('${fall}','${rule.id}',${!isDisabled})"
         title="${isDisabled?"Aktivieren":"Deaktivieren"}"></button>
       <button class="rs-btn-del" onclick="rsRemoveCustomRule('${fall}',${idx})">✕</button>
     </div>`;
-  }).join("");
+  });
 
-  const activePos = positions.filter(p => !ruleCodes.has(p.code) && p.active).length;
-  const totalPos = positions.filter(p => !ruleCodes.has(p.code)).length;
+  // Alles in einer Liste zusammenführen
+  const allRows = [...normalRows, ...stdRuleRows, ...customRuleRows].join("");
+  const activeCount = positions.filter(p => !ruleCodes.has(p.code) && p.active).length
+    + stdRules.filter(r => !(override?.rulesDisabled||[]).includes(r.id||r.nr)).length
+    + customRules.filter(r => !(override?.rulesDisabled||[]).includes(r.id)).length;
+  const totalCount = positions.filter(p => !ruleCodes.has(p.code)).length + stdRules.length + customRules.length;
 
   el.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div>
         <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${FALL_LABELS[fall]||fall}</span>
-        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${activePos}/${totalPos} aktiv</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${activeCount}/${totalCount} aktiv</span>
       </div>
       <div style="display:flex;gap:6px">
         ${hasOverride?`<button class="rs-btn-sm" onclick="rsResetFall('${fall}')" style="color:var(--red)">↺ Zurücksetzen</button>`:""}
       </div>
     </div>
 
-    <!-- Standard-Positionen -->
     <div class="rs-section-title">Positionen</div>
-    <div class="rs-pos-list" id="rs-pos-list">${posRows}</div>
+    <div class="rs-pos-list" id="rs-pos-list">${allRows}</div>
 
-    <!-- Position hinzufügen -->
-    <div class="rs-add-panel">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Position hinzufügen</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+    <!-- Add-Panel: Position + Befundregel in einem -->
+    <div class="rs-add-panel" style="margin-top:12px">
+      <!-- Position hinzufügen -->
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">+ Position hinzufügen</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
         <div style="flex-direction:column;display:flex;gap:4px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label>
-          <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 0802, 2673 …" style="width:120px"/>
+          <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 0802" style="width:110px"/>
           <datalist id="rs-code-datalist">
             ${Object.keys(POSITIONEN||{}).sort().map(k=>`<option value="${k}">`).join("")}
           </datalist>
@@ -7281,25 +7273,19 @@ function renderRsFallContent(){
             <option value="kiefer">Kiefer</option>
           </select>
         </div>
-        <button onclick="rsAddPosition(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">
+        <button onclick="rsAddPosition(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
           Hinzufügen
         </button>
       </div>
-    </div>
 
-    <!-- Befundabhängige Regeln -->
-    <div class="rs-section-title" style="margin-top:20px">Befundabhängige Regeln</div>
-    <div class="rs-pos-list" id="rs-rules-list">
-      ${stdRuleRows}
-      ${customRuleRows}
-    </div>
+      <!-- Trennlinie -->
+      <div style="border-top:1px solid var(--border);margin-bottom:16px"></div>
 
-    <!-- Befundregel hinzufügen -->
-    <div class="rs-add-panel" style="margin-top:8px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Befundregel hinzufügen</div>
+      <!-- Befundregel hinzufügen -->
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">+ Befundregel hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Wenn (Bedingung)</label>
+        <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px">
+          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Wenn</label>
           <select id="rs-rule-cond" style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text-primary)">
             <option value="neighborKrone">Nachbar = Krone/Keramik</option>
             <option value="neighborKunststoff">Nachbar = Kunststoff</option>
@@ -7311,7 +7297,7 @@ function renderRsFallContent(){
             <option value="zahnSeite">Zahn = Seitenzahn</option>
           </select>
         </div>
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:100px">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:90px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Dann (Code)</label>
           <input id="rs-rule-pos" placeholder="z.B. 2320"/>
         </div>
@@ -7323,9 +7309,7 @@ function renderRsFallContent(){
 
     <!-- Info-Hinweise -->
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">
-      Erscheinen unter dem generierten Output.
-    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Erscheinen unter dem generierten Output.</div>
     <div id="rs-hints-list" style="display:flex;flex-direction:column;gap:5px">
       ${rsRenderHints(fall)}
     </div>
@@ -7351,7 +7335,6 @@ function renderRsFallContent(){
     </div>
   `;
 }
-
 // Hilfsfunktion: Bedingung aus Standard-Regel-Label ableiten
 function ruleCondFromLabel(label){
   if(!label) return "";

@@ -179,7 +179,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
 .case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
-.case-tooth-btn{min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;
+.case-tooth-btn{min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
   font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
@@ -1040,6 +1040,7 @@ localStorage.setItem = function(key, value) {
     <div class="slabel">Behandlungsfälle</div>
     <div class="cases-list" id="cases-list"></div>
     <button class="case-add-btn" onclick="addCase()">+ Fall hinzufügen</button>
+    <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,0.6)';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.borderColor='rgba(255,255,255,0.1)'">Behandlungsfall vorschlagen</button>
     <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,0.6)';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.borderColor='rgba(255,255,255,0.1)'">Behandlungsfall vorschlagen</button>
   </div>
 
@@ -2506,11 +2507,6 @@ const ZEM_KRONE_POS = [
   { code:"M4025",   typ:"material"     },
   { code:"1020",    typ:"bereich"      },
   { code:"0708",    typ:"einmalig"     },
-  { code:"2130",        typ:"nachbar_c" },
-  { code:"2320",        typ:"nachbar_ke"},
-  { code:"8229",        typ:"nachbar_ke"},
-  { code:"2290",        typ:"befund_praep"},
-  { code:"0725",        typ:"befund_wf"  },
 ];
 
 // ── ZEMENTIERUNG TEILKRONE ────────────────────────────────────────
@@ -2536,11 +2532,6 @@ const ZEM_TK_POS = [
   { code:"M4025",   typ:"material"   },
   { code:"1020",    typ:"bereich"    },
   { code:"0708",    typ:"einmalig"   },
-  { code:"2130",        typ:"nachbar_c" },
-  { code:"2320",        typ:"nachbar_ke"},
-  { code:"8229",        typ:"nachbar_ke"},
-  { code:"2290",        typ:"befund_praep"},
-  { code:"0725",        typ:"befund_wf"  },
 ];
 
 // ── ZEMENTIERUNG INLAY ────────────────────────────────────────────
@@ -2570,11 +2561,6 @@ const ZEM_INLAY_POS = [
   { code:"M4025",   typ:"material"   },
   { code:"1020",    typ:"bereich"    },
   { code:"0708",    typ:"einmalig"   },
-  { code:"2130",        typ:"nachbar_c" },
-  { code:"2320",        typ:"nachbar_ke"},
-  { code:"8229",        typ:"nachbar_ke"},
-  { code:"2290",        typ:"befund_praep"},
-  { code:"0725",        typ:"befund_wf"  },
 ];
 
 // ── PRÄPARATION BRÜCKE ────────────────────────────────────────────
@@ -2664,11 +2650,6 @@ const ZEM_B_POS = [
   { code:"M4025",   typ:"zahn"        },
   { code:"1020",    typ:"bereich"     },
   { code:"0708",    typ:"einmalig"    },
-  { code:"2130",        typ:"nachbar_c" },
-  { code:"2320",        typ:"nachbar_ke"},
-  { code:"8229",        typ:"nachbar_ke"},
-  { code:"2290",        typ:"befund_praep"},
-  { code:"0725",        typ:"befund_wf"  },
 ];
 
 // Zuordnung Falltyp → Positionsreihenfolge

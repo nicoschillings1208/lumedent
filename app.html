@@ -7449,7 +7449,7 @@ function rsAddCustomRule(fall){
   rsSaveOverride(profiles);
   const posEl = document.getElementById("rs-rule-pos");
   if(posEl) posEl.value="";
-  document.getElementById("rs-rules-list").innerHTML = rsRenderRules(fall);
+  renderRsFallContent();
 }
 
 function rsRemoveCustomRule(fall, idx){
@@ -7457,7 +7457,7 @@ function rsRemoveCustomRule(fall, idx){
   if(!override.customRules) return;
   override.customRules.splice(idx,1);
   rsSaveOverride(profiles);
-  document.getElementById("rs-rules-list").innerHTML = rsRenderRules(fall);
+  renderRsFallContent();
 }
 
 // ── Event Handler ─────────────────────────────────────────────────
@@ -7661,7 +7661,7 @@ function rsToggleRule(fall, ruleId, active){
       override.rulesDisabled.push(ruleId);
   }
   rsSaveOverride(profiles);
-  document.getElementById("rs-rules-list").innerHTML = rsRenderRules(fall);
+  renderRsFallContent();
 }
 
 // ── Drag & Drop ───────────────────────────────────────────────────
@@ -7705,7 +7705,7 @@ function rsAddHint(fall){
   document.getElementById("rs-hint-code").value = "";
   document.getElementById("rs-hint-text").value = "";
   document.getElementById("rs-hint-anzahl").value = "";
-  document.getElementById("rs-hints-list").innerHTML = rsRenderHints(fall);
+  renderRsFallContent();
 }
 
 function rsToggleHint(fall, idx){
@@ -7714,7 +7714,7 @@ function rsToggleHint(fall, idx){
   const h = override.infoHinweise[idx];
   h.visible = h.visible === false ? true : false;
   rsSaveOverride(profiles);
-  document.getElementById("rs-hints-list").innerHTML = rsRenderHints(fall);
+  renderRsFallContent();
 }
 
 function rsRemoveHint(fall, idx){
@@ -7722,7 +7722,7 @@ function rsRemoveHint(fall, idx){
   if(!override?.infoHinweise) return;
   override.infoHinweise.splice(idx, 1);
   rsSaveOverride(profiles);
-  document.getElementById("rs-hints-list").innerHTML = rsRenderHints(fall);
+  renderRsFallContent();
 }
 
 function rsDeleteBasePos(fall, code){

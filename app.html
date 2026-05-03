@@ -1026,6 +1026,7 @@ localStorage.setItem = function(key, value) {
     <div class="slabel">Behandlungsfälle</div>
     <div class="cases-list" id="cases-list"></div>
     <button class="case-add-btn" onclick="addCase()">+ Fall hinzufügen</button>
+    <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:6px 14px;border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,0.6)';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='rgba(255,255,255,0.35)';this.style.borderColor='rgba(255,255,255,0.1)'">Behandlungsfall vorschlagen</button>
   </div>
 
   <!-- AKTIONEN -->
@@ -7882,5 +7883,90 @@ document.addEventListener("DOMContentLoaded",()=>{
     <a href="/legal.html#haftung" style="font-size:11px;color:rgba(255,255,255,0.2);text-decoration:none;">Haftungsausschluss</a>
   </div>
 </footer>
+
+<!-- ── FALLVORSCHLAG MODAL ───────────────────────────── -->
+<div id="fallvorschlag-modal" style="display:none;position:fixed;inset:0;background:rgba(8,17,31,0.85);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0F1E35;border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;">Behandlungsfall vorschlagen</div>
+    <div style="font-size:13px;color:#6E849E;margin-bottom:24px;line-height:1.5;">Fehlt ein Behandlungsfall? Wir bauen ihn ein. Beschreibe kurz was du benötigst.</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#6E849E;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Fallbezeichnung</label>
+        <input id="fv-name" type="text" placeholder="z.B. Teleskopkrone, Stiftaufbau, Implantat-Krone …"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(201,168,76,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"/>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#6E849E;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Beschreibung / Positionen (optional)</label>
+        <textarea id="fv-desc" placeholder="z.B. Welche GOZ-Positionen sollen enthalten sein, GKV oder PKV, besondere Bedingungen …"
+          rows="4" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none;resize:vertical;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(201,168,76,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:flex-end;">
+      <button onclick="closeFallVorschlag()" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:9px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:var(--font);">Abbrechen</button>
+      <button id="fv-send-btn" onclick="sendFallVorschlag()" style="background:#C9A84C;color:#08111F;border:none;padding:9px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">Vorschlag senden →</button>
+    </div>
+    <div id="fv-msg" style="font-size:12px;margin-top:12px;text-align:center;display:none;"></div>
+  </div>
+</div>
+
+<script>
+function openFallVorschlag() {
+  document.getElementById('fallvorschlag-modal').style.display = 'flex';
+  document.getElementById('fv-name').focus();
+}
+function closeFallVorschlag() {
+  document.getElementById('fallvorschlag-modal').style.display = 'none';
+  document.getElementById('fv-name').value = '';
+  document.getElementById('fv-desc').value = '';
+  document.getElementById('fv-msg').style.display = 'none';
+}
+async function sendFallVorschlag() {
+  const name = document.getElementById('fv-name').value.trim();
+  const desc = document.getElementById('fv-desc').value.trim();
+  const msg = document.getElementById('fv-msg');
+  const btn = document.getElementById('fv-send-btn');
+  if (!name) {
+    msg.style.display = 'block';
+    msg.style.color = '#E05252';
+    msg.textContent = 'Bitte eine Fallbezeichnung eingeben.';
+    return;
+  }
+  btn.textContent = 'Wird gesendet...';
+  btn.disabled = true;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const userEmail = session?.user?.email || 'Unbekannt';
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userEmail,
+        message: '🦷 FALLVORSCHLAG\n\nFall: ' + name + '\n\nBeschreibung:\n' + (desc || '–') + '\n\nVon: ' + userEmail
+      })
+    });
+    if (res.ok) {
+      msg.style.display = 'block';
+      msg.style.color = '#3DB87A';
+      msg.textContent = '✓ Vorschlag gesendet — wir melden uns!';
+      btn.textContent = '✓ Gesendet';
+      setTimeout(() => closeFallVorschlag(), 2000);
+    } else {
+      throw new Error();
+    }
+  } catch(e) {
+    msg.style.display = 'block';
+    msg.style.color = '#E05252';
+    msg.textContent = 'Fehler — bitte direkt an info@lumedent.de schreiben.';
+    btn.textContent = 'Vorschlag senden →';
+    btn.disabled = false;
+  }
+}
+// ESC schließt Modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeFallVorschlag();
+});
+</script>
 </body>
 </html>

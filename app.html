@@ -7198,7 +7198,7 @@ function renderRsFallContent(){
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Regel / Kommentar (optional)</label>
           <input id="rs-add-regel" placeholder="z.B. nur wenn Befund KR"/>
         </div>
-        <button onclick="rsAddPosition('${fall}')" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">
+        <button onclick="rsAddPosition(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">
           Hinzufügen
         </button>
       </div>
@@ -7233,7 +7233,7 @@ function renderRsFallContent(){
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Anzahl</label>
           <input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/>
         </div>
-        <button onclick="rsAddHint('${fall}')" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
+        <button onclick="rsAddHint(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
           Hinzufügen
         </button>
       </div>
@@ -7338,7 +7338,7 @@ function rsRenderRules(fall){
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Dann (Code)</label>
           <input id="rs-rule-pos" placeholder="z.B. 4025"/>
         </div>
-        <button onclick="rsAddCustomRule('${fall}')" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
+        <button onclick="rsAddCustomRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
           Hinzufügen
         </button>
       </div>

@@ -966,7 +966,7 @@ localStorage.setItem = function(key, value) {
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
         style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font-size:11px;cursor:pointer;transition:all .14s;font-family:var(--font)" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
-        <span style="font-size:14px">👤</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span id="profil-btn-label">Standard</span>
         <span style="font-size:10px;opacity:.7">▾</span>
       </button>
@@ -975,7 +975,7 @@ localStorage.setItem = function(key, value) {
         <div id="profil-list"></div>
         <div style="border-top:1px solid var(--brown-100);padding:8px">
           <button onclick="openProfilEditor(null)" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='none'">+ Neues Profil</button>
-          <button onclick="openProfilEditor('__basis')" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--text-secondary);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background='none'">⚙ Praxis-Standard</button>
+          
         </div>
       </div>
     </div>
@@ -6392,13 +6392,13 @@ function renderProfilMenu(){
   const activeId = getActiveProfileId();
 
   let html = `<div class="profil-item${activeId==="__basis"?" active":""}" onclick="selectProfil('__basis')">
-    <span class="pi-name">⭐ Praxis-Standard</span>
+    <span class="pi-name"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#C9A84C;margin-right:6px;flex-shrink:0;"></span>Standard</span>
     <span class="pi-badge">Basis</span>
   </div>`;
 
   profiles.forEach(p=>{
     html += `<div class="profil-item${activeId===p.id?" active":""}" onclick="selectProfil('${p.id}')">
-      <span class="pi-name">👤 ${escHtml(p.name)}</span>
+      <span class="pi-name" style="display:flex;align-items:center;gap:6px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);font-size:9px;font-weight:700;color:var(--text-muted);flex-shrink:0;">${escHtml(p.name).charAt(0).toUpperCase()}</span>${escHtml(p.name)}</span>
       <span class="pi-del" onclick="event.stopPropagation();rs_deleteProfilById('${p.id}')" title="Löschen">🗑</span>
     </div>`;
   });
@@ -6495,13 +6495,13 @@ function openProfilEditor(id){
     renderPeBody();
   } else if(id === "__basis"){
     peState = {isNew:false, isBasis:true, profileId:"__basis", activeFall:"PRAEP-K", editedPos:{}, pwUnlocked:false};
-    document.getElementById("pe-title").textContent = "⭐ Praxis-Standard";
+    document.getElementById("pe-title").textContent = "Standard";
     document.getElementById("pe-subtitle").textContent = "Passwortgeschützt · gilt für alle";
     renderPeBody();
   } else {
     peState = {isNew:false, isBasis:false, profileId:id, activeFall:"PRAEP-K", editedPos:{}, pwUnlocked:true};
     const prof = loadProfile().find(p=>p.id===id);
-    document.getElementById("pe-title").textContent = `👤 ${prof?.name||id}`;
+    document.getElementById("pe-title").textContent = prof?.name||id;
     document.getElementById("pe-subtitle").textContent = "Individuelles Profil";
     renderPeBody();
   }
@@ -7009,7 +7009,7 @@ function renderRsProfileTabs(){
   // Nur aktuell aktives Profil anzeigen — kein separates Tab-System
   el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
     <span style="font-size:13px;color:var(--text-muted);">Regelkonfig für:</span>
-    <span style="font-size:13px;font-weight:600;color:var(--text-primary);background:var(--surface-2);padding:4px 12px;border-radius:20px;border:1px solid var(--border)">👤 ${name}</span>
+    <span style="font-size:13px;font-weight:600;color:var(--text-primary);background:var(--surface-2);padding:4px 12px;border-radius:20px;border:1px solid var(--border)" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>${name}</span>
     <span style="font-size:11px;color:var(--text-muted);margin-left:4px;">Profil oben rechts wechseln ↗</span>
   </div>`;
 }
@@ -7341,7 +7341,7 @@ function rs_selectFall(fall){
 
 function rs_newProfile(){
   // Profile werden oben rechts über den Profil-Button erstellt
-  alert('Profile werden oben rechts über den 👤 Button erstellt und verwaltet.');
+  alert('Profile werden oben rechts erstellt und verwaltet.');
 }
 
 function rs_confirmNewProfile(){

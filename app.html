@@ -6994,10 +6994,15 @@ function rsGetEffectivePositions(fallKey){
     "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
     "PRAEP-IN":"fuellung_inlay_1"};
   const activeInlayTyp = INLAY_FILL_MAP[fallKey];
+  // PF-Fälle: keine Präp/Befund-spezifischen Positionen
+  const PRAEP_TYPS = new Set(["befund_praep","befund_wf"]);
+  const IS_PF_FALL = ["PF1","PF2","PF3","PF4"].includes(fallKey);
+
   let positions = baseListe
     .filter(p => p.typ !== "fuellung" || !activeFill || p.code === activeFill)
     .filter(p => !INLAY_FILL_TYPES.has(p.typ) || !activeInlayTyp || p.typ === activeInlayTyp)
     .filter(p => !FILL_ONLY_FALLS.has(fallKey) || (p.typ !== "temp_seite" && p.typ !== "temp_front"))
+    .filter(p => !IS_PF_FALL || !PRAEP_TYPS.has(p.typ))
     .map(p => ({
       code: p.code,
       key: CODE_TO_OPT_KEY[p.code] || null,

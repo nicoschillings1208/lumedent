@@ -5773,6 +5773,20 @@ function buildGkvGlobalOutput(results){
         });
       });
     }
+    // customRules auswerten (befundabhängige Regeln)
+    if(_rsOvFall.customRules?.length > 0){
+      valid.forEach(r => {
+        _rsOvFall.customRules.forEach(rule => {
+          if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
+          const tooth = r.ctx?.tooth;
+          const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+          codes.forEach(code => {
+            if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
+            lines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
+          });
+        });
+      });
+    }
     // reorder anwenden
     if(_rsOvFall.reorder?.length > 0){
       const order = _rsOvFall.reorder.filter(code => lines.find(l=>l.code===code));

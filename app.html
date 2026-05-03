@@ -6884,14 +6884,14 @@ let _rsDragSrc = null;
 // ── Storage ──────────────────────────────────────────────────────
 function rsLoadProfiles(){
   try {
-  // Behandler-Profile laden
   const behandler = loadProfile();
-  // Gespeicherte RS-Overrides aus localStorage laden
   let savedRS = {};
-  try { savedRS = JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}'); } catch(e) {}
-  // Basis-Profil mit gespeicherten Overrides
+  try {
+    const raw = JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}');
+    // Alten Array-Bug abfangen
+    savedRS = Array.isArray(raw) ? {} : raw;
+  } catch(e) {}
   const rsFromBehandler = [{id: '__basis', name: 'Standard', overrides: savedRS['__basis']?.overrides || {}}];
-  // Behandler-Profile mit ihren gespeicherten Overrides zusammenführen
   behandler.forEach(p => rsFromBehandler.push({
     id: p.id,
     name: p.name,
@@ -6941,7 +6941,6 @@ function rsEnsureOverride(fallKey){
 }
 
 function rsSaveOverride(profiles){
-  // Overrides als eigenes Objekt in ld_rs_profiles speichern
   const rsData = {};
   profiles.forEach(p => {
     if (p.overrides && Object.keys(p.overrides).length > 0) {
@@ -6949,7 +6948,7 @@ function rsSaveOverride(profiles){
     }
   });
   try { localStorage.setItem('ld_rs_profiles', JSON.stringify(rsData)); } catch(e) {}
-  rsSaveProfiles(profiles);
+  _rsProfiles = profiles;
 }
 
 // ── Positions-Liste für einen Fall (mit Overrides) ───────────────

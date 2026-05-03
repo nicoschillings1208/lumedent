@@ -73,17 +73,9 @@ header{
   border-bottom:1px solid rgba(255,255,255,.05);
   backdrop-filter:blur(12px);
 }
-.logo{display:flex;align-items:center;gap:12px}
-.logo-mark{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--accent-dark),var(--accent-light));
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
-}
-.logo-name{
-  font-family:var(--font-h);font-size:18px;font-weight:700;
-  color:#fff;letter-spacing:-.01em;
-}
+.logo{display:flex;align-items:baseline;gap:0;text-decoration:none}
+.logo-lume{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:900;color:var(--accent);letter-spacing:-0.5px}
+.logo-dent{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:300;color:#fff;letter-spacing:2px}
 .logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:1px}
 .hpill{
   font-size:10px;color:var(--dark-muted);
@@ -93,24 +85,24 @@ header{
 
 /* ── NAV ───────────────────────────────────────────────────── */
 .nav-tabs{
-  background:var(--dark-2);
+  background:var(--dark);
   display:flex;gap:0;padding:0 32px;
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .nav-tab{
-  padding:0 20px;height:44px;display:flex;align-items:center;
+  padding:0 22px;height:42px;display:flex;align-items:center;gap:6px;
   font-family:var(--font);font-size:12px;font-weight:500;
-  color:var(--dark-muted);letter-spacing:.02em;
+  color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;
   border:none;background:transparent;cursor:pointer;
   transition:color .15s;
   border-bottom:2px solid transparent;margin-bottom:-1px;
 }
-.nav-tab:hover{color:rgba(255,255,255,.7)}
-.nav-tab.on{color:#fff;border-bottom-color:var(--accent);font-weight:600}
+.nav-tab:hover{color:rgba(255,255,255,.65)}
+.nav-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
 .view{display:none}.view.on{display:block}
 
 /* ── LAYOUT ────────────────────────────────────────────────── */
-main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-direction:column;gap:16px}
+main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-direction:column;gap:16px}
 .card{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh);
@@ -131,7 +123,7 @@ main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-dire
 
 /* ── ZAHNSCHEMA ────────────────────────────────────────────── */
 .srow-lbl{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
-.trow{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
+.trow{display:flex;gap:3px;flex-wrap:nowrap;margin-bottom:4px;overflow-x:auto}
 .sdiv{border:none;border-top:1px solid var(--border);margin:12px 0}
 .tcell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .1s}
 .tcell:hover{transform:translateY(-2px)}
@@ -187,7 +179,7 @@ main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-dire
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
 .case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
-.case-tooth-btn{
+.case-tooth-btn{min-width:32px;width:32px;justify-content:center;
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
   font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
@@ -847,8 +839,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (nav) {
     // Abo verwalten Button
     const btnAbo = document.createElement('button');
-    btnAbo.textContent = '⚙ Abo verwalten';
-    btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
+    btnAbo.textContent = 'Abo verwalten';
+    btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.25);color:rgba(201,168,76,0.65);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--font);letter-spacing:.02em;transition:all .14s;';
     btnAbo.onclick = () => {
       window.open('https://billing.stripe.com/p/login/4gM28tekjcoJfGy5mJao800', '_blank');
     };
@@ -857,7 +849,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Abmelden Button
     const btn = document.createElement('button');
     btn.textContent = 'Abmelden';
-    btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
+    btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--font);letter-spacing:.02em;transition:all .14s;';
     btn.onclick = async () => {
       if (_sessionToken && _currentUserId) {
         await sb.from('active_sessions').delete()
@@ -955,11 +947,7 @@ localStorage.setItem = function(key, value) {
 
 <header>
   <div class="logo">
-    <div class="logo-mark">🦷</div>
-    <div>
-      <div class="logo-name">LumeDent</div>
-      <div class="logo-tag">Abrechnungs-Generator</div>
-    </div>
+    <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
   </div>
   <div class="hpill"></div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -982,10 +970,29 @@ localStorage.setItem = function(key, value) {
   </div>
 </header>
 
+<div id="checkout-overlay" style="display:none;position:fixed;inset:0;background:rgba(8,17,31,0.85);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0F1E35;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:48px 44px;max-width:460px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+    <div style="font-family:Georgia,serif;font-size:28px;font-weight:900;color:#C9A84C;letter-spacing:-0.5px;margin-bottom:4px;">Lume<span style="font-weight:300;color:#fff;letter-spacing:2px;">DENT</span></div>
+    <div style="font-size:20px;font-weight:700;color:#fff;margin:16px 0 8px;">Willkommen!</div>
+    <div style="font-size:14px;color:#6E849E;line-height:1.6;margin-bottom:32px;">Deine 14-tägige Testphase hat begonnen.<br>Du hast vollen Zugriff auf alle Funktionen.</div>
+    <button onclick="document.getElementById('checkout-overlay').style.display='none'" style="background:#C9A84C;color:#08111F;border:none;padding:14px 40px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;">Los geht's →</button>
+  </div>
+</div>
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('checkout') === 'success') {
+    document.getElementById('checkout-overlay').style.display = 'flex';
+    window.history.replaceState({}, '', '/app.html');
+  }
+})();
+</script>
+
+
 <nav class="nav-tabs">
-  <button class="nav-tab on" onclick="switchView('generator',this)">⬡ Generator</button>
-  <button class="nav-tab" onclick="switchView('katalog',this)">◈ Abrechnungskatalog</button>
-  <button class="nav-tab" onclick="switchView('regelstudio',this)">⚙ Regelstudio</button>
+  <button class="nav-tab on" onclick="switchView('generator',this)">Generator</button>
+  <button class="nav-tab" onclick="switchView('katalog',this)">Katalog</button>
+  <button class="nav-tab" onclick="switchView('regelstudio',this)">Regelstudio</button>
 
 </nav>
 
@@ -1024,7 +1031,7 @@ localStorage.setItem = function(key, value) {
   <!-- AKTIONEN -->
   <div class="card">
     <div class="arow">
-      <button id="debug-rs-btn" onclick="debugRS()" class="bs" style="font-size:11px;padding:8px 14px">🔍 RS-Debug</button>
+      
       <button class="bp" onclick="generate()">◈ Generieren</button>
 
       <button class="bs" onclick="resetAll()">↺ Zurücksetzen</button>
@@ -5140,12 +5147,32 @@ function renderCasesList(){
           "Präp + Zem":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-bundle"),
         };
 
-    const fallBtns = Object.entries(fallGruppen).filter(([g,items])=>items.length).map(([gruppe,items])=>`
-      <div style="font-size:9px;color:var(--brown-300);letter-spacing:.1em;text-transform:uppercase;margin:6px 0 4px">${gruppe}</div>
-      <div class="case-fall-btns">${items.map(([k,v])=>
-        `<button class="case-fall-btn${c.caseType===k?" on":""}" onclick="updateCaseFall(${c.id},'${k}');renderCasesList()" title="${v.desc}">${v.label}</button>`
-      ).join("")}</div>
-    `).join("");
+    const currentGruppe = c.caseType ? (FALL_TYPEN[c.caseType]?.gruppe || '') : '';
+    const gruppeToKat = {
+      'gkv-fuellung':'Füllung','pkv-fuellung':'Füllung',
+      'pkv-praep':'Präparation','pkv-zem':'Zementierung','pkv-bundle':'Präp + Zem'
+    };
+    const currentKat = gruppeToKat[currentGruppe] || '';
+
+    const fallBtns = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      ${Object.entries(fallGruppen).filter(([g,items])=>items.length).map(([gruppe,items])=>`
+        <div style="position:relative;display:inline-block">
+          <select
+            onchange="updateCaseFall(${c.id},this.value);renderCasesList()"
+            style="appearance:none;-webkit-appearance:none;background:${gruppe===currentKat?'var(--accent)':'var(--surface)'};
+              border:1px solid ${gruppe===currentKat?'var(--accent)':'var(--border)'};
+              color:${gruppe===currentKat?'#fff':'var(--text-secondary)'};
+              padding:5px 28px 5px 12px;border-radius:6px;font-size:12px;
+              font-family:var(--font);cursor:pointer;font-weight:${gruppe===currentKat?'600':'400'};
+              transition:all .12s;min-width:100px;"
+          >
+            <option value="" disabled ${gruppe!==currentKat?'selected':''} style="color:#999">${gruppe}</option>
+            ${items.map(([k,v])=>`<option value="${k}" ${c.caseType===k?'selected':''} style="background:#1a1a2e;color:#fff">${v.label} – ${v.desc}</option>`).join('')}
+          </select>
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:9px;color:${gruppe===currentKat?'rgba(255,255,255,.7)':'var(--text-muted)'}">▾</span>
+        </div>
+      `).join('')}
+    </div>`
 
     // Zahnauswahl – Mehrfachauswahl (Toggle)
     const cTeeth = c.teeth || new Set();
@@ -5889,7 +5916,6 @@ function renderAllResults(results, combined, cases){
       </div>
       <div class="global-raw">${globalRawText}</div>
       <div class="global-btns">
-        <button class="copy-btn-global" onclick="copyGlobal('multi')">⎘ Mehrzeilig kopieren</button>
         <button class="copy-btn-global-sec" onclick="copyGlobal('inline')">⎘ Einzeilig kopieren</button>
       </div>
     </div>
@@ -6408,7 +6434,7 @@ function renderProfilMenu(){
 function selectProfil(id){
   setActiveProfileId(id);
   const profiles = loadProfile();
-  const name = id==="__basis" ? "Praxis-Standard"
+  const name = id==="__basis" ? "Standard"
     : (profiles.find(p=>p.id===id)?.name || id);
   document.getElementById("profil-btn-label").textContent = name;
   document.getElementById("profil-menu").style.display="none";
@@ -6858,7 +6884,7 @@ function rsLoadProfiles(){
   // Nutze immer die Behandler-Profile (kein separates RS-Profil-System)
   const behandler = loadProfile();
   // Konvertiere Behandler-Profile ins RS-Format falls nötig
-  const rsFromBehandler = [{id: '__basis', name: 'Praxis-Standard'}];
+  const rsFromBehandler = [{id: '__basis', name: 'Standard'}];
   behandler.forEach(p => rsFromBehandler.push({id: p.id, name: p.name}));
   return rsFromBehandler;
   } catch(e) { return _rsProfiles; }
@@ -7005,7 +7031,7 @@ function renderRsProfileTabs(){
   const activeId = rsGetActiveId();
   const profiles = rsLoadProfiles();
   const active = profiles.find(p => p.id === activeId);
-  const name = active ? active.name : 'Praxis-Standard';
+  const name = active ? active.name : 'Standard';
   // Nur aktuell aktives Profil anzeigen — kein separates Tab-System
   el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
     <span style="font-size:13px;color:var(--text-muted);">Regelkonfig für:</span>
@@ -7706,7 +7732,7 @@ function renderKatalog(){
   countEl.textContent=`${items.length} Position${items.length!==1?"en":""}`;
   if(!items.length){ grid.innerHTML=`<div class="kat-no-results">Keine Positionen gefunden.</div>`; return; }
   grid.innerHTML=items.map(p=>{
-    const hintsHTML=(p.hints||[]).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
+    const hintsHTML=(p.hints||[]).filter(h=>!h.match(/Punkte:|fach:|€|\d+,\d+/)).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
     const fields=[
       {lbl:"Häufigkeit",val:p.frequency},{lbl:"Einschränkungen",val:p.restrictions},{lbl:"Kombinationen",val:p.combinations}
     ].map(f=>`<div class="kat-detail-field">
@@ -7788,7 +7814,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
     <div>
       <h2 style="font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:4px">Regelstudio</h2>
-      <p style="font-size:12px;color:var(--text-muted)">Passe die Abrechnungslogik für jede Behandlung individuell an — ohne Code.</p>
+      <p style="font-size:12px;color:var(--text-muted)">Passe die Abrechnungslogik für jede Behandlung individuell an</p>
     </div>
     <div style="display:flex;gap:8px">
       <div style="display:flex;flex-direction:column;gap:8px">

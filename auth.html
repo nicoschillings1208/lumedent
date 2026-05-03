@@ -203,6 +203,12 @@ if (_urlTab === 'register') {
 
 if (_urlPlan && PLAN_PRICES[_urlPlan]) {
   const { id, idx } = PLAN_PRICES[_urlPlan];
+  // Automatisch auf Registrieren-Tab wechseln
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn')[1].classList.add('active');
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-register').style.display = 'block';
+  // Richtigen Plan vorauswählen
   document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
   document.querySelectorAll('.plan-opt')[idx].classList.add('selected');
   selectedPriceId = id;

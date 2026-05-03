@@ -7117,26 +7117,13 @@ function renderRsFallContent(){
   const fall = _rsActiveFall;
   const positions = rsGetEffectivePositions(fall);
   const override = rsGetOverride(fall);
+  const customRules = override?.customRules || [];
   const hasOverride = override && (
     (override.removePositions||[]).length > 0 ||
     (override.addPositions||[]).length > 0 ||
-    (override.reorder||[]).length > 0
+    (override.reorder||[]).length > 0 ||
+    customRules.length > 0
   );
-
-  // Typ-Label
-  function typLabel(typ){
-    const map = {
-      "bereich":"Bereich","behandlung":"Behandlungszahn","einmalig":"Einmalig",
-      "global":"Global","nachbar":"Nachbarzahn","basis":"Standard",
-      "zahn":"Zahnbezogen","kiefer":"Kiefer","befund":"Befundabhängig",
-    };
-    const cls = {
-      "bereich":"bereich","behandlung":"behandlung","einmalig":"einmalig",
-      "global":"global","nachbar":"nachbar","basis":"other",
-      "zahn":"behandlung","kiefer":"bereich","befund":"nachbar",
-    };
-    return `<span class="rs-typ rs-typ-${cls[typ]||'other'}">${map[typ]||typ}</span>`;
-  }
 
   const TYP_OPTIONS = [
     ["behandlung","Behandlungszahn"],["bereich","Bereich"],
@@ -7144,8 +7131,41 @@ function renderRsFallContent(){
     ["nachbar","Nachbarzahn"],["kiefer","Kiefer"],
   ];
 
+  // Befund-Bedingungsoptionen
+  const COND_OPTIONS = [
+    ["","— immer —"],
+    ["neighborKrone","Nachbar = Krone/Keramik"],
+    ["neighborKunststoff","Nachbar = Kunststoff"],
+    ["neighborImplantat","Nachbar = Implantat"],
+    ["neighborFehlt","Nachbar = fehlt"],
+    ["zahnWF","Zahn = WF vorhanden"],
+    ["zahnKrone","Zahn = Krone vorhanden"],
+    ["zahnFront","Zahn = Frontzahn"],
+    ["zahnSeite","Zahn = Seitenzahn"],
+  ];
+
+  // Hilfsfunktion: prüft ob eine Bedingung aktuell im Befund zutrifft
+  // Nutzt das globale findings-Objekt + erster Behandlungszahn als Referenz
+  function conditionMet(cond){
+    if(!cond) return true; // kein Limit = immer
+    const firstCase = treatmentCases?.[0];
+    if(!firstCase) return null; // kein Fall = unbekannt
+    const teeth = [...(firstCase.teeth||new Set())];
+    if(!teeth.length) return null;
+    // Für jeden Behandlungszahn prüfen
+    return teeth.some(tooth => {
+      const nb = [tooth-1, tooth+1].filter(t => t >= 11 && t <= 48);
+      const ctx = {
+        tooth,
+        neighborLeft: nb[0] ? {tooth: nb[0]} : null,
+        neighborRight: nb[1] ? {tooth: nb[1]} : null,
+      };
+      return rsCheckCondition(cond, ctx, findings);
+    });
+  }
+
+  // Positions-Rows inkl. befundabhängiger custom Rules
   const posRows = positions.map((p,i) => {
-    // Typ-Selector (für alle Positionen)
     const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)"
       style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;
       background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
@@ -7169,11 +7189,52 @@ function renderRsFallContent(){
     </div>`;
   }).join("");
 
+  // Custom Rules als Positions-Rows mit Befund-Status
+  const ruleRows = customRules.map((rule, idx) => {
+    const met = conditionMet(rule.condition);
+    const metColor = met === true ? "var(--green,#3DB87A)" : met === false ? "var(--text-muted)" : "var(--accent)";
+    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "? kein Fall";
+    const isDisabled = override?.rulesDisabled?.includes(rule.id);
+    return `<div class="rs-pos-row custom${isDisabled?" disabled":""}" style="border-left:3px solid ${metColor}">
+      <span class="rs-drag" style="opacity:.3">⠿</span>
+      <span class="rs-code">${escHtml(rule.pos)}</span>
+      <span class="rs-typ rs-typ-nachbar" style="font-size:10px">Befund</span>
+      <span style="font-size:10px;color:var(--text-muted);flex:1">WENN ${escHtml(rule.label)}</span>
+      <span style="font-size:10px;font-weight:600;color:${metColor};margin-right:8px">${metLabel}</span>
+      <button class="rs-toggle ${isDisabled?"off":"on"}"
+        onclick="rsToggleRule('${fall}','${rule.id}',${!isDisabled})"
+        title="${isDisabled?"Aktivieren":"Deaktivieren"}"></button>
+      <button class="rs-btn-del" onclick="rsRemoveCustomRule('${fall}',${idx})">✕</button>
+    </div>`;
+  }).join("");
+
+  // Standard-Regeln (read-only, mit Befund-Status)
+  const stdRules = getStandardRules(fall);
+  const stdRuleRows = stdRules.map(rule => {
+    const met = conditionMet(rule.condition || ruleCondFromLabel(rule.label));
+    const metColor = met === true ? "var(--green,#3DB87A)" : met === false ? "var(--text-muted)" : "var(--text-muted)";
+    const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "";
+    const isDisabled = override?.rulesDisabled?.includes(rule.id||rule.nr);
+    return `<div class="rs-pos-row${isDisabled?" disabled":""}" style="border-left:3px solid ${metColor};opacity:${isDisabled?0.4:1}">
+      <span class="rs-drag" style="opacity:.3">⠿</span>
+      <span class="rs-code">${escHtml(rule.pos)}</span>
+      <span class="rs-typ rs-typ-nachbar" style="font-size:10px">Befund</span>
+      <span style="font-size:10px;color:var(--text-muted);flex:1">WENN ${escHtml(rule.label)}</span>
+      ${metLabel?`<span style="font-size:10px;font-weight:600;color:${metColor};margin-right:8px">${metLabel}</span>`:""}
+      <button class="rs-toggle ${isDisabled?"off":"on"}"
+        onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"
+        title="${isDisabled?"Aktivieren":"Deaktivieren"}"></button>
+    </div>`;
+  }).join("");
+
+  const totalActive = positions.filter(p=>p.active).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
+  const totalCount = positions.length + customRules.length;
+
   el.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div>
         <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${FALL_LABELS[fall]||fall}</span>
-        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${positions.filter(p=>p.active).length}/${positions.length} aktiv</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${totalActive}/${totalCount} aktiv</span>
       </div>
       <div style="display:flex;gap:6px">
         ${hasOverride?`<button class="rs-btn-sm" onclick="rsResetFall('${fall}')" style="color:var(--red)">↺ Zurücksetzen</button>`:""}
@@ -7181,7 +7242,11 @@ function renderRsFallContent(){
     </div>
 
     <div class="rs-section-title">Positionen</div>
-    <div class="rs-pos-list" id="rs-pos-list">${posRows}</div>
+    <div class="rs-pos-list" id="rs-pos-list">
+      ${posRows}
+      ${stdRuleRows}
+      ${ruleRows}
+    </div>
 
     <!-- Position hinzufügen -->
     <div class="rs-add-panel">
@@ -7189,8 +7254,7 @@ function renderRsFallContent(){
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="flex-direction:column;display:flex;gap:4px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label>
-          <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 0802, 2673 …"
-            style="width:130px"/>
+          <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 0802, 2673 …" style="width:120px"/>
           <datalist id="rs-code-datalist">
             ${Object.keys(POSITIONEN||{}).sort().map(k=>`<option value="${k}">`).join("")}
           </datalist>
@@ -7203,13 +7267,14 @@ function renderRsFallContent(){
             <option value="einmalig">Einmalig</option>
             <option value="global">Global</option>
             <option value="nachbar">Nachbarzahn</option>
-            <option value="befund">Befundabhängig</option>
             <option value="kiefer">Kiefer</option>
           </select>
         </div>
-        <div style="flex-direction:column;display:flex;gap:4px;flex:1;min-width:140px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Regel / Kommentar (optional)</label>
-          <input id="rs-add-regel" placeholder="z.B. nur wenn Befund KR"/>
+        <div style="flex-direction:column;display:flex;gap:4px">
+          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Nur wenn (optional)</label>
+          <select id="rs-add-cond">
+            ${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}
+          </select>
         </div>
         <button onclick="rsAddPosition(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">
           Hinzufügen
@@ -7217,16 +7282,10 @@ function renderRsFallContent(){
       </div>
     </div>
 
-    <!-- Befund-Regeln -->
-    <div class="rs-section-title" style="margin-top:20px">Befundabhängige Regeln</div>
-    <div id="rs-rules-list" style="display:flex;flex-direction:column;gap:5px">
-      ${rsRenderRules(fall)}
-    </div>
-
     <!-- Info-Hinweise -->
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">
-      Erscheinen unter dem generierten Output — ein/ausblendbar.
+      Erscheinen unter dem generierten Output.
     </div>
     <div id="rs-hints-list" style="display:flex;flex-direction:column;gap:5px">
       ${rsRenderHints(fall)}
@@ -7252,6 +7311,18 @@ function renderRsFallContent(){
       </div>
     </div>
   `;
+}
+
+// Hilfsfunktion: Bedingung aus Standard-Regel-Label ableiten
+function ruleCondFromLabel(label){
+  if(!label) return "";
+  if(label.includes("Krone/Keramik")) return "neighborKrone";
+  if(label.includes("Kunststoff")) return "neighborKunststoff";
+  if(label.includes("Implantat")) return "neighborImplantat";
+  if(label.includes("fehlt")) return "neighborFehlt";
+  if(label.includes("WF") || label.includes("Wurzelkanal")) return "zahnWF";
+  if(label.includes("vorhandene Krone")) return "zahnKrone";
+  return "";
 }
 
 // Standard-Regeln global (mit Nummer)
@@ -7509,21 +7580,40 @@ function rsTogglePos(fall, code, active){
 function rsAddPosition(fall){
   const code = (document.getElementById("rs-add-code")?.value||"").trim();
   const typ  = document.getElementById("rs-add-typ")?.value || "behandlung";
-  const regel= (document.getElementById("rs-add-regel")?.value||"").trim();
+  const cond = document.getElementById("rs-add-cond")?.value || "";
   if(!code){ alert("Bitte einen Code eingeben."); return; }
   const { profiles, prof, override } = rsEnsureOverride(fall);
   if(!override) return;
-  if(!override.addPositions) override.addPositions = [];
-  // Wenn bereits in addPositions: Typ/Regel updaten
-  const existIdx = override.addPositions.findIndex(p=>p.code===code);
-  if(existIdx >= 0){
-    override.addPositions[existIdx] = { code, typ, regel };
+
+  if(cond) {
+    // Mit Bedingung → als customRule speichern
+    if(!override.customRules) override.customRules = [];
+    const label = {
+      "neighborKrone":"Nachbar = Krone/Keramik",
+      "neighborKunststoff":"Nachbar = Kunststoff",
+      "neighborImplantat":"Nachbar = Implantat",
+      "neighborFehlt":"Nachbar = fehlt",
+      "zahnWF":"Zahn = WF vorhanden",
+      "zahnKrone":"Zahn = Krone vorhanden",
+      "zahnFront":"Zahn = Frontzahn",
+      "zahnSeite":"Zahn = Seitenzahn",
+    }[cond] || cond;
+    const id = "custom_" + Date.now();
+    override.customRules.push({ id, condition: cond, label, pos: code });
   } else {
-    override.addPositions.push({ code, typ, regel });
+    // Ohne Bedingung → als addPosition (immer)
+    if(!override.addPositions) override.addPositions = [];
+    const existIdx = override.addPositions.findIndex(p=>p.code===code);
+    if(existIdx >= 0){
+      override.addPositions[existIdx] = { code, typ };
+    } else {
+      override.addPositions.push({ code, typ });
+    }
   }
+
   rsSaveOverride(profiles);
   document.getElementById("rs-add-code").value = "";
-  document.getElementById("rs-add-regel").value = "";
+  if(document.getElementById("rs-add-cond")) document.getElementById("rs-add-cond").value = "";
   renderRsFallContent();
 }
 

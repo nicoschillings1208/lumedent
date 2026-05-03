@@ -67,15 +67,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 /* ── HEADER ────────────────────────────────────────────────── */
 header{
   background:var(--dark);
-  padding:0 40px;height:56px;
+  padding:0 32px;height:60px;
   display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:300;
   border-bottom:1px solid rgba(255,255,255,.05);
   backdrop-filter:blur(12px);
 }
-.logo{display:flex;align-items:baseline;gap:0;text-decoration:none}
-.logo-lume{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:900;color:var(--accent);letter-spacing:-0.5px}
-.logo-dent{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:300;color:#fff;letter-spacing:2px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent-dark),var(--accent-light));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.logo-name{
+  font-family:var(--font-h);font-size:18px;font-weight:700;
+  color:#fff;letter-spacing:-.01em;
+}
 .logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:1px}
 .hpill{
   font-size:10px;color:var(--dark-muted);
@@ -85,24 +93,24 @@ header{
 
 /* ── NAV ───────────────────────────────────────────────────── */
 .nav-tabs{
-  background:var(--dark);
+  background:var(--dark-2);
   display:flex;gap:0;padding:0 32px;
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .nav-tab{
-  padding:0 22px;height:42px;display:flex;align-items:center;gap:6px;
+  padding:0 20px;height:44px;display:flex;align-items:center;
   font-family:var(--font);font-size:12px;font-weight:500;
-  color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;
+  color:var(--dark-muted);letter-spacing:.02em;
   border:none;background:transparent;cursor:pointer;
   transition:color .15s;
   border-bottom:2px solid transparent;margin-bottom:-1px;
 }
-.nav-tab:hover{color:rgba(255,255,255,.65)}
-.nav-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.nav-tab:hover{color:rgba(255,255,255,.7)}
+.nav-tab.on{color:#fff;border-bottom-color:var(--accent);font-weight:600}
 .view{display:none}.view.on{display:block}
 
 /* ── LAYOUT ────────────────────────────────────────────────── */
-main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-direction:column;gap:16px}
+main{max-width:780px;margin:0 auto;padding:24px 16px 80px;display:flex;flex-direction:column;gap:16px}
 .card{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh);
@@ -123,7 +131,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
 
 /* ── ZAHNSCHEMA ────────────────────────────────────────────── */
 .srow-lbl{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
-.trow{display:flex;gap:3px;flex-wrap:nowrap;margin-bottom:4px;overflow-x:auto}
+.trow{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
 .sdiv{border:none;border-top:1px solid var(--border);margin:12px 0}
 .tcell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .1s}
 .tcell:hover{transform:translateY(-2px)}
@@ -167,7 +175,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
 /* ── BEHANDLUNGSFÄLLE ──────────────────────────────────────── */
 .cases-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .case-row{
-  display:flex;align-items:flex-start;gap:10px;flex-wrap:nowrap;
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
   background:var(--surface-2);border:1px solid var(--border);
   border-radius:var(--r);padding:14px 16px;
   transition:border-color .15s,box-shadow .15s;
@@ -178,8 +186,8 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
   letter-spacing:.08em;text-transform:uppercase;
   min-width:42px;flex-shrink:0;margin-top:2px;
 }
-.case-tooth-select{display:flex;gap:3px;flex-wrap:nowrap;flex:1;min-width:0;overflow-x:auto;padding-bottom:2px}
-.case-tooth-btn{min-width:32px;width:32px;justify-content:center;
+.case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
+.case-tooth-btn{
   padding:4px 9px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-muted);font-size:11px;
   font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
@@ -191,7 +199,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-dir
   box-shadow:0 0 0 2px var(--accent-glow);
 }
 .case-tooth-btn.miss{border-color:var(--red)!important;color:var(--red)!important}
-.case-fall-btns{display:flex;gap:5px;flex-wrap:nowrap;flex-shrink:0;overflow-x:auto}
+.case-fall-btns{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
 .case-fall-btn{
   padding:5px 13px;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);color:var(--text-secondary);
@@ -839,8 +847,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (nav) {
     // Abo verwalten Button
     const btnAbo = document.createElement('button');
-    btnAbo.textContent = 'Abo verwalten';
-    btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.25);color:rgba(201,168,76,0.65);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--font);letter-spacing:.02em;transition:all .14s;';
+    btnAbo.textContent = '⚙ Abo verwalten';
+    btnAbo.style.cssText = 'background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
     btnAbo.onclick = () => {
       window.open('https://billing.stripe.com/p/login/4gM28tekjcoJfGy5mJao800', '_blank');
     };
@@ -849,7 +857,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Abmelden Button
     const btn = document.createElement('button');
     btn.textContent = 'Abmelden';
-    btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--font);letter-spacing:.02em;transition:all .14s;';
+    btn.style.cssText = 'background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:11px;font-family:var(--font);margin-left:4px;';
     btn.onclick = async () => {
       if (_sessionToken && _currentUserId) {
         await sb.from('active_sessions').delete()
@@ -886,7 +894,20 @@ async function loadUserData(userId) {
       if (typeof renderProfilListe === 'function') renderProfilListe();
       if (typeof renderRsProfileTabs === 'function') renderRsProfileTabs();
       if (typeof applyBasis === 'function') applyBasis();
-    }, 100);
+      if (typeof renderRegelstudio === 'function') renderRegelstudio();
+      if (typeof renderCasesList === 'function') renderCasesList();
+
+      // Profil-Button Label synchronisieren
+      const activeId = typeof getActiveProfileId === 'function' ? getActiveProfileId() : null;
+      if (activeId) {
+        const profiles = typeof loadProfile === 'function' ? loadProfile() : [];
+        const active = profiles.find(p => p.id === activeId);
+        const label = document.getElementById('profil-btn-label');
+        if (label) {
+          label.textContent = active ? active.name : 'Standard';
+        }
+      }
+    }, 150);
     console.log('LumeDent: Daten geladen');
   } catch(e) {
     console.log('LumeDent: Standard-Einstellungen');
@@ -934,21 +955,27 @@ localStorage.setItem = function(key, value) {
 
 <header>
   <div class="logo">
-    <span class="logo-lume">Lume</span><span class="logo-dent">DENT</span>
+    <div class="logo-mark">🦷</div>
+    <div>
+      <div class="logo-name">LumeDent</div>
+      <div class="logo-tag">Abrechnungs-Generator</div>
+    </div>
   </div>
+  <div class="hpill"></div>
   <div style="display:flex;align-items:center;gap:8px">
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
-        style="display:flex;align-items:center;gap:7px;padding:7px 14px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);letter-spacing:.02em" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+        style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font-size:11px;cursor:pointer;transition:all .14s;font-family:var(--font)" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        <span style="font-size:14px">👤</span>
         <span id="profil-btn-label">Standard</span>
-        <span style="font-size:9px;opacity:.5">▾</span>
+        <span style="font-size:10px;opacity:.7">▾</span>
       </button>
       <div id="profil-menu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.08);min-width:210px;z-index:200;overflow:hidden;border:1px solid var(--border)">
         <div style="padding:12px 16px 6px;font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600">Profile</div>
         <div id="profil-list"></div>
         <div style="border-top:1px solid var(--brown-100);padding:8px">
           <button onclick="openProfilEditor(null)" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='none'">+ Neues Profil</button>
-          <button onclick="openProfilEditor('__basis')" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--text-secondary);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background='none'">Standard</button>
+          <button onclick="openProfilEditor('__basis')" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--text-secondary);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background='none'">⚙ Praxis-Standard</button>
         </div>
       </div>
     </div>
@@ -956,9 +983,9 @@ localStorage.setItem = function(key, value) {
 </header>
 
 <nav class="nav-tabs">
-  <button class="nav-tab on" onclick="switchView('generator',this)">Generator</button>
-  <button class="nav-tab" onclick="switchView('katalog',this)">Katalog</button>
-  <button class="nav-tab" onclick="switchView('regelstudio',this)">Regelstudio</button>
+  <button class="nav-tab on" onclick="switchView('generator',this)">⬡ Generator</button>
+  <button class="nav-tab" onclick="switchView('katalog',this)">◈ Abrechnungskatalog</button>
+  <button class="nav-tab" onclick="switchView('regelstudio',this)">⚙ Regelstudio</button>
 
 </nav>
 
@@ -997,7 +1024,7 @@ localStorage.setItem = function(key, value) {
   <!-- AKTIONEN -->
   <div class="card">
     <div class="arow">
-      
+      <button id="debug-rs-btn" onclick="debugRS()" class="bs" style="font-size:11px;padding:8px 14px">🔍 RS-Debug</button>
       <button class="bp" onclick="generate()">◈ Generieren</button>
 
       <button class="bs" onclick="resetAll()">↺ Zurücksetzen</button>
@@ -5113,33 +5140,12 @@ function renderCasesList(){
           "Präp + Zem":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-bundle"),
         };
 
-    // Aktuelle Gruppe ermitteln
-    const currentGruppe = c.caseType ? (FALL_TYPEN[c.caseType]?.gruppe || '') : '';
-    const gruppeToKat = {
-      'gkv-fuellung':'Füllung','pkv-fuellung':'Füllung',
-      'pkv-praep':'Präparation','pkv-zem':'Zementierung','pkv-bundle':'Präp + Zem'
-    };
-    const currentKat = gruppeToKat[currentGruppe] || '';
-
-    const fallBtns = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      ${Object.entries(fallGruppen).filter(([g,items])=>items.length).map(([gruppe,items])=>`
-        <div style="position:relative;display:inline-block">
-          <select
-            onchange="updateCaseFall(${c.id},this.value);renderCasesList()"
-            style="appearance:none;-webkit-appearance:none;background:${gruppe===currentKat?'var(--accent)':'var(--surface)'};
-              border:1px solid ${gruppe===currentKat?'var(--accent)':'var(--border)'};
-              color:${gruppe===currentKat?'#fff':'var(--text-secondary)'};
-              padding:5px 28px 5px 12px;border-radius:6px;font-size:12px;
-              font-family:var(--font);cursor:pointer;font-weight:${gruppe===currentKat?'600':'400'};
-              transition:all .12s;min-width:100px;"
-          >
-            <option value="" disabled ${gruppe!==currentKat?'selected':''} style="color:#999">${gruppe}</option>
-            ${items.map(([k,v])=>`<option value="${k}" ${c.caseType===k?'selected':''} style="background:#1a1a2e;color:#fff">${v.label} – ${v.desc}</option>`).join('')}
-          </select>
-          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:9px;color:${gruppe===currentKat?'rgba(255,255,255,.7)':'var(--text-muted)'}">▾</span>
-        </div>
-      `).join('')}
-    </div>`;
+    const fallBtns = Object.entries(fallGruppen).filter(([g,items])=>items.length).map(([gruppe,items])=>`
+      <div style="font-size:9px;color:var(--brown-300);letter-spacing:.1em;text-transform:uppercase;margin:6px 0 4px">${gruppe}</div>
+      <div class="case-fall-btns">${items.map(([k,v])=>
+        `<button class="case-fall-btn${c.caseType===k?" on":""}" onclick="updateCaseFall(${c.id},'${k}');renderCasesList()" title="${v.desc}">${v.label}</button>`
+      ).join("")}</div>
+    `).join("");
 
     // Zahnauswahl – Mehrfachauswahl (Toggle)
     const cTeeth = c.teeth || new Set();
@@ -5883,6 +5889,7 @@ function renderAllResults(results, combined, cases){
       </div>
       <div class="global-raw">${globalRawText}</div>
       <div class="global-btns">
+        <button class="copy-btn-global" onclick="copyGlobal('multi')">⎘ Mehrzeilig kopieren</button>
         <button class="copy-btn-global-sec" onclick="copyGlobal('inline')">⎘ Einzeilig kopieren</button>
       </div>
     </div>
@@ -6385,7 +6392,7 @@ function renderProfilMenu(){
   const activeId = getActiveProfileId();
 
   let html = `<div class="profil-item${activeId==="__basis"?" active":""}" onclick="selectProfil('__basis')">
-    <span class="pi-name">Standard</span>
+    <span class="pi-name">⭐ Praxis-Standard</span>
     <span class="pi-badge">Basis</span>
   </div>`;
 
@@ -6401,7 +6408,7 @@ function renderProfilMenu(){
 function selectProfil(id){
   setActiveProfileId(id);
   const profiles = loadProfile();
-  const name = id==="__basis" ? "Standard"
+  const name = id==="__basis" ? "Praxis-Standard"
     : (profiles.find(p=>p.id===id)?.name || id);
   document.getElementById("profil-btn-label").textContent = name;
   document.getElementById("profil-menu").style.display="none";
@@ -6488,7 +6495,7 @@ function openProfilEditor(id){
     renderPeBody();
   } else if(id === "__basis"){
     peState = {isNew:false, isBasis:true, profileId:"__basis", activeFall:"PRAEP-K", editedPos:{}, pwUnlocked:false};
-    document.getElementById("pe-title").textContent = "Standard";
+    document.getElementById("pe-title").textContent = "⭐ Praxis-Standard";
     document.getElementById("pe-subtitle").textContent = "Passwortgeschützt · gilt für alle";
     renderPeBody();
   } else {
@@ -6512,7 +6519,7 @@ function renderPeBody(){
   // Passwort-Screen für Basis
   if(peState.isBasis && !peState.pwUnlocked){
     body.innerHTML = `
-      <p style="font-size:13px;color:var(--brown-400);margin-bottom:14px">Standard bearbeiten — Passwort erforderlich:</p>
+      <p style="font-size:13px;color:var(--brown-400);margin-bottom:14px">Praxis-Standard bearbeiten — Passwort erforderlich:</p>
       <div style="display:flex;gap:8px">
         <input type="password" id="pe-pw" placeholder="Passwort …"
           style="padding:8px 12px;border:1px solid var(--brown-100);border-radius:8px;font-size:13px;flex:1"
@@ -6808,7 +6815,7 @@ function importProfil(event){
       const data=JSON.parse(e.target.result);
       if(data.type==="basis"){
         saveBasisKonfig(data.data);
-        alert("✓ Standard importiert");
+        alert("✓ Praxis-Standard importiert");
       } else if(data.type==="profil"){
         const profiles=loadProfile();
         const id="prof_"+Date.now();
@@ -6851,7 +6858,7 @@ function rsLoadProfiles(){
   // Nutze immer die Behandler-Profile (kein separates RS-Profil-System)
   const behandler = loadProfile();
   // Konvertiere Behandler-Profile ins RS-Format falls nötig
-  const rsFromBehandler = [{id: '__basis', name: 'Standard'}];
+  const rsFromBehandler = [{id: '__basis', name: 'Praxis-Standard'}];
   behandler.forEach(p => rsFromBehandler.push({id: p.id, name: p.name}));
   return rsFromBehandler;
   } catch(e) { return _rsProfiles; }
@@ -6998,7 +7005,7 @@ function renderRsProfileTabs(){
   const activeId = rsGetActiveId();
   const profiles = rsLoadProfiles();
   const active = profiles.find(p => p.id === activeId);
-  const name = active ? active.name : 'Standard';
+  const name = active ? active.name : 'Praxis-Standard';
   // Nur aktuell aktives Profil anzeigen — kein separates Tab-System
   el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
     <span style="font-size:13px;color:var(--text-muted);">Regelkonfig für:</span>
@@ -7699,7 +7706,7 @@ function renderKatalog(){
   countEl.textContent=`${items.length} Position${items.length!==1?"en":""}`;
   if(!items.length){ grid.innerHTML=`<div class="kat-no-results">Keine Positionen gefunden.</div>`; return; }
   grid.innerHTML=items.map(p=>{
-    const hintsHTML=(p.hints||[]).filter(h=>!h.match(/Punkte:|fach:|€|\d+,\d+/)).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
+    const hintsHTML=(p.hints||[]).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
     const fields=[
       {lbl:"Häufigkeit",val:p.frequency},{lbl:"Einschränkungen",val:p.restrictions},{lbl:"Kombinationen",val:p.combinations}
     ].map(f=>`<div class="kat-detail-field">

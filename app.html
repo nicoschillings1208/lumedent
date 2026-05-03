@@ -7208,9 +7208,9 @@ function renderRsFallContent(){
     </div>`;
   }).join("");
 
-  // Standard-Regeln (read-only, mit Befund-Status)
+  // Standard-Befundregeln (WENN/DANN, read-only, mit Live-Status)
   const stdRules = getStandardRules(fall);
-  const stdRuleRows = stdRules.map(rule => {
+  const stdRuleRows = stdRules.length === 0 ? '' : stdRules.map(rule => {
     const met = conditionMet(rule.condition || ruleCondFromLabel(rule.label));
     const metColor = met === true ? "var(--green,#3DB87A)" : met === false ? "var(--text-muted)" : "var(--text-muted)";
     const metLabel = met === true ? "✓ greift" : met === false ? "✗ greift nicht" : "";
@@ -7246,6 +7246,8 @@ function renderRsFallContent(){
       ${posRows}
       ${ruleRows}
     </div>
+
+    ${stdRuleRows ? `<div class="rs-section-title" style="margin-top:16px">Befundabhängige Regeln</div><div class="rs-pos-list">${stdRuleRows}</div>` : ''}
 
     <!-- Position hinzufügen -->
     <div class="rs-add-panel">

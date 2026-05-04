@@ -7013,11 +7013,13 @@ function rsGetEffectivePositions(fallKey){
       typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
       isBase:true, active:true, _uid:`praep_${i}_${p.code}`
     }));
-    const zemMapped = zemListe.map((p,i) => ({
-      code: p.code, key: CODE_TO_OPT_KEY[p.code]||null,
-      typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
-      isBase:true, active:true, _uid:`zem_${i}_${p.code}`, _isZem:true
-    }));
+    const zemMapped = zemListe
+      .filter(p => !INLAY_FILL_TYPES.has(p.typ) || !activeInlayTyp || p.typ === activeInlayTyp)
+      .map((p,i) => ({
+        code: p.code, key: CODE_TO_OPT_KEY[p.code]||null,
+        typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
+        isBase:true, active:true, _uid:`zem_${i}_${p.code}`, _isZem:true
+      }));
     baseMapped = [...praepMapped, ...zemMapped];
   } else {
     baseMapped = baseListe

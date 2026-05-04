@@ -1576,7 +1576,6 @@ const FALL_OPT_DEFS = {
 
 // Hilfsfunktion: Optionen-Defaults für einen Falltyp laden
 function getFallOptDefs(fall){
-  // Lazy: Arrays und Funktionen werden erst zur Laufzeit aufgelöst
   function getBaseListe(f){
     if(typeof getPosReihenfolge === 'function'){
       const r = getPosReihenfolge(f);
@@ -1587,8 +1586,6 @@ function getFallOptDefs(fall){
     return [];
   }
 
-  const posListe = getBaseListe(fall);
-
   const NEVER_CHIP = new Set([
     "2060-f","2080-f","2100-f","2120-f",
     "2060","2080","2100","2120",
@@ -1596,34 +1593,37 @@ function getFallOptDefs(fall){
     "2210","2220","5010","5070",
     "OK,UK 4020F","2040o",
   ]);
-
   const INLAY_MAP = {
     "ZEM-IN1":"fuellung_inlay_1","ZEM-IN2":"fuellung_inlay_2","ZEM-IN3":"fuellung_inlay_3",
     "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
   };
   const activeInlayTyp = INLAY_MAP[fall] || null;
   const INLAY_TYPS = new Set(["fuellung_inlay_1","fuellung_inlay_2","fuellung_inlay_3"]);
+  const IS_BUNDLE = fall.startsWith("PZ-");
 
   const seen = new Set();
+  const posListe = getBaseListe(fall);
   const defs = [];
-  posListe.forEach(p => {
+
+  posListe.forEach((p, idx) => {
     const code = p.code;
     if(NEVER_CHIP.has(code)) return;
     if(p.typ === "fuellung") return;
     if(p.typ === "kiefer") return;
     if(activeInlayTyp && INLAY_TYPS.has(p.typ) && p.typ !== activeInlayTyp) return;
-    if(seen.has(code)) return;  // nach Code deduplizieren, nicht nach Key
+    // Bundle: alle Positionen anzeigen (auch Duplikate), Nicht-Bundle: deduplizieren
+    if(!IS_BUNDLE && seen.has(code)) return;
     seen.add(code);
-    const key = (typeof CODE_TO_OPT_KEY !== 'undefined' && CODE_TO_OPT_KEY[code]) || ("mit_" + code);
+    const baseKey = (typeof CODE_TO_OPT_KEY !== 'undefined' && CODE_TO_OPT_KEY[code]) || ("mit_" + code);
+    // Bundle: eindeutiger Key per Index damit Duplikate unabhängig togglebar sind
+    const key = IS_BUNDLE ? baseKey + "_" + idx : baseKey;
     defs.push({
-      key,
-      label: code,
+      key, label: code, baseKey,
       desc: (typeof FALL_OPT_DEFS_LABEL !== 'undefined' && FALL_OPT_DEFS_LABEL[code]) || p.typ || "",
       default: true,
     });
   });
 
-  // Fallback auf alte FALL_OPT_DEFS wenn posListe leer
   if(defs.length === 0 && typeof FALL_OPT_DEFS !== 'undefined'){
     const gruppe = FALL_TYPEN[fall]?.gruppe || "";
     const base = FALL_OPT_DEFS[gruppe] || [];
@@ -1632,7 +1632,6 @@ function getFallOptDefs(fall){
 
   const override = rsGetOverride(fall);
   if(!override) return defs;
-
   const deleted = new Set((override.removePositions||[]).filter(c=>!(override.toggledOff||[]).includes(c)));
   const filtered = defs.filter(d => !deleted.has(d.label));
   const extra = (override.addPositions||[])
@@ -5267,7 +5266,7 @@ function renderCasesList(){
         ...(_rsOvC?.toggledOff||[])
       ]);
       const uniqueDefs = _defs.filter(d => !_rsChipDel.has(d.label));
-      const aktiv = uniqueDefs.filter(d => d.key in opt ? opt[d.key]!==false : true).length;
+      const aktiv = uniqueDefs.filter(d => { const bk = d.baseKey||d.key; return bk in opt ? opt[bk]!==false : true; }).length;
 
       privatOptHTML = `
       <details style="margin-top:8px">
@@ -5278,15 +5277,15 @@ function renderCasesList(){
         </summary>
         <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;padding:10px 12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">
           ${uniqueDefs.map(d=>{
-            const key = d.key;
             const code = d.label;
-            const active = key in opt ? opt[key]!==false : true;
-            const safeKey = encodeURIComponent(key);
+            const baseKey = d.baseKey || d.key;
+            const active = baseKey in opt ? opt[baseKey]!==false : true;
+            const safeKey = encodeURIComponent(baseKey);
             const lborder = active?'var(--accent)':'var(--border)';
             const lbg = active?'#FFFBF0':'var(--surface)';
             const lcolor = active?'var(--text-primary)':'var(--text-muted)';
             const lweight = active?'600':'400';
-            return '<label title="'+key+'" style="display:flex;align-items:center;gap:4px;font-size:11px;color:'+lcolor+';cursor:pointer;padding:3px 8px;border-radius:6px;border:1px solid '+lborder+';background:'+lbg+';transition:all .12s;white-space:nowrap">'
+            return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:'+lcolor+';cursor:pointer;padding:3px 8px;border-radius:6px;border:1px solid '+lborder+';background:'+lbg+';transition:all .12s;white-space:nowrap">'
               +'<input type="checkbox" '+(active?'checked':'')
               +' data-case-id="'+c.id+'" data-opt-key="'+safeKey+'"'
               +' class="privat-opt-cb" style="accent-color:var(--accent);width:13px;height:13px"/>'

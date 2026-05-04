@@ -7921,7 +7921,17 @@ document.addEventListener("DOMContentLoaded",()=>{
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:14px 20px 0;border-bottom:1px solid var(--border)">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Behandlungsfall wählen</div>
-      <div id="rs-fall-tabs" style="display:flex;gap:0;overflow-x:auto;padding-bottom:0;scrollbar-width:none"></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button onclick="document.getElementById('rs-fall-tabs').scrollBy({left:-200,behavior:'smooth'})"
+          style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .12s"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">‹</button>
+        <div id="rs-fall-tabs" style="display:flex;gap:0;overflow-x:auto;flex:1;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth"></div>
+        <button onclick="document.getElementById('rs-fall-tabs').scrollBy({left:200,behavior:'smooth'})"
+          style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .12s"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">›</button>
+      </div>
     </div>
     <div id="rs-fall-content" style="padding:20px"></div>
   </div>

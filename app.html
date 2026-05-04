@@ -6990,6 +6990,9 @@ function rsGetEffectivePositions(fallKey){
     "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
     "PRAEP-IN":"fuellung_inlay_1"};
   const activeInlayTyp = INLAY_FILL_MAP[fallKey];
+  const PRAEP_BEFUND_TYPS = new Set(["befund_praep","befund_wf"]);
+  const ZEM_FALLS_SET = new Set(["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"]);
+  const IS_NON_PRAEP = ["PF1","PF2","PF3","PF4"].includes(fallKey) || ZEM_FALLS_SET.has(fallKey);
   const IS_BUNDLE = fallKey.startsWith("PZ-");
 
   // Für Bundle-Fälle: Trennlinie zwischen PRAEP und ZEM einfügen

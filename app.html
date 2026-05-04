@@ -1160,7 +1160,7 @@ function hasRootCanal(tooth, findings){
 }
 function hasExistingRestoration(tooth, findings){
   const s = getBefundSet(tooth, findings);
-  return s.has("KR")||s.has("KE");
+  return s.has("KE");
 }
 // Prüft ob Zahn als fehlend gilt
 function isMissingTooth(tooth, findings){
@@ -1361,10 +1361,10 @@ function resolveParoCode(rootCount){ return rootCount>1?"4075":"4070"; }
 function hasRootCanal(tooth, findings){
   return getBefundSet(tooth, findings).has("WF");
 }
-// Prüft ob Zahn bereits Krone/TK/Inlay hat (Befund K oder E) – für 2290
+// Prüft ob Zahn bereits eine Keramikkrone hat (nur KE) – für 2290
 function hasExistingRestoration(tooth, findings){
   const s = getBefundSet(tooth, findings);
-  return s.has("KR")||s.has("KE");
+  return s.has("KE");
 }
 // Temporärversorgung: tmlprov (Seiten) oder tmfront (Front)
 function getTempCode(tooth){
@@ -2587,6 +2587,10 @@ const PRAEP_B_POS_REIHENFOLGE = [
   { code:"M100",    typ:"bruecke_anker_je" },
   { code:"1433",    typ:"bruecke_anker_je" },
   { code:"M506M",   typ:"bruecke_anker_je" },
+  { code:"2290",    typ:"befund_praep"     },  // Entfernung vorhandene Krone – wenn KE am Ankerzahn
+  { code:"0725",    typ:"befund_wf"        },  // WF vorhanden – wenn WF am Ankerzahn
+  { code:"2320",    typ:"nachbar_ke"       },  // Nachbar mit Keramik
+  { code:"8229",    typ:"nachbar_ke"       },  // Verblendkorrektur
   { code:"4050",    typ:"zahn"        },
   { code:"4070",    typ:"zahn"        },
   { code:"4055",    typ:"zahn"        },

@@ -1576,17 +1576,67 @@ const FALL_OPT_DEFS = {
 
 // Hilfsfunktion: Optionen-Defaults für einen Falltyp laden
 function getFallOptDefs(fall){
-  const gruppe = FALL_TYPEN[fall]?.gruppe || "";
-  const base = FALL_OPT_DEFS[gruppe] || [];
-  const override = rsGetOverride(fall);
-  if(!override) return base;
-  const _chipDeleted = new Set((override.removePositions||[]).filter(c=>!(override.toggledOff||[]).includes(c)));
-  const filtered = base.filter(d => {
-    const code = d.label || d.key.replace("mit_","");
-    return !_chipDeleted.has(code);
+  // Lazy: Arrays und Funktionen werden erst zur Laufzeit aufgelöst
+  function getBaseListe(f){
+    if(typeof getPosReihenfolge === 'function'){
+      const r = getPosReihenfolge(f);
+      if(r) return r;
+    }
+    if(["F1","F2","F3","F4"].includes(f) && typeof GKV_POS_REIHENFOLGE !== 'undefined') return GKV_POS_REIHENFOLGE;
+    if(["PF1","PF2","PF3","PF4"].includes(f) && typeof PRIVAT_POS_REIHENFOLGE !== 'undefined') return PRIVAT_POS_REIHENFOLGE;
+    return [];
+  }
+
+  const posListe = getBaseListe(fall);
+
+  const NEVER_CHIP = new Set([
+    "2060-f","2080-f","2100-f","2120-f",
+    "2060","2080","2100","2120",
+    "2150","2160","2170",
+    "2210","2220","5010","5070",
+    "OK,UK 4020F","2040o",
+  ]);
+
+  const INLAY_MAP = {
+    "ZEM-IN1":"fuellung_inlay_1","ZEM-IN2":"fuellung_inlay_2","ZEM-IN3":"fuellung_inlay_3",
+    "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
+  };
+  const activeInlayTyp = INLAY_MAP[fall] || null;
+  const INLAY_TYPS = new Set(["fuellung_inlay_1","fuellung_inlay_2","fuellung_inlay_3"]);
+
+  const seen = new Set();
+  const defs = [];
+  posListe.forEach(p => {
+    const code = p.code;
+    if(NEVER_CHIP.has(code)) return;
+    if(p.typ === "fuellung") return;
+    if(p.typ === "kiefer") return;
+    if(activeInlayTyp && INLAY_TYPS.has(p.typ) && p.typ !== activeInlayTyp) return;
+    const key = (typeof CODE_TO_OPT_KEY !== 'undefined' && CODE_TO_OPT_KEY[code]) || ("mit_" + code);
+    if(seen.has(key)) return;
+    seen.add(key);
+    defs.push({
+      key,
+      label: code,
+      desc: (typeof FALL_OPT_DEFS_LABEL !== 'undefined' && FALL_OPT_DEFS_LABEL[code]) || p.typ || "",
+      default: true,
+    });
   });
-  const extra = override.addPositions
-    .filter(ap => !filtered.find(d => (d.key==="mit_"+ap.code || d.label===ap.code)))
+
+  // Fallback auf alte FALL_OPT_DEFS wenn posListe leer
+  if(defs.length === 0 && typeof FALL_OPT_DEFS !== 'undefined'){
+    const gruppe = FALL_TYPEN[fall]?.gruppe || "";
+    const base = FALL_OPT_DEFS[gruppe] || [];
+    base.forEach(d => defs.push(d));
+  }
+
+  const override = rsGetOverride(fall);
+  if(!override) return defs;
+
+  const deleted = new Set((override.removePositions||[]).filter(c=>!(override.toggledOff||[]).includes(c)));
+  const filtered = defs.filter(d => !deleted.has(d.label));
+  const extra = (override.addPositions||[])
+    .filter(ap => !filtered.find(d => d.label === ap.code))
     .map(ap => ({ key:"mit_"+ap.code, label:ap.code, desc:ap.regel||ap.typ||"", default:true }));
   return [...filtered, ...extra];
 }

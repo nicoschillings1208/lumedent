@@ -7028,22 +7028,22 @@ function rsGetEffectivePositions(fallKey){
       }));
   }
 
-  let positions = IS_BUNDLE ? baseMapped : baseMapped;
+  let positions = baseMapped;
 
   if(!override) return positions;
 
-  // typeOverrides: Typ überschreiben
+  // typeOverrides: Typ überschreiben (Trenner überspringen)
   const typeOvs = override.typeOverrides || {};
-  positions = positions.map(p => ({
-    ...p,
-    typ: typeOvs[p.code] || p.typ
-  }));
+  positions = positions.map(p => {
+    if(p.typ === "trenner") return p;
+    return { ...p, typ: typeOvs[p.code] || p.typ };
+  });
 
   const deleted  = new Set((override.removePositions||[]).filter(c=>!(override.toggledOff||[]).includes(c)));
   const toggled  = new Set(override.toggledOff||[]);
   positions = positions
-    .filter(p => !deleted.has(p.code))           // ✕ gelöscht → weg
-    .map(p => ({...p, active: !toggled.has(p.code)})); // Toggle → grau
+    .filter(p => p.typ==="trenner" || !deleted.has(p.code))
+    .map(p => p.typ==="trenner" ? p : ({...p, active: !toggled.has(p.code)}));
 
   // Hinzugefügte Positionen
   (override.addPositions || []).forEach(ap => {
@@ -7223,7 +7223,7 @@ function renderRsFallContent(){
   });
 
   const allRowsHtml = [...allRows, ...customRuleRows].join("");
-  const activeCount = positions.filter(p => { const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
+  const activeCount = positions.filter(p => { if(p.typ==="trenner") return false; const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
   const totalCount = positions.length + customRules.length;
 
   el.innerHTML = `

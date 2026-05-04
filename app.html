@@ -5259,60 +5259,29 @@ function renderCasesList(){
     const firstTooth = [...(c.teeth||new Set())].sort((a,b)=>a-b)[0];
     let privatOptHTML = "";
     if(c.caseType && firstTooth){
-      // Berechne Ausgabe für diesen Zahn → echte Positionen als Chips
-      const _r = calculateCaseResult({tooth:firstTooth,caseType:c.caseType,optionen:c.optionen||{}}, findings, kassentyp, new Set([firstTooth]));
-      const _lines = _r.billingOut?.lines||[];
-      // Nur Positionen die optional sind (haben einen opt-Key, sind nicht in NEVER_OPT)
-      const optLines = _lines.filter(l=>{
-        const code = l.code || l.text.split(' ').pop();
-        return CODE_TO_OPT_KEY[code] && !NEVER_OPT_CODES.has(code);
-      });
-      // Deduplizieren nach opt-Key
-      const seenKeys = new Set();
-      // Gelöschte Positionen (✕) aus Chips ausblenden
+      // Chips direkt aus den echten Positions-Arrays bauen
+      const _defs = getFallOptDefs(c.caseType);
       const _rsOvC = rsGetOverride(c.caseType);
       const _rsChipDel = new Set([
         ...((_rsOvC?.removePositions||[]).filter(x=>!(_rsOvC?.toggledOff||[]).includes(x))),
         ...(_rsOvC?.toggledOff||[])
       ]);
-      const seenCodes = new Set();
-      const uniqueLines = optLines.filter(l=>{
-        const code = l.code || l.text.split(' ').pop();
-        if(_rsChipDel.has(code)) return false;
-        if(seenCodes.has(code)) return false;
-        const key = CODE_TO_OPT_KEY[code];
-        if(!key) return false;
-        seenCodes.add(code);
-        seenKeys.add(key);
-        return true;
-      });
-      // Nicht-optionale Codes (immer da)
-      const fixedLines = _lines.filter(l=>{
-        const code = l.code || l.text.split(' ').pop();
-        return NEVER_OPT_CODES.has(code) && l.type!=="fill";
-      });
-      const fixedCodes = [...new Set(fixedLines.map(l=>l.code||l.text.split(' ').pop()))];
-      const aktiv = uniqueLines.filter(l=>{
-        const code = l.code||l.text.split(' ').pop();
-        const key = CODE_TO_OPT_KEY[code];
-        return key in opt ? opt[key]!==false : true;
-      }).length;
+      const uniqueDefs = _defs.filter(d => !_rsChipDel.has(d.label));
+      const aktiv = uniqueDefs.filter(d => d.key in opt ? opt[d.key]!==false : true).length;
 
       privatOptHTML = `
       <details style="margin-top:8px">
         <summary style="font-size:11px;color:var(--text-muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;user-select:none;padding:4px 0">
           <span style="font-size:10px;color:var(--accent)">▾</span>
           <span style="font-weight:600;letter-spacing:.04em">Optionen</span>
-          <span style="font-size:10px;color:var(--text-muted);margin-left:2px">(${aktiv}/${uniqueLines.length} aktiv)</span>
+          <span style="font-size:10px;color:var(--text-muted);margin-left:2px">(${aktiv}/${uniqueDefs.length} aktiv)</span>
         </summary>
         <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;padding:10px 12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">
-          ${uniqueLines.map(l=>{
-            const code = l.code||l.text.split(' ').pop();
-            const key = CODE_TO_OPT_KEY[code];
+          ${uniqueDefs.map(d=>{
+            const key = d.key;
+            const code = d.label;
             const active = key in opt ? opt[key]!==false : true;
             const safeKey = encodeURIComponent(key);
-            // Label: echter Code aus Output (z.B. "0100" für UK-Zahn)
-            const displayCode = l.text.includes(' ') ? l.text.split(' ').pop() : l.text;
             const lborder = active?'var(--accent)':'var(--border)';
             const lbg = active?'#FFFBF0':'var(--surface)';
             const lcolor = active?'var(--text-primary)':'var(--text-muted)';
@@ -5321,7 +5290,7 @@ function renderCasesList(){
               +'<input type="checkbox" '+(active?'checked':'')
               +' data-case-id="'+c.id+'" data-opt-key="'+safeKey+'"'
               +' class="privat-opt-cb" style="accent-color:var(--accent);width:13px;height:13px"/>'
-              +'<span style="font-weight:'+lweight+'">'+displayCode+'</span>'
+              +'<span style="font-weight:'+lweight+'">'+code+'</span>'
               +'</label>';
           }).join("")}
         </div>

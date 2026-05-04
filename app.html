@@ -1612,9 +1612,9 @@ function getFallOptDefs(fall){
     if(p.typ === "fuellung") return;
     if(p.typ === "kiefer") return;
     if(activeInlayTyp && INLAY_TYPS.has(p.typ) && p.typ !== activeInlayTyp) return;
+    if(seen.has(code)) return;  // nach Code deduplizieren, nicht nach Key
+    seen.add(code);
     const key = (typeof CODE_TO_OPT_KEY !== 'undefined' && CODE_TO_OPT_KEY[code]) || ("mit_" + code);
-    if(seen.has(key)) return;
-    seen.add(key);
     defs.push({
       key,
       label: code,

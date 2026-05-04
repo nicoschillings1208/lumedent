@@ -2598,6 +2598,7 @@ const PRAEP_B_POS_REIHENFOLGE = [
   { code:"t0203",   typ:"bereich"     },
   { code:"2330",    typ:"bruecke_anker_je" },
   { code:"2060D",   typ:"bruecke_anker_je" },
+  { code:"Aufbau",  typ:"bruecke_anker_je" },  // Aufbaufüllung – je Ankerzahn
   { code:"5170",    typ:"kiefer_beide"},
   { code:"0220i",   typ:"kiefer_beide"},
   { code:"M401M",   typ:"kiefer_gegen"},
@@ -6989,23 +6990,45 @@ function rsGetEffectivePositions(fallKey){
     "PZ-IN1":"fuellung_inlay_1","PZ-IN2":"fuellung_inlay_2","PZ-IN3":"fuellung_inlay_3",
     "PRAEP-IN":"fuellung_inlay_1"};
   const activeInlayTyp = INLAY_FILL_MAP[fallKey];
-  const PRAEP_BEFUND_TYPS = new Set(["befund_praep","befund_wf"]);
-  const ZEM_FALLS_SET = new Set(["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"]);
-  const IS_NON_PRAEP = ["PF1","PF2","PF3","PF4"].includes(fallKey) || ZEM_FALLS_SET.has(fallKey);
+  const IS_BUNDLE = fallKey.startsWith("PZ-");
 
-  let positions = baseListe
-    .filter(p => p.typ !== "fuellung" || !activeFill || p.code === activeFill)
-    .filter(p => !INLAY_FILL_TYPES.has(p.typ) || !activeInlayTyp || p.typ === activeInlayTyp)
-    .filter(p => !FILL_ONLY_FALLS.has(fallKey) || (p.typ !== "temp_seite" && p.typ !== "temp_front"))
-    .filter(p => !IS_NON_PRAEP || !PRAEP_BEFUND_TYPS.has(p.typ))
-    .map(p => ({
-      code: p.code,
-      key: CODE_TO_OPT_KEY[p.code] || null,
-      typ: p.typ || "behandlung",
-      desc: FALL_OPT_DEFS_LABEL[p.code] || p.typ || "",
-      isBase: true,
-      active: true,
+  // Für Bundle-Fälle: Trennlinie zwischen PRAEP und ZEM einfügen
+  let baseMapped;
+  if(IS_BUNDLE){
+    const praepListe = fallKey==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE;
+    const zemListe   = fallKey==="PZ-B" ? ZEM_B_POS
+                     : fallKey.includes("TK") ? ZEM_TK_POS
+                     : fallKey.includes("IN") ? ZEM_INLAY_POS
+                     : ZEM_KRONE_POS;
+    const praepMapped = praepListe.map((p,i) => ({
+      code: p.code, key: CODE_TO_OPT_KEY[p.code]||null,
+      typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
+      isBase:true, active:true, _uid:`praep_${i}_${p.code}`
     }));
+    const zemMapped = zemListe.map((p,i) => ({
+      code: p.code, key: CODE_TO_OPT_KEY[p.code]||null,
+      typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
+      isBase:true, active:true, _uid:`zem_${i}_${p.code}`, _isZem:true
+    }));
+    baseMapped = [
+      ...praepMapped,
+      { code:"__trenner__", typ:"trenner", desc:"Zementierung", isBase:true, active:true, _uid:"trenner" },
+      ...zemMapped
+    ];
+  } else {
+    baseMapped = baseListe
+      .filter(p => p.typ !== "fuellung" || !activeFill || p.code === activeFill)
+      .filter(p => !INLAY_FILL_TYPES.has(p.typ) || !activeInlayTyp || p.typ === activeInlayTyp)
+      .filter(p => !FILL_ONLY_FALLS.has(fallKey) || (p.typ !== "temp_seite" && p.typ !== "temp_front"))
+      .filter(p => !IS_NON_PRAEP || !PRAEP_BEFUND_TYPS.has(p.typ))
+      .map(p => ({
+        code: p.code, key: CODE_TO_OPT_KEY[p.code]||null,
+        typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
+        isBase:true, active:true,
+      }));
+  }
+
+  let positions = IS_BUNDLE ? baseMapped : baseMapped;
 
   if(!override) return positions;
 
@@ -7139,6 +7162,15 @@ function renderRsFallContent(){
   }
 
   const allRows = positions.map((p, i) => {
+    // Trenner zwischen Präp und Zem bei Bundle-Fällen
+    if(p.typ === "trenner") {
+      return `<div style="display:flex;align-items:center;gap:10px;margin:10px 0 6px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:10px;font-weight:700;color:var(--accent-dark);letter-spacing:.08em;text-transform:uppercase;background:#FFFBF0;padding:2px 10px;border-radius:20px;border:1px solid var(--accent-glow)">↓ Zementierung</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>`;
+    }
+    const uid = p._uid || p.code;
     const rule = ruleByCode[p.code];
     const isWenn = !!rule;
     const cond = isWenn ? ruleCondFromLabel(rule.label) : null;
@@ -7160,14 +7192,14 @@ function renderRsFallContent(){
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
         ${TYP_OPTIONS.map(([v,l])=>`<option value="${v}"${p.typ===v?" selected":""}>${l}</option>`).join("")}
       </select>`;
-      return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}" draggable="true" data-code="${p.code}" data-idx="${i}"
-        ondragstart="rsDragStart(event,'${p.code}')" ondragover="rsDragOver(event,'${p.code}')" ondrop="rsDrop(event,'${fall}','${p.code}')" ondragend="rsDragEnd(event)">
+      return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}${p._isZem?" ":""}${p._isZem?'style="border-left:2px solid var(--accent-glow)"':''}" draggable="true" data-code="${p.code}" data-uid="${uid}" data-idx="${i}"
+        ondragstart="rsDragStart(event,'${uid}')" ondragover="rsDragOver(event,'${uid}')" ondrop="rsDrop(event,'${fall}','${uid}')" ondragend="rsDragEnd(event)">
         <span class="rs-drag">⠿</span>
         <span class="rs-code">${escHtml(p.code)}</span>
         ${typSelect}
         <span style="flex:1"></span>
-        <button class="rs-toggle ${p.active?"on":"off"}" onclick="rsTogglePos('${fall}','${p.code}',${!p.active})"></button>
-        <button class="rs-btn-del" onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}')`:`rsRemoveCustomPos('${fall}','${p.code}')`}">✕</button>
+        <button class="rs-toggle ${p.active?"on":"off"}" onclick="rsTogglePos('${fall}','${p.code}',${!p.active}${p._isZem?",true":""})"></button>
+        <button class="rs-btn-del" onclick="${p.isBase?`rsDeleteBasePos('${fall}','${p.code}'${p._isZem?",true":""})`:`rsRemoveCustomPos('${fall}','${p.code}')`}">✕</button>
       </div>`;
     }
   });

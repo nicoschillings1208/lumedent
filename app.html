@@ -7013,11 +7013,7 @@ function rsGetEffectivePositions(fallKey){
       typ: p.typ||"behandlung", desc: FALL_OPT_DEFS_LABEL[p.code]||p.typ||"",
       isBase:true, active:true, _uid:`zem_${i}_${p.code}`, _isZem:true
     }));
-    baseMapped = [
-      ...praepMapped,
-      { code:"__trenner__", typ:"trenner", desc:"Zementierung", isBase:true, active:true, _uid:"trenner" },
-      ...zemMapped
-    ];
+    baseMapped = [...praepMapped, ...zemMapped];
   } else {
     baseMapped = baseListe
       .filter(p => p.typ !== "fuellung" || !activeFill || p.code === activeFill)
@@ -7037,16 +7033,13 @@ function rsGetEffectivePositions(fallKey){
 
   // typeOverrides: Typ überschreiben (Trenner überspringen)
   const typeOvs = override.typeOverrides || {};
-  positions = positions.map(p => {
-    if(p.typ === "trenner") return p;
-    return { ...p, typ: typeOvs[p.code] || p.typ };
-  });
+  positions = positions.map(p => ({ ...p, typ: typeOvs[p.code] || p.typ }));
 
   const deleted  = new Set((override.removePositions||[]).filter(c=>!(override.toggledOff||[]).includes(c)));
   const toggled  = new Set(override.toggledOff||[]);
   positions = positions
-    .filter(p => p.typ==="trenner" || !deleted.has(p.code))
-    .map(p => p.typ==="trenner" ? p : ({...p, active: !toggled.has(p.code)}));
+    .filter(p => !deleted.has(p.code))
+    .map(p => ({...p, active: !toggled.has(p.code)}));
 
   // Hinzugefügte Positionen
   (override.addPositions || []).forEach(ap => {
@@ -7165,14 +7158,6 @@ function renderRsFallContent(){
   }
 
   const allRows = positions.map((p, i) => {
-    // Trenner zwischen Präp und Zem bei Bundle-Fällen
-    if(p.typ === "trenner") {
-      return `<div style="display:flex;align-items:center;gap:10px;margin:10px 0 6px">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <span style="font-size:10px;font-weight:700;color:var(--accent-dark);letter-spacing:.08em;text-transform:uppercase;background:#FFFBF0;padding:2px 10px;border-radius:20px;border:1px solid var(--accent-glow)">↓ Zementierung</span>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>`;
-    }
     const uid = p._uid || p.code;
     const rule = ruleByCode[p.code];
     const isWenn = !!rule;
@@ -7226,7 +7211,7 @@ function renderRsFallContent(){
   });
 
   const allRowsHtml = [...allRows, ...customRuleRows].join("");
-  const activeCount = positions.filter(p => { if(p.typ==="trenner") return false; const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
+  const activeCount = positions.filter(p => { const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
   const totalCount = positions.length + customRules.length;
 
   el.innerHTML = `

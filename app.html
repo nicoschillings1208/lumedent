@@ -2090,9 +2090,15 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
         lines.push({ type:"basis", text:`OK,UK ${code}` });
         return;
       }
-      // ── Kiefer des gewählten Zahns (OK oder UK je nach Zahn)
+      // ── Kiefer des gewählten Zahns (OK oder UK je nach Zahn, OK,UK wenn beide)
       if(typ==="kiefer_selected"){
-        lines.push({ type:"basis", text:`${kiefer} ${code}`, code });
+        // Prüfe ob treatmentTeeth beide Kiefer abdecken
+        const allTeeth = treatmentTeeth ? [...treatmentTeeth] : [tooth];
+        const hasOK = allTeeth.some(t => OBERKIEFER.includes(t));
+        const hasUK = allTeeth.some(t => UNTERKIEFER.includes(t));
+        const kieferStr = (hasOK && hasUK) ? "OK,UK" : hasOK ? "OK" : "UK";
+        if(!lines.find(l=>l.code===code))
+          lines.push({ type:"basis", text:`${kieferStr} ${code}`, code });
         return;
       }
       // ── Material Alginat – Gegenkiefer (nicht behandelt)

@@ -1210,6 +1210,10 @@ const FALL_TYPEN = {
   "PRAEP-B":  { label:"Präp Brücke",       desc:"Präparation Brücke",             gruppe:"pkv-praep"  },
   "ZEM-B":    { label:"Zem Brücke",        desc:"Zementierung Brücke",            gruppe:"pkv-zem"    },
   "PZ-B":     { label:"Präp+Zem Brücke",   desc:"Präp & Zem Brücke (gebündelt)",  gruppe:"pkv-bundle" },
+  // ── SKM / Implantkrone ───────────────────────────────────────────
+  "SKM-ABF":  { label:"SKM Abf.",       desc:"Abformung Implantkrone",                     gruppe:"pkv-skm" },
+  "SKM-ZEM":  { label:"SKM Zem.",       desc:"Zementierung Implantkrone",                  gruppe:"pkv-skm" },
+  "SKM-PZ":   { label:"SKM Abf.+Zem.", desc:"Abformung + Zementierung Implantkrone (gebündelt)", gruppe:"pkv-skm-bundle" },
   // ── Schiene ───────────────────────────────────────────────────
   "SCHIENE-ABF":  { label:"Schiene Abf.",       desc:"Abformung Schiene",                        gruppe:"pkv-schiene" },
   "SCHIENE-EINGL":{ label:"Schiene Eingl.",     desc:"Eingliederung Schiene",                    gruppe:"pkv-schiene" },
@@ -1285,7 +1289,24 @@ const POSITIONEN = {
   "2290":   { label:"2290",   typ:"befund_praep" }, // Entfernung Inlay/Krone – wenn Befund K oder E am Behandlungszahn
   "0725":   { label:"0725",   typ:"befund_wf"  },  // Farbbestimmung Zahnstumpf – wenn WF (W) am Behandlungszahn
   "8229":   { label:"8229",   typ:"nachbar"    },  // Krone überarbeiten und polieren der Verblendung
-  "7010":   { label:"7010",   typ:"kiefer_selected" },  // Eingliederung Aufbissbehelf mit adjustierter Oberfläche
+  "7010":   { label:"7010",   typ:"kiefer_selected" },
+  "Ä5000": { label:"Ä5000", typ:"behandlung" },  // Strahlendiagnostik Zähne, je Projektion
+  "0812":  { label:"0812",  typ:"einmalig"   },  // Optisch-elektronische Auswertung
+  "MISA":  { label:"MISA",  typ:"behandlung" },  // Material MIS Abformpfosten
+  "0221i": { label:"0221i", typ:"einmalig"   },  // Hilfsteil im Abdruck
+  "0817":  { label:"0817",  typ:"einmalig"   },  // Auswahl Implantat-Abutment
+  "1225":  { label:"1225",  typ:"einmalig"   },  // Abutmentcheck
+  "1351":  { label:"1351",  typ:"einmalig"   },  // Vorwall und Zähne nach Einprobe anpassen
+  "0220":  { label:"0220",  typ:"kiefer_beide" }, // Individualisieren konfektionierter Löffel
+  "2972":  { label:"2972",  typ:"behandlung" },  // Aufwand zu Suprastruktur bei Implantat
+  "2973":  { label:"2973",  typ:"behandlung" },  // Individualisieren des Implantataufbaus
+  "2976":  { label:"2976",  typ:"behandlung" },  // Stabilitätsmessung am Implantat
+  "1227":  { label:"1227",  typ:"einmalig"   },  // Gingivaformer reinigen, aufarbeiten & polieren
+  "8020":  { label:"8020",  typ:"einmalig"   },  // Arbiträre Scharnierachsenbestimmung
+  "8050":  { label:"8050",  typ:"einmalig"   },  // Registrieren UK für teiljustierbaren Artikulator
+  "2200":  { label:"2200",  typ:"behandlung" },  // Vollkrone nach Tangentialpräparation, je Zahn/Implantat
+  "2591":  { label:"2591",  typ:"einmalig"   },  // Komposit zur Abdeckung der Verschlussschraube
+  "2978":  { label:"2978",  typ:"einmalig"   },  // Versiegelung von Implantatinnenräumen  // Eingliederung Aufbissbehelf mit adjustierter Oberfläche
   "2813":   { label:"2813",   typ:"einmalig"   },  // Selektives Einschleifen und Feinjustieren auf Schiene
   "8125":   { label:"8125",   typ:"einmalig"   },  // Schiene überarbeiten & polieren – Nachbar mit Keramik, immer mit 2320
   // ── Zementierungs-Positionen ─────────────────────────────────────
@@ -1606,7 +1627,7 @@ function getFallOptDefs(fall){
   };
   const activeInlayTyp = INLAY_MAP[fall] || null;
   const INLAY_TYPS = new Set(["fuellung_inlay_1","fuellung_inlay_2","fuellung_inlay_3"]);
-  const IS_BUNDLE = fall.startsWith("PZ-") || fall === "SCHIENE-PZ";
+  const IS_BUNDLE = fall.startsWith("PZ-") || fall === "SCHIENE-PZ" || fall === "SKM-PZ";
 
   const seen = new Set();
   const posListe = getBaseListe(fall);
@@ -1991,9 +2012,9 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
   const inlayCode = inlayMap[inlayFlaechen] || "2160";
 
   // Gebündelt = Präp + Zem nacheinander
-  const isBundle      = fall.startsWith("PZ-") || fall === "SCHIENE-PZ";
-  const isSinglePraep = fall.startsWith("PRAEP-") || fall === "SCHIENE-ABF";
-  const isSingleZem   = (fall.startsWith("ZEM-") || fall === "SCHIENE-EINGL") && !isBundle;
+  const isBundle      = fall.startsWith("PZ-") || fall === "SCHIENE-PZ" || fall === "SKM-PZ";
+  const isSinglePraep = fall.startsWith("PRAEP-") || fall === "SCHIENE-ABF" || fall === "SKM-ABF";
+  const isSingleZem   = (fall.startsWith("ZEM-") || fall === "SCHIENE-EINGL" || fall === "SKM-ZEM") && !isBundle;
 
   // Hilfsfunktion: Glieder der n-ten Spanne ermitteln
   function getSpanneGlieder(bi, spanneIdx) {
@@ -2243,19 +2264,20 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
     "PZ-IN1":"in","PZ-IN2":"in","PZ-IN3":"in",
     "ZEM-B":"b","PZ-B":"b",
     "SCHIENE-EINGL":"schiene","SCHIENE-PZ":"schiene",
+    "SKM-ZEM":"skm","SKM-PZ":"skm",
   };
 
   if(isSinglePraep||isBundle){
     // Bundle: nur den PRAEP-Teil verwenden, nicht die kombinierte Liste
     const praepOnlyList = isBundle
-      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE)
+      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="SKM-PZ" ? SKM_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE)
       : (getPosReihenfolge(fall) || (isBruecke ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE));
     const praepList = filterPosByOpt(praepOnlyList, opt);
     const praepLines = buildSitzung(praepList, "Präparation", tempCode);
     allLines = [...allLines, ...praepLines];
   }
   if(isSingleZem||isBundle){
-    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS };
+    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS, skm:SKM_ZEM_POS };
     const typ2 = zemMap[fall];
     if(typ2){
       // Bundle: nur den ZEM-Teil verwenden
@@ -2731,6 +2753,89 @@ const ZEM_B_POS = [
 ];
 
 
+
+// ── ABFORMUNG SKM / IMPLANTKRONE ─────────────────────────────────
+const SKM_ABF_POS = [
+  { code:"0040",    typ:"global"      },
+  { code:"m0030",   typ:"global"      },
+  { code:"0802",    typ:"global"      },
+  { code:"Ä5",      typ:"einmalig"    },
+  { code:"Ä1",      typ:"einmalig"    },
+  { code:"OK,UK 4020F", typ:"kiefer"  },
+  { code:"Ä5000",   typ:"behandlung"  },
+  { code:"0812",    typ:"einmalig"    },
+  { code:"0723",    typ:"behandlung"  },
+  { code:"0724",    typ:"behandlung"  },
+  { code:"0080",    typ:"bereich"     },
+  { code:"0090",    typ:"behandlung"  },
+  { code:"0100",    typ:"behandlung"  },
+  { code:"M100",    typ:"behandlung"  },
+  { code:"4050",    typ:"zahn"        },
+  { code:"4070",    typ:"zahn"        },
+  { code:"4055",    typ:"zahn"        },
+  { code:"4075",    typ:"zahn"        },
+  { code:"4080",    typ:"zahn"        },
+  { code:"2130",    typ:"nachbar_c"   },
+  { code:"2320",    typ:"nachbar_ke"  },
+  { code:"8229",    typ:"nachbar_ke"  },
+  { code:"9050",    typ:"behandlung"  },
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"MISA",    typ:"behandlung"  },
+  { code:"0221i",   typ:"einmalig"    },
+  { code:"0817",    typ:"einmalig"    },
+  { code:"1225",    typ:"einmalig"    },
+  { code:"1351",    typ:"einmalig"    },
+  { code:"5170",    typ:"kiefer_beide"},
+  { code:"0220",    typ:"kiefer_beide"},
+  { code:"0220i",   typ:"kiefer_beide"},
+  { code:"M401M",   typ:"kiefer_gegen"},
+  { code:"M402M",   typ:"kiefer_behandlung"},
+  { code:"2972",    typ:"behandlung"  },
+  { code:"2973",    typ:"behandlung"  },
+  { code:"2976",    typ:"behandlung"  },
+  { code:"8010",    typ:"einmalig"    },
+  { code:"M407M",   typ:"kiefer_beide"},
+  { code:"tmdes",   typ:"behandlung"  },
+  { code:"0302z",   typ:"kiefer_beide"},
+  { code:"1227",    typ:"einmalig"    },
+  { code:"0521",    typ:"einmalig"    },
+  { code:"8020",    typ:"einmalig"    },
+  { code:"8050",    typ:"einmalig"    },
+  { code:"8080",    typ:"kiefer_beide"},
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"1020",    typ:"bereich"     },
+  { code:"0708",    typ:"einmalig"    },
+];
+
+// ── ZEMENTIERUNG SKM / IMPLANTKRONE ──────────────────────────────
+const SKM_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"  },
+  { code:"Ä5",      typ:"einmalig"    },
+  { code:"0080",    typ:"bereich"     },
+  { code:"0090",    typ:"behandlung"  },
+  { code:"0100",    typ:"behandlung"  },
+  { code:"M100",    typ:"behandlung"  },
+  { code:"4060",    typ:"bereich"     },
+  { code:"4150",    typ:"bereich"     },
+  { code:"9050",    typ:"behandlung"  },
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"2197",    typ:"behandlung"  },
+  { code:"tmkon",   typ:"behandlung"  },
+  { code:"tmätz",   typ:"behandlung"  },
+  { code:"5305",    typ:"behandlung"  },
+  { code:"2200",    typ:"behandlung"  },
+  { code:"2591",    typ:"einmalig"    },
+  { code:"2978",    typ:"einmalig"    },
+  { code:"6484",    typ:"bereich"     },
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"1020",    typ:"bereich"     },
+  { code:"0708",    typ:"einmalig"    },
+];
+
 // ── ABFORMUNG SCHIENE ─────────────────────────────────────────────
 const SCHIENE_ABF_POS = [
   { code:"OK,UK 4020F", typ:"kiefer"   },
@@ -2778,6 +2883,7 @@ const FALL_POS_MAP = {
   "PZ-IN1": "bundle-in","PZ-IN2":"bundle-in","PZ-IN3":"bundle-in",
   "PRAEP-B":"praep-b","ZEM-B":"zem-b","PZ-B":"bundle-b",
   "SCHIENE-ABF":"schiene-abf","SCHIENE-EINGL":"schiene-eingl","SCHIENE-PZ":"schiene-pz",
+  "SKM-ABF":"skm-abf","SKM-ZEM":"skm-zem","SKM-PZ":"skm-pz",
 };
 
 const PRIVAT_POS_REIHENFOLGE = [
@@ -5253,12 +5359,13 @@ function renderCasesList(){
           "Zementierung":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-zem"),
           "Präp + Zem":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-bundle"),
           "Schiene":     Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-schiene"||v.gruppe==="pkv-schiene-bundle"),
+          "SKM / Implkr.":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-skm"||v.gruppe==="pkv-skm-bundle"),
         };
 
     const currentGruppe = c.caseType ? (FALL_TYPEN[c.caseType]?.gruppe || '') : '';
     const gruppeToKat = {
       'gkv-fuellung':'Füllung','pkv-fuellung':'Füllung',
-      'pkv-praep':'Präparation','pkv-zem':'Zementierung','pkv-bundle':'Präp + Zem','pkv-schiene':'Schiene','pkv-schiene-bundle':'Schiene'
+      'pkv-praep':'Präparation','pkv-zem':'Zementierung','pkv-bundle':'Präp + Zem','pkv-schiene':'Schiene','pkv-schiene-bundle':'Schiene','pkv-skm':'SKM / Implkr.','pkv-skm-bundle':'SKM / Implkr.'
     };
     const currentKat = gruppeToKat[currentGruppe] || '';
 
@@ -5440,6 +5547,9 @@ function getPosReihenfolge(fall){
     "schiene-abf":SCHIENE_ABF_POS,
     "schiene-eingl":SCHIENE_EINGL_POS,
     "schiene-pz":[...SCHIENE_ABF_POS,...SCHIENE_EINGL_POS],
+    "skm-abf":SKM_ABF_POS,
+    "skm-zem":SKM_ZEM_POS,
+    "skm-pz":[...SKM_ABF_POS,...SKM_ZEM_POS],
   };
   const baseListe = praepListen[gruppe] || zemListen[gruppe] || null;
   if(!baseListe) return null;
@@ -5488,7 +5598,7 @@ function buildPrivatGlobalOutput(results){
 
   // Krone/Präp/Zem-Fälle haben bereits vollständig sortierte billingOut.lines
   // → direkt übernehmen. Füllungsfälle über PRIVAT_POS_REIHENFOLGE zusammenführen.
-  const KRONE_GRUPPEN = new Set(["praep","zem-k","zem-tk","zem-in","bundle-k","bundle-tk","bundle-in","praep-b","zem-b","bundle-b","schiene-abf","schiene-eingl","schiene-pz"]);
+  const KRONE_GRUPPEN = new Set(["praep","zem-k","zem-tk","zem-in","bundle-k","bundle-tk","bundle-in","praep-b","zem-b","bundle-b","schiene-abf","schiene-eingl","schiene-pz","skm-abf","skm-zem","skm-pz"]);
   const isKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&KRONE_GRUPPEN.has(fg); };
 
   const kroneCases = valid.filter(isKroneCase);
@@ -5498,7 +5608,7 @@ function buildPrivatGlobalOutput(results){
   // ── Krone/Präp/Zem: Zeilen zusammenführen ───────────────────────
   if(kroneCases.length > 0){
     const refFall   = kroneCases[0].ctx.fall;
-    const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ";
+    const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ" || refFall === "SKM-PZ";
 
     if(IS_BUNDLE){
       // Bundle-Fälle: Zeilen direkt sequenziell ausgeben (keine Zusammenführung)
@@ -5934,7 +6044,7 @@ function generate(){
     // → je Zahn eine eigene Berechnung, dann global zusammengeführt
     // Ausnahme: Bundle-Fälle (PZ-*, SCHIENE-PZ) nutzen nur ersten Zahn
     //   da billingOut bereits beide Sitzungen enthält
-    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle"]);
+    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle"]);
     const expandedCases = [];
     validCases.forEach(tc=>{
       const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);
@@ -6610,6 +6720,7 @@ const FALL_GRUPPEN = {
   "Zementierung":    ["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"],
   "Präp + Zem":      ["PZ-K","PZ-TK","PZ-IN1","PZ-IN2","PZ-IN3","PZ-B"],
   "Schiene":         ["SCHIENE-ABF","SCHIENE-EINGL","SCHIENE-PZ"],
+  "SKM / Implkrone": ["SKM-ABF","SKM-ZEM","SKM-PZ"],
 };
 const FALL_LABELS = {
   "F1":"GKV F1","F2":"GKV F2","F3":"GKV F3","F4":"GKV F4",
@@ -6618,6 +6729,7 @@ const FALL_LABELS = {
   "ZEM-K":"Zem K","ZEM-TK":"Zem TK","ZEM-IN1":"Zem IN1","ZEM-IN2":"Zem IN2","ZEM-IN3":"Zem IN3","ZEM-B":"Zem Brücke",
   "PZ-K":"P+Z K","PZ-TK":"P+Z TK","PZ-IN1":"P+Z IN1","PZ-IN2":"P+Z IN2","PZ-IN3":"P+Z IN3","PZ-B":"P+Z Brücke",
   "SCHIENE-ABF":"Schiene Abf.","SCHIENE-EINGL":"Schiene Eingl.","SCHIENE-PZ":"Schiene Abf.+Eingl.",
+  "SKM-ABF":"SKM Abf.","SKM-ZEM":"SKM Zem.","SKM-PZ":"SKM Abf.+Zem.",
 };
 
 function openProfilEditor(id){
@@ -7093,16 +7205,18 @@ function rsGetEffectivePositions(fallKey){
   const PRAEP_BEFUND_TYPS = new Set(["befund_praep","befund_wf"]);
   const ZEM_FALLS_SET = new Set(["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"]);
   const IS_NON_PRAEP = ["PF1","PF2","PF3","PF4"].includes(fallKey) || ZEM_FALLS_SET.has(fallKey);
-  const IS_BUNDLE = fallKey.startsWith("PZ-");
+  const IS_BUNDLE = fallKey.startsWith("PZ-") || fallKey === "SCHIENE-PZ" || fallKey === "SKM-PZ";
 
   // Für Bundle-Fälle: Trennlinie zwischen PRAEP und ZEM einfügen
   let baseMapped;
   if(IS_BUNDLE){
     const praepListe = fallKey==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE
                      : fallKey==="SCHIENE-PZ" ? SCHIENE_ABF_POS
+                     : fallKey==="SKM-PZ" ? SKM_ABF_POS
                      : PRAEP_POS_REIHENFOLGE;
     const zemListe   = fallKey==="PZ-B" ? ZEM_B_POS
                      : fallKey==="SCHIENE-PZ" ? SCHIENE_EINGL_POS
+                     : fallKey==="SKM-PZ" ? SKM_ZEM_POS
                      : fallKey.includes("TK") ? ZEM_TK_POS
                      : fallKey.includes("IN") ? ZEM_INLAY_POS
                      : ZEM_KRONE_POS;

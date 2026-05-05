@@ -5493,17 +5493,25 @@ function buildPrivatGlobalOutput(results){
   const allLines   = [];
 
   // ── Krone/Präp/Zem: Zeilen zusammenführen ───────────────────────
-  // Reihenfolge aus der Positionsliste des Falltyps (nicht aus zufälliger line-Reihenfolge).
-  // Zähne aus ALLEN Fällen zusammenführen.
   if(kroneCases.length > 0){
-    // Positionsreihenfolge aus dem ersten Fall holen
     const refFall   = kroneCases[0].ctx.fall;
+    const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ";
+
+    if(IS_BUNDLE){
+      // Bundle-Fälle: Zeilen direkt sequenziell ausgeben (keine Zusammenführung)
+      // damit beide Sitzungen vollständig erscheinen
+      kroneCases.forEach(r => {
+        r.billingOut.lines.forEach(l => {
+          if(l.type === "trenner") return;
+          allLines.push(l);
+        });
+      });
+    } else {
     const posListe  = getPosReihenfolge(refFall) || [];
 
-    // Alle Zähne und Texte aus allen Fällen sammeln
-    const codeToTeeth = new Map(); // normalizedKey → Set<tooth>
-    const codeToTexts = new Map(); // normalizedKey → Set<text> (für basis/kiefer)
-    const codeToType  = new Map(); // normalizedKey → type
+    const codeToTeeth = new Map();
+    const codeToTexts = new Map();
+    const codeToType  = new Map();
 
     kroneCases.forEach(r=>{
       r.billingOut.lines.forEach(l=>{
@@ -5522,21 +5530,19 @@ function buildPrivatGlobalOutput(results){
       });
     });
 
-    // Ausgabe in der Reihenfolge der Positionsliste
     const emitted = new Set();
     posListe.forEach(pos=>{
       const code = pos.code;
       const nkey = (pos.typ==="kiefer"||pos.typ==="einmalig"||pos.typ==="global"
-        ||pos.typ==="kiefer_beide"||pos.typ==="kiefer_gegen"||pos.typ==="kiefer_behandlung")
+        ||pos.typ==="kiefer_beide"||pos.typ==="kiefer_gegen"||pos.typ==="kiefer_behandlung"||pos.typ==="kiefer_selected")
         ? code.replace(/^(OK,UK|OK|UK)\s+/,"")
         : code;
       if(emitted.has(nkey)) return;
 
       const type = codeToType.get(nkey);
-      if(!type) return; // Position nicht vorhanden in diesem Fall
+      if(!type) return;
 
       if(codeToTexts.has(nkey)){
-        // Einmalige Positionen: alle gesammelten Texte ausgeben
         [...codeToTexts.get(nkey)].forEach(txt=>{
           allLines.push({ type, text:txt, code:nkey });
         });
@@ -5550,6 +5556,7 @@ function buildPrivatGlobalOutput(results){
         emitted.add(nkey);
       }
     });
+    } // end non-bundle
   }
 
   // ── Füllungs-Fälle: über Reihenfolge zusammenführen ────────────

@@ -1624,7 +1624,7 @@ function getFallOptDefs(fall){
       if(r) return r;
     }
     if(["F1","F2","F3","F4"].includes(f) && typeof GKV_POS_REIHENFOLGE !== 'undefined') return GKV_POS_REIHENFOLGE;
-    if(["PF1","PF2","PF3","PF4"].includes(f) && typeof PRIVAT_POS_REIHENFOLGE !== 'undefined') return PRIVAT_POS_REIHENFOLGE;
+    if(["PF1","PF2","PF3","PF4"].includes(f) && typeof PKV_FUELLUNG_POS !== 'undefined') return PKV_FUELLUNG_POS;
     return [];
   }
 
@@ -2963,6 +2963,43 @@ const FALL_POS_MAP = {
   "SKM-B-ABF":"skm-b-abf","SKM-B-ZEM":"skm-b-zem","SKM-B-PZ":"skm-b-pz",
   "UPS-ABF":"ups-abf","UPS-EINGL":"ups-eingl","UPS-PZ":"ups-pz",
 };
+
+const PKV_FUELLUNG_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"    },
+  { code:"2040o",       typ:"kiefer"    },
+  { code:"Ä5",          typ:"einmalig"  },
+  { code:"Ä1",          typ:"einmalig"  },
+  { code:"0070",        typ:"behandlung"},
+  { code:"0080",        typ:"bereich"   },
+  { code:"0090",        typ:"behandlung"},
+  { code:"0100",        typ:"behandlung"},
+  { code:"M100",        typ:"behandlung"},
+  { code:"4050",        typ:"zahn"      },
+  { code:"4055",        typ:"zahn"      },
+  { code:"4070",        typ:"zahn"      },
+  { code:"4075",        typ:"zahn"      },
+  { code:"4080",        typ:"zahn"      },
+  { code:"2030P",       typ:"bereich"   },
+  { code:"2030F",       typ:"bereich"   },
+  { code:"2040",        typ:"bereich"   },
+  { code:"t0203",       typ:"bereich"   },
+  { code:"2330",        typ:"behandlung"},
+  { code:"2060D",       typ:"behandlung"},
+  { code:"2130",        typ:"nachbar_c" },
+  { code:"2320",        typ:"nachbar_ke"},
+  { code:"8229",        typ:"nachbar_ke"},
+  { code:"2060",        typ:"fuellung"  },
+  { code:"2080",        typ:"fuellung"  },
+  { code:"2100",        typ:"fuellung"  },
+  { code:"2120",        typ:"fuellung"  },
+  { code:"8010",        typ:"bereich"   },
+  { code:"0521",        typ:"bereich"   },
+  { code:"6484",        typ:"bereich"   },
+  { code:"4025",        typ:"zahn"      },
+  { code:"M4025",       typ:"zahn"      },
+  { code:"1020",        typ:"bereich"   },
+  { code:"0708",        typ:"einmalig"  },
+];
 
 const PRIVAT_POS_REIHENFOLGE = [
   // ── Allgemeines / Untersuchung ─────────────────────────────────
@@ -7274,7 +7311,7 @@ function rsGetEffectivePositions(fallKey){
   _rsActiveId = null;
   const baseListe = getPosReihenfolge(fallKey)
     || (fallKey==="F1"||fallKey==="F2"||fallKey==="F3"||fallKey==="F4" ? GKV_POS_REIHENFOLGE : null)
-    || (["PF1","PF2","PF3","PF4"].includes(fallKey) ? PRIVAT_POS_REIHENFOLGE : null)
+    || (["PF1","PF2","PF3","PF4"].includes(fallKey) ? PKV_FUELLUNG_POS : null)
     || [];
   _rsActiveId = _savedActive;
 

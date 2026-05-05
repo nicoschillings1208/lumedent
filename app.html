@@ -1645,7 +1645,6 @@ function getFallOptDefs(fall){
     const code = p.code;
     if(NEVER_CHIP.has(code)) return;
     if(p.typ === "fuellung") return;
-    if(p.typ === "kiefer") return;
     if(activeInlayTyp && INLAY_TYPS.has(p.typ) && p.typ !== activeInlayTyp) return;
     // Bundle: alle Positionen anzeigen (auch Duplikate), Nicht-Bundle: deduplizieren
     if(!IS_BUNDLE && seen.has(code)) return;

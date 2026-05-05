@@ -2092,8 +2092,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
       }
       // ── Kiefer des gewählten Zahns (OK oder UK je nach Zahn, OK,UK wenn beide)
       if(typ==="kiefer_selected"){
-        // Prüfe ob treatmentTeeth beide Kiefer abdecken
-        const allTeeth = treatmentTeeth ? [...treatmentTeeth] : [tooth];
+        const allTeeth = caseInput._allTeeth ? [...caseInput._allTeeth] : (treatmentTeeth ? [...treatmentTeeth] : [tooth]);
         const hasOK = allTeeth.some(t => OBERKIEFER.includes(t));
         const hasUK = allTeeth.some(t => UNTERKIEFER.includes(t));
         const kieferStr = (hasOK && hasUK) ? "OK,UK" : hasOK ? "OK" : "UK";
@@ -5928,14 +5927,23 @@ function generate(){
 
   try {
     // Mehrfachzähne expandieren: ein Fall mit mehreren Zähnen
-  // → je Zahn eine eigene Berechnung, dann global zusammengeführt
-  const expandedCases = [];
-  validCases.forEach(tc=>{
-    const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);
-    teethArr.forEach(tooth=>{
-      expandedCases.push({ ...tc, tooth, workflow: tc.workflow||'digital', _parentId: tc.id, _multiTooth: teethArr.length > 1 });
+    // → je Zahn eine eigene Berechnung, dann global zusammengeführt
+    // Ausnahme: Bundle-Fälle (PZ-*, SCHIENE-PZ) nutzen nur ersten Zahn
+    //   da billingOut bereits beide Sitzungen enthält
+    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle"]);
+    const expandedCases = [];
+    validCases.forEach(tc=>{
+      const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);
+      const isBundle = BUNDLE_GRUPPEN.has(FALL_TYPEN[tc.caseType]?.gruppe);
+      if(isBundle){
+        // Bundle: nur einen Case mit dem ersten Zahn, aber allTeeth weitergeben
+        expandedCases.push({ ...tc, tooth: teethArr[0], _allTeeth: tc.teeth, workflow: tc.workflow||'digital', _parentId: tc.id });
+      } else {
+        teethArr.forEach(tooth=>{
+          expandedCases.push({ ...tc, tooth, workflow: tc.workflow||'digital', _parentId: tc.id, _multiTooth: teethArr.length > 1 });
+        });
+      }
     });
-  });
 
   // Alle Behandlungszähne aller Fälle sammeln
   // → wird an calculateCaseResult weitergegeben damit Nachbarlogik

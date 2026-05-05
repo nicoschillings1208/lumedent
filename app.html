@@ -5875,7 +5875,8 @@ function buildGkvGlobalOutput(results){
     const {code, typ} = pos;
 
     if(typ==="kiefer"){
-      if(kieferCodes.has(code)||kieferCodes.has("OK,UK "+code)){
+      const codeStripped = code.replace(/^OK,UK\s+/,"");
+      if(kieferCodes.has(code)||kieferCodes.has("OK,UK "+code)||kieferCodes.has("OK,UK "+codeStripped)||[...kieferCodes].some(k=>k.replace(/^OK,UK\s+/,"")=== codeStripped)){
         const kt = code.startsWith("OK,UK") ? code : `OK,UK ${code}`;
         lines.push({ type:"kiefer", text:kt, code });
       }

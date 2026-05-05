@@ -2246,17 +2246,21 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
   };
 
   if(isSinglePraep||isBundle){
-    const praepList = filterPosByOpt(getPosReihenfolge(fall) || (isBruecke ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE), opt);
+    // Bundle: nur den PRAEP-Teil verwenden, nicht die kombinierte Liste
+    const praepOnlyList = isBundle
+      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE)
+      : (getPosReihenfolge(fall) || (isBruecke ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE));
+    const praepList = filterPosByOpt(praepOnlyList, opt);
     const praepLines = buildSitzung(praepList, "Präparation", tempCode);
     allLines = [...allLines, ...praepLines];
   }
-  // Bundle: kein Trenner – Präp-Positionen direkt gefolgt von Zem-Positionen
-  // (zwei separate Sitzungen, aber nahtlos in einer Ausgabe dargestellt)
   if(isSingleZem||isBundle){
     const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS };
     const typ2 = zemMap[fall];
     if(typ2){
-      const zemList = filterPosByOpt(getPosReihenfolge(fall) || zemPosMap[typ2], opt);
+      // Bundle: nur den ZEM-Teil verwenden
+      const zemOnlyList = isBundle ? zemPosMap[typ2] : (getPosReihenfolge(fall) || zemPosMap[typ2]);
+      const zemList = filterPosByOpt(zemOnlyList, opt);
       const zemLines = buildSitzung(zemList, "Zementierung", tempCode);
       allLines = [...allLines, ...zemLines];
     }

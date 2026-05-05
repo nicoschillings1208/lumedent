@@ -5568,7 +5568,7 @@ function renderCasesList(){
               +'<input type="checkbox" '+(active?'checked':'')
               +' data-case-id="'+c.id+'" data-opt-key="'+safeKey+'"'
               +' class="privat-opt-cb" style="accent-color:var(--accent);width:13px;height:13px"/>'
-              +'<span style="font-weight:'+lweight+'">'+code+'</span>'
+              +'<span style="font-weight:'+lweight+'">'+code.replace(/^OK,UK\s+/,'')+'</span>'
               +'</label>';
           }).join("")}
         </div>

@@ -1285,7 +1285,7 @@ const POSITIONEN = {
   "2290":   { label:"2290",   typ:"befund_praep" }, // Entfernung Inlay/Krone – wenn Befund K oder E am Behandlungszahn
   "0725":   { label:"0725",   typ:"befund_wf"  },  // Farbbestimmung Zahnstumpf – wenn WF (W) am Behandlungszahn
   "8229":   { label:"8229",   typ:"nachbar"    },  // Krone überarbeiten und polieren der Verblendung
-  "7010":   { label:"7010",   typ:"kiefer"     },  // Eingliederung Aufbissbehelf mit adjustierter Oberfläche
+  "7010":   { label:"7010",   typ:"kiefer_selected" },  // Eingliederung Aufbissbehelf mit adjustierter Oberfläche
   "2813":   { label:"2813",   typ:"einmalig"   },  // Selektives Einschleifen und Feinjustieren auf Schiene
   "8125":   { label:"8125",   typ:"einmalig"   },  // Schiene überarbeiten & polieren – Nachbar mit Keramik, immer mit 2320
   // ── Zementierungs-Positionen ─────────────────────────────────────
@@ -2090,6 +2090,11 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
         lines.push({ type:"basis", text:`OK,UK ${code}` });
         return;
       }
+      // ── Kiefer des gewählten Zahns (OK oder UK je nach Zahn)
+      if(typ==="kiefer_selected"){
+        lines.push({ type:"basis", text:`${kiefer} ${code}`, code });
+        return;
+      }
       // ── Material Alginat – Gegenkiefer (nicht behandelt)
       if(typ==="kiefer_gegen"){
         const gegen = kiefer==="OK" ? "UK" : "OK";
@@ -2742,7 +2747,7 @@ const SCHIENE_ABF_POS = [
 const SCHIENE_EINGL_POS = [
   { code:"OK,UK 4020F", typ:"kiefer"   },
   { code:"Ä5",      typ:"einmalig"     },
-  { code:"7010",    typ:"kiefer"     },
+  { code:"7010",    typ:"kiefer_selected" },
   { code:"2813",    typ:"einmalig"     },
   { code:"8125",    typ:"einmalig"     },
   { code:"6484",    typ:"einmalig"     },

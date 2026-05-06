@@ -2307,7 +2307,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
   if(isSinglePraep||isBundle){
     // Bundle: nur den PRAEP-Teil verwenden, nicht die kombinierte Liste
     const praepOnlyList = isBundle
-      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="SKM-PZ" ? SKM_ABF_POS : fall==="SKM-B-PZ" ? SKM_ABF_POS : fall==="UPS-PZ" ? UPS_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : (fall.startsWith("GKV-IN") ? GKV_INLAY_PRAEP_POS : PRAEP_POS_REIHENFOLGE))
+      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="SKM-PZ" ? SKM_ABF_POS : fall==="SKM-B-PZ" ? SKM_ABF_POS : fall==="UPS-PZ" ? UPS_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : fall==="GKV-TK-PZ" ? GKV_TK_PRAEP_POS : fall.startsWith("GKV-IN") ? GKV_INLAY_PRAEP_POS : PRAEP_POS_REIHENFOLGE)
       : (getPosReihenfolge(fall) || (isBruecke ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE));
     const praepList = filterPosByOpt(praepOnlyList, opt);
     const praepLines = buildSitzung(praepList, "Präparation", tempCode);

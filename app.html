@@ -1236,6 +1236,10 @@ const FALL_TYPEN = {
   "GKV-IN3-PRAEP": { label:"GKV IN3 Präp",  desc:"GKV Inlay 3+-flächig Präparation", gruppe:"gkv-inlay" },
   "GKV-IN3-ZEM":   { label:"GKV IN3 Zem",   desc:"GKV Inlay 3+-flächig Zementierung",gruppe:"gkv-inlay" },
   "GKV-IN3-PZ":    { label:"GKV IN3 P+Z",   desc:"GKV Inlay 3+-flächig Präp+Zem",    gruppe:"gkv-inlay-bundle" },
+  // ── GKV Teilkrone ─────────────────────────────────────────────────
+  "GKV-TK-PRAEP": { label:"GKV TK Präp",  desc:"GKV Teilkrone Präparation",  gruppe:"gkv-tk" },
+  "GKV-TK-ZEM":   { label:"GKV TK Zem",   desc:"GKV Teilkrone Zementierung", gruppe:"gkv-tk" },
+  "GKV-TK-PZ":    { label:"GKV TK P+Z",   desc:"GKV Teilkrone Präp+Zem",     gruppe:"gkv-tk-bundle" },
   // >>> Weitere Fälle ergänzen <<<
 };
 
@@ -1346,6 +1350,11 @@ const POSITIONEN = {
   "2160-f": { label:"2160-f", typ:"fuellung"   },  // GKV Inlay 2-flächig
   "2170-f": { label:"2170-f", typ:"fuellung"   },  // GKV Inlay 3+-flächig
   "tmprovl":{ label:"tmprovl",typ:"einmalig"   },  // Material Provisorische Krone (Groß)
+  "mabf4m": { label:"mabf4m", typ:"einmalig"   },  // Abformmaterial Silikon (mittel)
+  "mabf1m": { label:"mabf1m", typ:"einmalig"   },  // Abformmaterial Alginat (mittel)
+  "mabf3m": { label:"mabf3m", typ:"einmalig"   },  // Zweiphasenabformung (mittel)
+  "mabf5m": { label:"mabf5m", typ:"einmalig"   },  // Material Bissnahme (mittel)
+  "z19":    { label:"z19",    typ:"behandlung"  },  // Provisorische Krone/Brückenglied
   "2160":   { label:"2160",   typ:"fuellung"   },  // Inlay 2-flächig
   "2170":   { label:"2170",   typ:"fuellung"   },  // Inlay >2-flächig
   "2802":   { label:"2802",   typ:"behandlung" },  // Kaufläche gnathologisch – Behandlungszahn
@@ -2289,6 +2298,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
     "SKM-ZEM":"skm","SKM-PZ":"skm",
     "SKM-B-ZEM":"skm-b","SKM-B-PZ":"skm-b",
     "UPS-EINGL":"ups","UPS-PZ":"ups",
+    "GKV-TK-ZEM":"gkv-tk","GKV-TK-PZ":"gkv-tk",
     "GKV-IN1-ZEM":"gkv-in1","GKV-IN1-PZ":"gkv-in1",
     "GKV-IN2-ZEM":"gkv-in2","GKV-IN2-PZ":"gkv-in2",
     "GKV-IN3-ZEM":"gkv-in3","GKV-IN3-PZ":"gkv-in3",
@@ -2304,7 +2314,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null){
     allLines = [...allLines, ...praepLines];
   }
   if(isSingleZem||isBundle){
-    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS, skm:SKM_ZEM_POS, "skm-b":SKM_B_ZEM_POS, ups:UPS_EINGL_POS, "gkv-in1":GKV_INLAY1_ZEM_POS, "gkv-in2":GKV_INLAY2_ZEM_POS, "gkv-in3":GKV_INLAY3_ZEM_POS };
+    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS, skm:SKM_ZEM_POS, "skm-b":SKM_B_ZEM_POS, ups:UPS_EINGL_POS, "gkv-tk":GKV_TK_ZEM_POS, "gkv-in1":GKV_INLAY1_ZEM_POS, "gkv-in2":GKV_INLAY2_ZEM_POS, "gkv-in3":GKV_INLAY3_ZEM_POS };
     const typ2 = zemMap[fall];
     if(typ2){
       // Bundle: nur den ZEM-Teil verwenden
@@ -2929,6 +2939,65 @@ const UPS_EINGL_POS = [
 ];
 
 
+
+// ── GKV TEILKRONE PRÄPARATION ────────────────────────────────────
+const GKV_TK_PRAEP_POS = [
+  { code:"0040",    typ:"global"      },
+  { code:"0802",    typ:"global"      },
+  { code:"m0030",   typ:"global"      },
+  { code:"1433",    typ:"behandlung"  },
+  { code:"mabf4m",  typ:"einmalig"    },
+  { code:"OK,UK 4020F", typ:"kiefer"  },
+  { code:"2040o",   typ:"kiefer"      },
+  { code:"5170",    typ:"kiefer_beide"},
+  { code:"0220i",   typ:"kiefer_beide"},
+  { code:"mabf1m",  typ:"einmalig"    },
+  { code:"0080",    typ:"bereich"     },
+  { code:"0090",    typ:"behandlung"  },
+  { code:"0100",    typ:"behandlung"  },
+  { code:"M100",    typ:"behandlung"  },
+  { code:"4050",    typ:"zahn"        },
+  { code:"4055",    typ:"zahn"        },
+  { code:"2030",    typ:"bereich"     },
+  { code:"2040",    typ:"bereich"     },
+  { code:"t0203",   typ:"bereich"     },
+  { code:"2060D",   typ:"behandlung"  },
+  { code:"0220",    typ:"kiefer_beide"},
+  { code:"mabf3m",  typ:"einmalig"    },
+  { code:"8010",    typ:"einmalig"    },
+  { code:"mabf5m",  typ:"einmalig"    },
+  { code:"8020",    typ:"einmalig"    },
+  { code:"8050",    typ:"einmalig"    },
+  { code:"8080",    typ:"kiefer_beide"},
+  { code:"z19",     typ:"behandlung"  },
+  { code:"tmlprov", typ:"temp_seite"  },
+  { code:"tmfront", typ:"temp_front"  },
+  { code:"tmprovl", typ:"einmalig"    },
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"1020",    typ:"bereich"     },
+];
+
+// ── GKV TEILKRONE ZEMENTIERUNG ───────────────────────────────────
+const GKV_TK_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"  },
+  { code:"2040o",   typ:"kiefer"      },
+  { code:"0080",    typ:"bereich"     },
+  { code:"4060",    typ:"bereich"     },
+  { code:"2040",    typ:"bereich"     },
+  { code:"t0203",   typ:"bereich"     },
+  { code:"2197",    typ:"behandlung"  },
+  { code:"tmkon",   typ:"behandlung"  },
+  { code:"tmätz",   typ:"behandlung"  },
+  { code:"5305",    typ:"behandlung"  },
+  { code:"2220",    typ:"fuellung"    },
+  { code:"4025",    typ:"zahn"        },
+  { code:"M4025",   typ:"material"    },
+  { code:"1020",    typ:"bereich"     },
+  { code:"6484",    typ:"bereich"     },
+  { code:"0708",    typ:"einmalig"    },
+];
+
 // ── GKV INLAY PRÄPARATION (alle Flächenzahlen) ───────────────────
 const GKV_INLAY_PRAEP_POS = [
   { code:"0040",    typ:"global"      },
@@ -3077,6 +3146,7 @@ const FALL_POS_MAP = {
   "SKM-ABF":"skm-abf","SKM-ZEM":"skm-zem","SKM-PZ":"skm-pz",
   "SKM-B-ABF":"skm-b-abf","SKM-B-ZEM":"skm-b-zem","SKM-B-PZ":"skm-b-pz",
   "UPS-ABF":"ups-abf","UPS-EINGL":"ups-eingl","UPS-PZ":"ups-pz",
+  "GKV-TK-PRAEP":"gkv-tk-praep","GKV-TK-ZEM":"gkv-tk-zem","GKV-TK-PZ":"gkv-tk-pz",
   "GKV-IN1-PRAEP":"gkv-in1-praep","GKV-IN1-ZEM":"gkv-in1-zem","GKV-IN1-PZ":"gkv-in1-pz",
   "GKV-IN2-PRAEP":"gkv-in2-praep","GKV-IN2-ZEM":"gkv-in2-zem","GKV-IN2-PZ":"gkv-in2-pz",
   "GKV-IN3-PRAEP":"gkv-in3-praep","GKV-IN3-ZEM":"gkv-in3-zem","GKV-IN3-PZ":"gkv-in3-pz",
@@ -5119,7 +5189,7 @@ function calculateCaseResult(caseInput, findings, kassentyp, treatmentTeeth=null
   // ── GKV Inlay: trotz kassentyp kasse über Krone-Engine routen ────
   if(kassentyp === "kasse"){
     const _fg = FALL_POS_MAP[caseInput.caseType];
-    if(_fg && _fg.startsWith("gkv-in")){
+    if(_fg && (_fg.startsWith("gkv-in") || _fg.startsWith("gkv-tk"))){
       return calculateKroneResult(caseInput, findings, {}, treatmentTeeth);
     }
   }
@@ -5592,6 +5662,7 @@ function renderCasesList(){
     const fallGruppen = kassentyp === "kasse"
       ? {
           "GKV Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
+          "GKV Teilkrone":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-tk"||v.gruppe==="gkv-tk-bundle"),
           "GKV Inlay":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle"),
         }
       : {
@@ -5612,6 +5683,7 @@ function renderCasesList(){
       if(!fall) return '';
       if(['F1','F2','F3','F4'].includes(fall)) return 'GKV Füllung';
       if(['PF1','PF2','PF3','PF4'].includes(fall)) return 'Füllung';
+      if(fall.startsWith('GKV-TK')) return 'GKV Teilkrone';
       if(fall.startsWith('GKV-IN')) return 'GKV Inlay';
       if(fall==='PRAEP-K'||fall==='ZEM-K'||fall==='PZ-K') return 'PKV Krone';
       if(fall==='PRAEP-TK'||fall==='ZEM-TK'||fall==='PZ-TK') return 'PKV Teilkrone';
@@ -5812,6 +5884,12 @@ function getPosReihenfolge(fall){
     "ups-abf":UPS_ABF_POS,
     "ups-eingl":UPS_EINGL_POS,
     "ups-pz":[...UPS_ABF_POS,...UPS_EINGL_POS],
+    "gkv-tk-praep":GKV_TK_PRAEP_POS,
+    "gkv-tk-zem":GKV_TK_ZEM_POS,
+    "gkv-tk-pz":[...GKV_TK_PRAEP_POS,...GKV_TK_ZEM_POS],
+    "gkv-tk-praep":GKV_TK_PRAEP_POS,
+    "gkv-tk-zem":GKV_TK_ZEM_POS,
+    "gkv-tk-pz":[...GKV_TK_PRAEP_POS,...GKV_TK_ZEM_POS],
     "gkv-in1-praep":GKV_INLAY_PRAEP_POS,
     "gkv-in1-zem":GKV_INLAY1_ZEM_POS,
     "gkv-in1-pz":[...GKV_INLAY_PRAEP_POS,...GKV_INLAY1_ZEM_POS],
@@ -5869,7 +5947,7 @@ function buildPrivatGlobalOutput(results){
 
   // Krone/Präp/Zem-Fälle haben bereits vollständig sortierte billingOut.lines
   // → direkt übernehmen. Füllungsfälle über PRIVAT_POS_REIHENFOLGE zusammenführen.
-  const KRONE_GRUPPEN = new Set(["praep","zem-k","zem-tk","zem-in","bundle-k","bundle-tk","bundle-in","praep-b","zem-b","bundle-b","schiene-abf","schiene-eingl","schiene-pz","skm-abf","skm-zem","skm-pz","skm-b-abf","skm-b-zem","skm-b-pz","ups-abf","ups-eingl","ups-pz","gkv-in1-praep","gkv-in1-zem","gkv-in1-pz","gkv-in2-praep","gkv-in2-zem","gkv-in2-pz","gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
+  const KRONE_GRUPPEN = new Set(["praep","zem-k","zem-tk","zem-in","bundle-k","bundle-tk","bundle-in","praep-b","zem-b","bundle-b","schiene-abf","schiene-eingl","schiene-pz","skm-abf","skm-zem","skm-pz","skm-b-abf","skm-b-zem","skm-b-pz","ups-abf","ups-eingl","ups-pz","gkv-tk-praep","gkv-tk-zem","gkv-tk-pz","gkv-in1-praep","gkv-in1-zem","gkv-in1-pz","gkv-in2-praep","gkv-in2-zem","gkv-in2-pz","gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
   const isKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&KRONE_GRUPPEN.has(fg); };
 
   const kroneCases = valid.filter(isKroneCase);
@@ -6316,7 +6394,7 @@ function generate(){
     // → je Zahn eine eigene Berechnung, dann global zusammengeführt
     // Ausnahme: Bundle-Fälle (PZ-*, SCHIENE-PZ) nutzen nur ersten Zahn
     //   da billingOut bereits beide Sitzungen enthält
-    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle"]);
+    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle","gkv-tk-bundle"]);
     const expandedCases = [];
     validCases.forEach(tc=>{
       const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);
@@ -6996,6 +7074,7 @@ const FALL_GRUPPEN = {
   "SKM / Implkrone": ["SKM-ABF","SKM-ZEM","SKM-PZ"],
   "SKM / Implbrücke": ["SKM-B-ABF","SKM-B-ZEM","SKM-B-PZ"],
   "Protrusionsschiene": ["UPS-ABF","UPS-EINGL","UPS-PZ"],
+  "GKV Teilkrone":   ["GKV-TK-PRAEP","GKV-TK-ZEM","GKV-TK-PZ"],
   "GKV Inlay":       ["GKV-IN1-PRAEP","GKV-IN1-ZEM","GKV-IN1-PZ","GKV-IN2-PRAEP","GKV-IN2-ZEM","GKV-IN2-PZ","GKV-IN3-PRAEP","GKV-IN3-ZEM","GKV-IN3-PZ"],
 };
 const FALL_LABELS = {
@@ -7008,6 +7087,7 @@ const FALL_LABELS = {
   "SKM-ABF":"SKM Abf.","SKM-ZEM":"SKM Zem.","SKM-PZ":"SKM Abf.+Zem.",
   "SKM-B-ABF":"SKM-B Abf.","SKM-B-ZEM":"SKM-B Zem.","SKM-B-PZ":"SKM-B Abf.+Zem.",
   "UPS-ABF":"UPS Abf.","UPS-EINGL":"UPS Eingl.","UPS-PZ":"UPS Abf.+Eingl.",
+  "GKV-TK-PRAEP":"GKV TK Präp","GKV-TK-ZEM":"GKV TK Zem","GKV-TK-PZ":"GKV TK P+Z",
   "GKV-IN1-PRAEP":"GKV IN1 Präp","GKV-IN1-ZEM":"GKV IN1 Zem","GKV-IN1-PZ":"GKV IN1 P+Z",
   "GKV-IN2-PRAEP":"GKV IN2 Präp","GKV-IN2-ZEM":"GKV IN2 Zem","GKV-IN2-PZ":"GKV IN2 P+Z",
   "GKV-IN3-PRAEP":"GKV IN3 Präp","GKV-IN3-ZEM":"GKV IN3 Zem","GKV-IN3-PZ":"GKV IN3 P+Z",
@@ -7851,6 +7931,8 @@ const STANDARD_RULES_BY_GRUPPE = {
   ],
   "pkv-ups": [],
   "pkv-ups-bundle": [],
+  "gkv-tk": [],
+  "gkv-tk-bundle": [],
   "gkv-inlay": [],
   "gkv-inlay-bundle": [],
   "pkv-schiene": [],

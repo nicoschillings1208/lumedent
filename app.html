@@ -5596,9 +5596,10 @@ function renderCasesList(){
         }
       : {
           "Füllung":     Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-fuellung"),
-          "Präparation": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-praep"),
-          "Zementierung":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-zem"),
-          "Präp + Zem":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-bundle"),
+          "PKV Krone":   [["PRAEP-K",FALL_TYPEN["PRAEP-K"]],["ZEM-K",FALL_TYPEN["ZEM-K"]],["PZ-K",FALL_TYPEN["PZ-K"]]],
+          "PKV Teilkrone":[["PRAEP-TK",FALL_TYPEN["PRAEP-TK"]],["ZEM-TK",FALL_TYPEN["ZEM-TK"]],["PZ-TK",FALL_TYPEN["PZ-TK"]]],
+          "PKV Inlay":   [["PRAEP-IN",FALL_TYPEN["PRAEP-IN"]],["ZEM-IN1",FALL_TYPEN["ZEM-IN1"]],["ZEM-IN2",FALL_TYPEN["ZEM-IN2"]],["ZEM-IN3",FALL_TYPEN["ZEM-IN3"]],["PZ-IN1",FALL_TYPEN["PZ-IN1"]],["PZ-IN2",FALL_TYPEN["PZ-IN2"]],["PZ-IN3",FALL_TYPEN["PZ-IN3"]]],
+          "PKV Brücke":  [["PRAEP-B",FALL_TYPEN["PRAEP-B"]],["ZEM-B",FALL_TYPEN["ZEM-B"]],["PZ-B",FALL_TYPEN["PZ-B"]]],
           "Schiene":     Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-schiene"||v.gruppe==="pkv-schiene-bundle"),
           "SKM / Implkr.":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-skm"||v.gruppe==="pkv-skm-bundle"),
           "SKM / Implbrücke":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="pkv-skm-b"||v.gruppe==="pkv-skm-b-bundle"),
@@ -5606,11 +5607,23 @@ function renderCasesList(){
         };
 
     const currentGruppe = c.caseType ? (FALL_TYPEN[c.caseType]?.gruppe || '') : '';
-    const gruppeToKat = {
-      'gkv-fuellung':'Füllung','pkv-fuellung':'Füllung','gkv-inlay':'GKV Inlay','gkv-inlay-bundle':'GKV Inlay',
-      'pkv-praep':'Präparation','pkv-zem':'Zementierung','pkv-bundle':'Präp + Zem','pkv-schiene':'Schiene','pkv-schiene-bundle':'Schiene','pkv-skm':'SKM / Implkr.','pkv-skm-bundle':'SKM / Implkr.','pkv-skm-b':'SKM / Implbrücke','pkv-skm-b-bundle':'SKM / Implbrücke','pkv-ups':'Protrusionsschiene','pkv-ups-bundle':'Protrusionsschiene'
-    };
-    const currentKat = gruppeToKat[currentGruppe] || '';
+    // Falltyp-spezifisches Mapping für Dropdown-Hervorhebung
+    function getKatForFall(fall){
+      if(!fall) return '';
+      if(['F1','F2','F3','F4'].includes(fall)) return 'Füllung';
+      if(['PF1','PF2','PF3','PF4'].includes(fall)) return 'Füllung';
+      if(fall.startsWith('GKV-IN')) return 'GKV Inlay';
+      if(fall==='PRAEP-K'||fall==='ZEM-K'||fall==='PZ-K') return 'PKV Krone';
+      if(fall==='PRAEP-TK'||fall==='ZEM-TK'||fall==='PZ-TK') return 'PKV Teilkrone';
+      if(fall.includes('IN')) return 'PKV Inlay';
+      if(fall.includes('-B')||fall==='PRAEP-B'||fall==='ZEM-B'||fall==='PZ-B') return 'PKV Brücke';
+      if(fall.startsWith('SCHIENE')) return 'Schiene';
+      if(fall.startsWith('SKM-B')) return 'SKM / Implbrücke';
+      if(fall.startsWith('SKM')) return 'SKM / Implkr.';
+      if(fall.startsWith('UPS')) return 'Protrusionsschiene';
+      return '';
+    }
+    const currentKat = getKatForFall(c.caseType);
 
     const fallBtns = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       ${Object.entries(fallGruppen).filter(([g,items])=>items.length).map(([gruppe,items])=>`
@@ -6975,9 +6988,10 @@ let peState = {
 const FALL_GRUPPEN = {
   "GKV Füllungen":   ["F1","F2","F3","F4"],
   "PKV Füllungen":   ["PF1","PF2","PF3","PF4"],
-  "Präparation":     ["PRAEP-K","PRAEP-TK","PRAEP-IN","PRAEP-B"],
-  "Zementierung":    ["ZEM-K","ZEM-TK","ZEM-IN1","ZEM-IN2","ZEM-IN3","ZEM-B"],
-  "Präp + Zem":      ["PZ-K","PZ-TK","PZ-IN1","PZ-IN2","PZ-IN3","PZ-B"],
+  "PKV Krone":       ["PRAEP-K","ZEM-K","PZ-K"],
+  "PKV Teilkrone":   ["PRAEP-TK","ZEM-TK","PZ-TK"],
+  "PKV Inlay":       ["PRAEP-IN","ZEM-IN1","ZEM-IN2","ZEM-IN3","PZ-IN1","PZ-IN2","PZ-IN3"],
+  "PKV Brücke":      ["PRAEP-B","ZEM-B","PZ-B"],
   "Schiene":         ["SCHIENE-ABF","SCHIENE-EINGL","SCHIENE-PZ"],
   "SKM / Implkrone": ["SKM-ABF","SKM-ZEM","SKM-PZ"],
   "SKM / Implbrücke": ["SKM-B-ABF","SKM-B-ZEM","SKM-B-PZ"],

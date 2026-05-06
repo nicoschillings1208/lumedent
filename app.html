@@ -6182,6 +6182,32 @@ function buildGkvGlobalOutput(results){
     return { lines:[], multiline:errText, inline:errText, hasErrors:true, errorLines };
   }
 
+  // ── GKV-TK / GKV-Inlay: direkt aus billingOut.lines übernehmen ──
+  const GKV_KRONE_GRUPPEN = new Set(["gkv-tk-praep","gkv-tk-zem","gkv-tk-pz",
+    "gkv-in1-praep","gkv-in1-zem","gkv-in1-pz",
+    "gkv-in2-praep","gkv-in2-zem","gkv-in2-pz",
+    "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
+  const isGkvKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&GKV_KRONE_GRUPPEN.has(fg); };
+  const gkvKroneCases = valid.filter(isGkvKroneCase);
+  const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
+
+  if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
+    // Nur GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
+    const allLines = [];
+    const seenKeys = new Set();
+    gkvKroneCases.forEach(r=>{
+      r.billingOut.lines.forEach(line=>{
+        const key = line.text||line.code;
+        if(!seenKeys.has(key)){ seenKeys.add(key); allLines.push(line); }
+      });
+    });
+    const errorsFirst = [...errorLines];
+    const allTexts = [...errorsFirst, ...allLines.map(l=>l.text)];
+    const multiline = allTexts.join("\n");
+    const inline    = allTexts.join("  ");
+    return{ lines:allLines, multiline, inline, hasErrors:errors.length>0, errorLines };
+  }
+
   // Alle Zähne + Codes aus allen Fällen sammeln
   const areaTeethAll = new Set();
   const presentCodes = new Set();   // welche Bereichscodes sind aktiv

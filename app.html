@@ -6189,6 +6189,8 @@ function buildGkvGlobalOutput(results){
   const fillEntries  = [];          // [{tooth, code}]
   const kieferCodes   = new Set();  // kiefer-Pos (4020F, 2040o)
   const einmaligCodes = new Set();  // einmalige Pos (0708)
+  const behandlungEntries = [];     // [{text, code, type}] – behandlung/material/nachbar
+  const seenBehCodes  = new Set();  // Deduplizierung
 
   valid.forEach(r=>{
     r.billingOut.lines.forEach(line=>{
@@ -6210,6 +6212,12 @@ function buildGkvGlobalOutput(results){
             if(!fillEntries.find(e=>e.tooth===t&&e.code===line.code))
               fillEntries.push({tooth:t,code:line.code});
           });
+        }
+      } else if(line.type==="behandlung"||line.type==="material"||line.type==="nachbar"){
+        const key = (line.text||line.code);
+        if(!seenBehCodes.has(key)){
+          seenBehCodes.add(key);
+          behandlungEntries.push({ type:line.type, text:line.text||line.code, code:line.code, meta:line.meta });
         }
       }
     });
@@ -6346,6 +6354,14 @@ function buildGkvGlobalOutput(results){
       }
     }
   }
+
+  // behandlung/material/nachbar Einträge anhängen (GKV-TK, GKV-Inlay etc.)
+  // Nur wenn sie noch nicht über GKV_POS_REIHENFOLGE erfasst wurden
+  behandlungEntries.forEach(be=>{
+    if(!lines.find(l=>l.code===be.code && l.text===be.text)){
+      lines.push(be);
+    }
+  });
 
   // Fehlermeldungen am Ende anhängen wenn Teilfälle fehlerhaft
   const allTexts = [...errorLines, ...lines.map(l=>l.text)];

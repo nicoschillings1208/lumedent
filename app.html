@@ -5591,7 +5591,7 @@ function renderCasesList(){
     // Falltyp-Buttons: nur passend zur aktuellen Versicherungsauswahl
     const fallGruppen = kassentyp === "kasse"
       ? {
-          "Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
+          "GKV Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
           "GKV Inlay":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle"),
         }
       : {
@@ -5610,7 +5610,7 @@ function renderCasesList(){
     // Falltyp-spezifisches Mapping für Dropdown-Hervorhebung
     function getKatForFall(fall){
       if(!fall) return '';
-      if(['F1','F2','F3','F4'].includes(fall)) return 'Füllung';
+      if(['F1','F2','F3','F4'].includes(fall)) return 'GKV Füllung';
       if(['PF1','PF2','PF3','PF4'].includes(fall)) return 'Füllung';
       if(fall.startsWith('GKV-IN')) return 'GKV Inlay';
       if(fall==='PRAEP-K'||fall==='ZEM-K'||fall==='PZ-K') return 'PKV Krone';

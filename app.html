@@ -2374,7 +2374,8 @@ function calculatePrivatCaseResult(caseInput, findings, treatmentTeeth=null){
   // ── Routing: Krone/TK/Inlay Fälle ──────────────────────────────
   const fallGruppe = FALL_POS_MAP[fall];
   if(fallGruppe && fallGruppe !== "privat-fuellung" && fallGruppe !== "gkv"){
-    return calculateKroneResult(caseInput, findings, opt, treatmentTeeth);
+    const _isGkvFall = fallGruppe.startsWith("gkv-tk") || fallGruppe.startsWith("gkv-in");
+    return calculateKroneResult(caseInput, findings, opt, treatmentTeeth, _isGkvFall);
   }
 
   // PKV-Füllungs-Mapping (PF1-PF4 → 2060-2120, F1-F4 → PRIVAT_PROFILE)

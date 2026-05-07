@@ -3001,13 +3001,12 @@ const GKV_TK_ZEM_POS = [
 // ── GKV INLAY PRÄPARATION (alle Flächenzahlen) ───────────────────
 const GKV_INLAY_PRAEP_POS = [
   { code:"0040",    typ:"global"       },
-  { code:"0802",    typ:"global"       },
   { code:"m0030",   typ:"global"       },
+  { code:"0802",    typ:"global"       },
+  { code:"OK,UK 4020F", typ:"kiefer"  },
+  { code:"2040o",   typ:"kiefer"       },
   { code:"1433",    typ:"behandlung"   },
   { code:"M506M",   typ:"behandlung"   },
-  { code:"5170",    typ:"kiefer_beide" },
-  { code:"0220i",   typ:"kiefer_beide" },
-  { code:"M402M",   typ:"kiefer_behandlung" },
   { code:"0080",    typ:"bereich"      },
   { code:"0090",    typ:"behandlung"   },
   { code:"0100",    typ:"behandlung"   },
@@ -3015,10 +3014,11 @@ const GKV_INLAY_PRAEP_POS = [
   { code:"4050",    typ:"zahn"         },
   { code:"4055",    typ:"zahn"         },
   { code:"2030",    typ:"bereich"      },
-  { code:"2040o",   typ:"kiefer"       },
   { code:"2060D",   typ:"behandlung"   },
-  { code:"0220",    typ:"kiefer_beide" },
+  { code:"5170",    typ:"kiefer_beide" },
+  { code:"0220i",   typ:"kiefer_beide" },
   { code:"M401M",   typ:"kiefer_gegen" },
+  { code:"M402M",   typ:"kiefer_behandlung" },
   { code:"8010",    typ:"einmalig"     },
   { code:"M407M",   typ:"kiefer_beide" },
   { code:"8020",    typ:"einmalig"     },
@@ -3030,6 +3030,9 @@ const GKV_INLAY_PRAEP_POS = [
   { code:"4025",    typ:"zahn"         },
   { code:"M4025",   typ:"material"     },
   { code:"1020",    typ:"bereich"      },
+  { code:"2130",    typ:"nachbar_c"    },
+  { code:"2320",    typ:"nachbar_ke"   },
+  { code:"8229",    typ:"nachbar_ke"   },
 ];
 
 // ── GKV INLAY ZEMENTIERUNG 1-FLÄCHIG ─────────────────────────────
@@ -3070,6 +3073,7 @@ const GKV_INLAY2_ZEM_POS = [
 
 // ── GKV INLAY ZEMENTIERUNG 3+-FLÄCHIG ────────────────────────────
 const GKV_INLAY3_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"  },
   { code:"0080",    typ:"bereich"          },
   { code:"4060",    typ:"bereich"          },
   { code:"2040",    typ:"bereich"          },

@@ -1668,10 +1668,6 @@ function getFallOptDefs(fall){
     const code = p.code;
     if(NEVER_CHIP.has(code)) return;
     if(p.typ === "fuellung") return;
-    if(p.typ === "nachbar_c" || p.typ === "nachbar_ke"){ 
-      defs.push({ key:"mit_"+code, label:code, baseKey:"mit_"+code, desc:p.typ, default:true, wennDann:true });
-      return;
-    }
     if(activeInlayTyp && INLAY_TYPS.has(p.typ) && p.typ !== activeInlayTyp) return;
     // Bundle: alle Positionen anzeigen (auch Duplikate), Nicht-Bundle: deduplizieren
     if(!IS_BUNDLE && seen.has(code)) return;
@@ -5772,12 +5768,6 @@ function renderCasesList(){
             const baseKey = d.baseKey || d.key;
             const active = baseKey in opt ? opt[baseKey]!==false : true;
             const safeKey = encodeURIComponent(baseKey);
-            if(d.wennDann){
-              return '<span style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--text-muted);padding:3px 8px;border-radius:6px;border:1px dashed var(--border);background:var(--surface);white-space:nowrap;opacity:0.8">'
-                +'<span style="font-size:9px;color:var(--accent);margin-right:2px">?</span>'
-                +'<span>'+code+'</span>'
-                +'</span>';
-            }
             const lborder = active?'var(--accent)':'var(--border)';
             const lbg = active?'#FFFBF0':'var(--surface)';
             const lcolor = active?'var(--text-primary)':'var(--text-muted)';
@@ -7977,10 +7967,22 @@ const STANDARD_RULES_BY_GRUPPE = {
   ],
   "pkv-ups": [],
   "pkv-ups-bundle": [],
-  "gkv-tk": [],
-  "gkv-tk-bundle": [],
-  "gkv-inlay": [],
-  "gkv-inlay-bundle": [],
+  "gkv-tk": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-tk-bundle": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-inlay": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-inlay-bundle": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
   "pkv-schiene": [],
   "pkv-schiene-bundle": [],
 };

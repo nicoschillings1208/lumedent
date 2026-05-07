@@ -6192,12 +6192,8 @@ function buildGkvGlobalOutput(results){
     // KEIN globales Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
     const allLines = [];
     gkvKroneCases.forEach(r=>{
-      // Innerhalb eines Falls deduplizieren (gleiche Zeile doppelt), aber NICHT über Fälle hinweg
-      const seenInCase = new Set();
-      r.billingOut.lines.forEach(line=>{
-        const key = line.text||line.code;
-        if(!seenInCase.has(key)){ seenInCase.add(key); allLines.push(line); }
-      });
+      // Kein Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
+      r.billingOut.lines.forEach(line=>{ allLines.push(line); });
     });
     const errorsFirst = [...errorLines];
     const allTexts = [...errorsFirst, ...allLines.map(l=>l.text)];

@@ -6317,9 +6317,20 @@ function buildGkvGlobalOutput(results){
 
   if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
     // Nur GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
-    // KEIN globales Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
+    // GKV-BR: Brückenfälle deduplizieren – isBruecke verarbeitet alle Ankerzähne in einem Aufruf
+    // → nur einen Fall pro Falltyp nehmen (PRAEP, ZEM, PZ je einmal)
+    const seenFallTypes = new Set();
+    const dedupedCases = gkvKroneCases.filter(r => {
+      const fg = FALL_POS_MAP[r.ctx && r.ctx.fall];
+      if(!fg) return true;
+      const isBr = fg.startsWith('gkv-br');
+      if(!isBr) return true; // TK/KR/Inlay: alle behalten
+      if(seenFallTypes.has(fg)) return false; // Brücke: nur ersten nehmen
+      seenFallTypes.add(fg);
+      return true;
+    });
     const allLines = [];
-    gkvKroneCases.forEach(r=>{
+    dedupedCases.forEach(r=>{
       // Kein Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
       r.billingOut.lines.forEach(line=>{ allLines.push(line); });
     });

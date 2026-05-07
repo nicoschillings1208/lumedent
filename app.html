@@ -6189,12 +6189,14 @@ function buildGkvGlobalOutput(results){
 
   if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
     // Nur GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
+    // KEIN globales Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
     const allLines = [];
-    const seenKeys = new Set();
     gkvKroneCases.forEach(r=>{
+      // Innerhalb eines Falls deduplizieren (gleiche Zeile doppelt), aber NICHT über Fälle hinweg
+      const seenInCase = new Set();
       r.billingOut.lines.forEach(line=>{
         const key = line.text||line.code;
-        if(!seenKeys.has(key)){ seenKeys.add(key); allLines.push(line); }
+        if(!seenInCase.has(key)){ seenInCase.add(key); allLines.push(line); }
       });
     });
     const errorsFirst = [...errorLines];

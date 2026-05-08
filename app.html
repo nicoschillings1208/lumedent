@@ -2013,6 +2013,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
 
   // ── Brücke: frühzeitig erkennen ──────────────────────────────────
   const isBruecke    = fall.startsWith("PRAEP-B")||fall.startsWith("ZEM-B")||fall.startsWith("PZ-B")||fall.startsWith("SKM-B")||fall.startsWith("GKV-BR");
+  if(fall.startsWith("GKV-BR")) console.log("GKV-BR debug:", fall, "tooth:", tooth, "brueckeInfo:", JSON.stringify(getBrueckenInfo(findings)));
   const brueckeInfo  = isBruecke ? getBrueckenInfo(findings) : null;
   const brueckenAnker= brueckeInfo ? brueckeInfo.anker : [];
 

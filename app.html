@@ -6335,7 +6335,7 @@ function buildGkvGlobalOutput(results){
     dedupedCases.forEach(r=>{
       r.billingOut.lines.forEach(line=>{
         // nachbar_c/nachbar_ke global deduplizieren – gehören nur zur PRÄP
-        if(line.type==="behandlung" && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
+        if((line.type==="behandlung"||line.type==="nachbar") && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
         }

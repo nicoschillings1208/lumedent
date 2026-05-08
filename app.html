@@ -3146,6 +3146,7 @@ const GKV_INLAY_PRAEP_POS = [
   { code:"4025",    typ:"zahn"         },
   { code:"M4025",   typ:"material"     },
   { code:"1020",    typ:"bereich"      },
+  { code:"0708",    typ:"einmalig"     },
   { code:"2130",    typ:"nachbar_c"    },
   { code:"2320",    typ:"nachbar_ke"   },
   { code:"8229",    typ:"nachbar_ke"   },
@@ -6330,9 +6331,16 @@ function buildGkvGlobalOutput(results){
       return true;
     });
     const allLines = [];
+    const seenNachbarCodes = new Set(); // 2320/8229/2130 nur 1x (aus PRÄP)
     dedupedCases.forEach(r=>{
-      // Kein Dedup – PRÄP und ZEM dürfen gleiche Codes haben (4020F, 0080 etc.)
-      r.billingOut.lines.forEach(line=>{ allLines.push(line); });
+      r.billingOut.lines.forEach(line=>{
+        // nachbar_c/nachbar_ke global deduplizieren – gehören nur zur PRÄP
+        if(line.type==="behandlung" && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
+          if(seenNachbarCodes.has(line.code)) return;
+          seenNachbarCodes.add(line.code);
+        }
+        allLines.push(line);
+      });
     });
     const errorsFirst = [...errorLines];
     const allTexts = [...errorsFirst, ...allLines.map(l=>l.text)];

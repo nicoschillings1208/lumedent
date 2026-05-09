@@ -2381,7 +2381,7 @@ function calculatePrivatCaseResult(caseInput, findings, treatmentTeeth=null){
   // ── Routing: Krone/TK/Inlay Fälle ──────────────────────────────
   const fallGruppe = FALL_POS_MAP[fall];
   if(fallGruppe && fallGruppe !== "privat-fuellung" && fallGruppe !== "gkv"){
-    const _isGkvFall = fallGruppe.startsWith("gkv-tk") || fallGruppe.startsWith("gkv-in") || fallGruppe.startsWith("gkv-kr") || fallGruppe.startsWith("gkv-br") || fallGruppe === "gkv-sch-abf";
+    const _isGkvFall = fallGruppe.startsWith("gkv-tk") || fallGruppe.startsWith("gkv-in") || fallGruppe.startsWith("gkv-kr") || fallGruppe.startsWith("gkv-br");
     return calculateKroneResult(caseInput, findings, opt, treatmentTeeth, _isGkvFall);
   }
 
@@ -5313,13 +5313,21 @@ function calculateCaseResult(caseInput, findings, kassentyp, treatmentTeeth=null
   // ── GKV Inlay: trotz kassentyp kasse über Krone-Engine routen ────
   if(kassentyp === "kasse"){
     const _fg = FALL_POS_MAP[caseInput.caseType];
-    if(_fg && (_fg.startsWith("gkv-in") || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br") || _fg === "gkv-sch-abf")){
+    if(_fg && (_fg.startsWith("gkv-in") || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br"))){
       return calculateKroneResult(caseInput, findings, {}, treatmentTeeth, true);
     }
   }
   // ── GKV-Pfad (unverändert) ────────────────────────────────────────
   const tooth = caseInput.tooth;
   const fall  = caseInput.caseType;
+
+  // GKV-SCH-ABF: direkt Positionen ausgeben ohne Zahn/Befund-Logik
+  if(fall === "GKV-SCH-ABF"){
+    const lines = GKV_SCH_ABF_POS.map(p=>({ type:"basis", text:p.code, code:p.code }));
+    const multiline = lines.map(l=>l.text).join("\n");
+    const inline    = lines.map(l=>l.text).join("  ");
+    return{ ctx:{tooth,fall,kassentyp:"kasse"}, rule:{label:"GKV Schiene"}, structuredOut:{warnings:[]}, billingOut:{lines,multiline,inline}, matching:[] };
+  }
 
   // ── Befundprüfung: Zielzahn fehlt? ────────────────────────────────
   if(isMissingTooth(tooth, findings)){
@@ -6320,7 +6328,7 @@ function buildGkvGlobalOutput(results){
   }
 
   // ── GKV-TK / GKV-Inlay: direkt aus billingOut.lines übernehmen ──
-  const GKV_KRONE_GRUPPEN = new Set(["gkv-sch-abf","gkv-br-praep","gkv-br-zem","gkv-br-pz","gkv-kr-praep","gkv-kr-zem","gkv-kr-pz","gkv-tk-praep","gkv-tk-zem","gkv-tk-pz",
+  const GKV_KRONE_GRUPPEN = new Set(["gkv-br-praep","gkv-br-zem","gkv-br-pz","gkv-kr-praep","gkv-kr-zem","gkv-kr-pz","gkv-tk-praep","gkv-tk-zem","gkv-tk-pz",
     "gkv-in1-praep","gkv-in1-zem","gkv-in1-pz",
     "gkv-in2-praep","gkv-in2-zem","gkv-in2-pz",
     "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);

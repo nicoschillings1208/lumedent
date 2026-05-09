@@ -5331,7 +5331,8 @@ function calculateCaseResult(caseInput, findings, kassentyp, treatmentTeeth=null
 
   // GKV-SCH-ABF: direkt Positionen ausgeben ohne Zahn/Befund-Logik
   if(fall === "GKV-SCH-ABF" || fall === "GKV-SCH-DIG"){
-    const lines = GKV_SCH_ABF_POS.map(p=>({ type:"basis", text:p.code, code:p.code }));
+    const _schPos = fall === "GKV-SCH-DIG" ? GKV_SCH_DIG_POS : GKV_SCH_ABF_POS;
+    const lines = _schPos.map(p=>({ type:"basis", text:p.code, code:p.code }));
     const multiline = lines.map(l=>l.text).join("\n");
     const inline    = lines.map(l=>l.text).join("  ");
     return{ ctx:{tooth,fall,kassentyp:"kasse"}, rule:{label:"GKV Schiene"}, structuredOut:{warnings:[]}, billingOut:{lines,multiline,inline}, matching:[] };

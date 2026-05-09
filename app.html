@@ -5802,9 +5802,15 @@ function renderCasesList(){
     // Falltyp-Buttons: nur passend zur aktuellen Versicherungsauswahl
     const isDigital = (c.workflow||'analog') === 'digital';
     const fallGruppen = kassentyp === "kasse"
-      ? {
+      ? isDigital ? {
+          "GKV Schiene Digital": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-sch-dig"),
+          "GKV Brücke Digital":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-br"||v.gruppe==="gkv-br-bundle"),
+          "GKV Krone Digital":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-kr"||v.gruppe==="gkv-kr-bundle"),
+          "GKV Teilkrone Digital":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-tk"||v.gruppe==="gkv-tk-bundle"),
+          "GKV Inlay Digital":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle"),
+        } : {
           "GKV Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
-          "GKV Schiene": Object.entries(FALL_TYPEN).filter(([k,v])=>isDigital ? v.gruppe==="gkv-sch-dig" : v.gruppe==="gkv-sch"),
+          "GKV Schiene": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-sch"),
           "GKV Brücke":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-br"||v.gruppe==="gkv-br-bundle"),
           "GKV Krone":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-kr"||v.gruppe==="gkv-kr-bundle"),
           "GKV Teilkrone":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-tk"||v.gruppe==="gkv-tk-bundle"),

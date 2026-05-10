@@ -6148,13 +6148,22 @@ function buildPrivatGlobalOutput(results){
     const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ" || refFall === "SKM-PZ" || refFall === "SKM-B-PZ" || refFall === "UPS-PZ" || (refFall.endsWith("-PZ") && (refFall.startsWith("GKV-IN") || refFall.startsWith("GKV-TK") || refFall.startsWith("GKV-KR") || refFall.startsWith("GKV-BR")));
 
     if(IS_BUNDLE){
-      console.log("PKV Bundle kroneCases:", kroneCases.map(r=>({fall:r.ctx.fall, lines:r.billingOut.lines.length, _allTeeth:[...(r.ctx.caseInput?._allTeeth||[])], tooth:r.ctx.tooth})));
       // Bundle-Fälle: PRÄP + ZEM getrennt mergen (wie GKV Fast-Path)
       const praepLines = [];
       const zemLines   = [];
       kroneCases.forEach(r=>{
         const fall = r.ctx && r.ctx.fall || "";
-        const lines = r.billingOut.lines.filter(l=>l.type!=="trenner");
+        const allTeeth = r.ctx && r.ctx._allTeeth ? [...r.ctx._allTeeth].sort((a,b)=>a-b) : null;
+        // Lines mit korrekten Zähnen aus _allTeeth neu aufbauen
+        const lines = r.billingOut.lines.filter(l=>l.type!=="trenner").map(l=>{
+          if(!allTeeth || allTeeth.length <= 1) return l;
+          if(l.teeth && l.teeth.length === 1 && !BEB97_CODES.has(l.code)){
+            // Einzelzahn-Line: durch alle _allTeeth ersetzen
+            const newText = mergeTeethForSameCode(allTeeth) + " " + l.code;
+            return {...l, text:newText, teeth:allTeeth};
+          }
+          return l;
+        });
         if(fall.endsWith("-PRAEP")){
           lines.forEach(l=>praepLines.push(l));
         } else if(fall.endsWith("-ZEM")){
@@ -6737,7 +6746,12 @@ function generate(){
   //   einen Behandlungszahn eines anderen Falls überspringt
   const allTreatmentTeeth = new Set(expandedCases.map(ec=>ec.tooth));
 
-  lastResults = expandedCases.map(ec=>calculateCaseResult(rsApplyToCase(ec, findings, kassentyp), findings, kassentyp, allTreatmentTeeth));
+  lastResults = expandedCases.map(ec=>{
+    const r = calculateCaseResult(rsApplyToCase(ec, findings, kassentyp), findings, kassentyp, allTreatmentTeeth);
+    // _allTeeth in ctx speichern für buildPrivatGlobalOutput
+    if(r.ctx && ec._allTeeth) r.ctx._allTeeth = ec._allTeeth;
+    return r;
+  });
     lastCombined = formatCombinedOutput(lastResults);
 
     if(kassentyp === "privat"){

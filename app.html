@@ -2058,11 +2058,17 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     // Bei Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne (GKV und PKV)
     if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
       const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
+      // Linker Nachbar des ersten Zahns
+      const nbLeft  = getNearestRelevantNeighbor(sortedAll[0], "left", findings, new Set(sortedAll));
+      if(nbLeft) allRelevant.push({...nbLeft, isTarget:false, side:"links"});
       sortedAll.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
+      // Rechter Nachbar des letzten Zahns
+      const nbRight = getNearestRelevantNeighbor(sortedAll[sortedAll.length-1], "right", findings, new Set(sortedAll));
+      if(nbRight) allRelevant.push({...nbRight, isTarget:false, side:"rechts"});
     } else {
       allRelevant.push({ tooth, rootCount, isTarget:true, side:"Zielzahn" });
+      if(neighborRight) allRelevant.push({...neighborRight, isTarget:false, side:"rechts"});
     }
-    if(neighborRight) allRelevant.push({...neighborRight, isTarget:false, side:"rechts"});
   }
 
   const areaTeeth = [...new Set(allRelevant.map(n=>n.tooth))].sort((a,b)=>a-b);

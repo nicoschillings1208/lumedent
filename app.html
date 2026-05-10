@@ -6387,50 +6387,61 @@ function buildGkvGlobalOutput(results){
       return true;
     });
 
-    // ── Intelligenter Merge: Positionen zusammenführen ──────────────
-    // Sammle alle Lines nach code gruppiert
-    const mergeMap = new Map(); // code → { line, teeth: Set }
-    const orderedCodes = []; // Reihenfolge beibehalten
-    const seenNachbarCodes = new Set();
-
-    dedupedCases.forEach(r=>{
-      r.billingOut.lines.forEach(line=>{
+    // ── Intelligenter Merge: PRÄP und ZEM getrennt mergen ──────────
+    function mergeLines(lines){
+      const mergeMap = new Map();
+      const orderedCodes = [];
+      const seenNachbar = new Set();
+      lines.forEach(line=>{
         const code = line.code || line.text;
-        
-        // nachbar nur 1x
-        if((line.type==="behandlung"||line.type==="nachbar") && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
-          if(seenNachbarCodes.has(code)) return;
-          seenNachbarCodes.add(code);
+        if((line.type==="behandlung"||line.type==="nachbar") && (code==="2320"||code==="8229"||code==="2130")){
+          if(seenNachbar.has(code)) return;
+          seenNachbar.add(code);
         }
-
         if(!mergeMap.has(code)){
-          mergeMap.set(code, { line: {...line}, teeth: new Set(line.teeth||[]), count: 0 });
+          mergeMap.set(code, { line:{...line}, teeth:new Set(line.teeth||[]) });
           orderedCodes.push(code);
         } else {
-          // Zähne zusammenführen
           (line.teeth||[]).forEach(t=>mergeMap.get(code).teeth.add(t));
         }
-        mergeMap.get(code).count++;
+      });
+      const result = [];
+      orderedCodes.forEach(code=>{
+        const {line, teeth} = mergeMap.get(code);
+        const sortedTeeth = [...teeth].sort((a,b)=>a-b);
+        let text = line.text;
+        if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
+          text = mergeTeethForSameCode(sortedTeeth) + " " + code;
+        }
+        result.push({...line, text, teeth:sortedTeeth});
+      });
+      return result;
+    }
+
+    // PRÄP und ZEM Lines aus allen Fällen getrennt sammeln
+    // Erkennung: ZEM-Cases haben caseType endend auf -ZEM oder -PZ (dann beide)
+    const praepLines = [];
+    const zemLines = [];
+    dedupedCases.forEach(r=>{
+      const fall = r.ctx && r.ctx.fall || "";
+      const isZemOnly = fall.endsWith("-ZEM");
+      const isPraepOnly = fall.endsWith("-PRAEP");
+      const isPZ = fall.endsWith("-PZ");
+      // Bei PZ: erste Hälfte PRÄP, zweite ZEM — splitten nach ZEM-spezifischen Codes
+      const ZEM_CODES = new Set(["4060","2197","tmkon","tmätz","5305","2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","5010","5070","6484"]);
+      r.billingOut.lines.forEach(line=>{
+        const code = line.code||line.text;
+        if(isZemOnly || (isPZ && ZEM_CODES.has(code))){
+          zemLines.push(line);
+        } else if(isPraepOnly || isPZ){
+          praepLines.push(line);
+        }
       });
     });
 
-    // Lines aus mergeMap aufbauen — text mit zusammengeführten Zähnen
-    const allLines = [];
-    orderedCodes.forEach(code=>{
-      const {line, teeth, count} = mergeMap.get(code);
-      const sortedTeeth = [...teeth].sort((a,b)=>a-b);
-      let text = line.text;
-      // Wenn Zähne vorhanden: text neu aufbauen
-      if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
-        text = mergeTeethForSameCode(sortedTeeth) + " " + code;
-      }
-      // 0708 soll 2x kommen (einmal pro Sitzung/Fall)
-      if(code === "0708"){
-        for(let i=0; i<count; i++) allLines.push({...line, text, teeth:sortedTeeth});
-        return;
-      }
-      allLines.push({...line, text, teeth:sortedTeeth});
-    });
+    const mergedPraep = mergeLines(praepLines);
+    const mergedZem  = mergeLines(zemLines);
+    const allLines   = [...mergedPraep, ...mergedZem];
 
     const allTexts = [...errorLines, ...allLines.map(l=>l.text)];
     return{ lines:allLines, multiline:allTexts.join("\n"), inline:allTexts.join("  "), hasErrors:errors.length>0, errorLines };

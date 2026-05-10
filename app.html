@@ -6148,14 +6148,38 @@ function buildPrivatGlobalOutput(results){
     const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ" || refFall === "SKM-PZ" || refFall === "SKM-B-PZ" || refFall === "UPS-PZ" || (refFall.endsWith("-PZ") && (refFall.startsWith("GKV-IN") || refFall.startsWith("GKV-TK") || refFall.startsWith("GKV-KR") || refFall.startsWith("GKV-BR")));
 
     if(IS_BUNDLE){
-      // Bundle-Fälle: Zeilen direkt sequenziell ausgeben (keine Zusammenführung)
-      // damit beide Sitzungen vollständig erscheinen
-      kroneCases.forEach(r => {
-        r.billingOut.lines.forEach(l => {
-          if(l.type === "trenner") return;
-          allLines.push(l);
-        });
+      // Bundle-Fälle: PRÄP + ZEM getrennt mergen dann zusammenführen
+      const praepLines = [];
+      const zemLines   = [];
+      kroneCases.forEach(r=>{
+        const fall = r.ctx && r.ctx.fall || "";
+        const lines = r.billingOut.lines.filter(l=>l.type!=="trenner");
+        if(fall.endsWith("-PRAEP")){
+          lines.forEach(l=>praepLines.push(l));
+        } else if(fall.endsWith("-ZEM")){
+          lines.forEach(l=>zemLines.push(l));
+        } else if(fall.endsWith("-PZ")){
+          let splitIdx = lines.findIndex(l=>l.code==="0708");
+          if(splitIdx === -1) splitIdx = lines.length;
+          lines.slice(0, splitIdx+1).forEach(l=>praepLines.push(l));
+          const zemRest = lines.slice(splitIdx+1);
+          const zem0708 = zemRest.filter(l=>l.code==="0708");
+          const zemOther= zemRest.filter(l=>l.code!=="0708");
+          zemOther.forEach(l=>zemLines.push(l));
+          zem0708.forEach(l=>zemLines.push(l));
+        }
       });
+
+      const mergedPraep = mergeLines(praepLines);
+      const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","2130","2150","2160","2170"]);
+      const mergedZemRaw = mergeLines(zemLines);
+      const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code) && l.code!=="0708" && l.code!=="4025" && l.code!=="M4025" && l.code!=="1020" && l.code!=="6484");
+      const zemFill   = mergedZemRaw.filter(l=>FILL_CODES.has(l.code));
+      const zemEnd    = mergedZemRaw.filter(l=>l.code==="6484");
+      const zemAfter  = mergedZemRaw.filter(l=>l.code==="4025"||l.code==="M4025"||l.code==="1020");
+      const zem0708l  = mergedZemRaw.filter(l=>l.code==="0708");
+      const mergedZem = [...zemBefore, ...zemFill, ...zemEnd, ...zemAfter, ...zem0708l];
+      [...mergedPraep, ...mergedZem].forEach(l=>allLines.push(l));
     } else {
     const posListe  = getPosReihenfolge(refFall) || [];
 
@@ -6358,6 +6382,36 @@ function buildPrivatGlobalOutput(results){
 }
 
 // ================================================================
+function mergeLines(lines){
+      const mergeMap = new Map();
+      const orderedCodes = [];
+      const seenNachbar = new Set();
+      lines.forEach(line=>{
+        const code = line.code || line.text;
+        if((line.type==="behandlung"||line.type==="nachbar") && (code==="2320"||code==="8229"||code==="2130")){
+          if(seenNachbar.has(code)) return;
+          seenNachbar.add(code);
+        }
+        if(!mergeMap.has(code)){
+          mergeMap.set(code, { line:{...line}, teeth:new Set(line.teeth||[]) });
+          orderedCodes.push(code);
+        } else {
+          (line.teeth||[]).forEach(t=>mergeMap.get(code).teeth.add(t));
+        }
+      });
+      const result = [];
+      orderedCodes.forEach(code=>{
+        const {line, teeth} = mergeMap.get(code);
+        const sortedTeeth = [...teeth].sort((a,b)=>a-b);
+        let text = line.text;
+        if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
+          text = mergeTeethForSameCode(sortedTeeth) + " " + code;
+        }
+        result.push({...line, text, teeth:sortedTeeth});
+      });
+      return result;
+}
+
 // buildGkvGlobalOutput – GKV Global-Zusammenführer mit Reihenfolge
 // ================================================================
 function buildGkvGlobalOutput(results){
@@ -6393,36 +6447,7 @@ function buildGkvGlobalOutput(results){
       return true;
     });
 
-    // ── Intelligenter Merge: PRÄP und ZEM getrennt mergen ──────────
-    function mergeLines(lines){
-      const mergeMap = new Map();
-      const orderedCodes = [];
-      const seenNachbar = new Set();
-      lines.forEach(line=>{
-        const code = line.code || line.text;
-        if((line.type==="behandlung"||line.type==="nachbar") && (code==="2320"||code==="8229"||code==="2130")){
-          if(seenNachbar.has(code)) return;
-          seenNachbar.add(code);
-        }
-        if(!mergeMap.has(code)){
-          mergeMap.set(code, { line:{...line}, teeth:new Set(line.teeth||[]) });
-          orderedCodes.push(code);
-        } else {
-          (line.teeth||[]).forEach(t=>mergeMap.get(code).teeth.add(t));
-        }
-      });
-      const result = [];
-      orderedCodes.forEach(code=>{
-        const {line, teeth} = mergeMap.get(code);
-        const sortedTeeth = [...teeth].sort((a,b)=>a-b);
-        let text = line.text;
-        if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
-          text = mergeTeethForSameCode(sortedTeeth) + " " + code;
-        }
-        result.push({...line, text, teeth:sortedTeeth});
-      });
-      return result;
-    }
+    // mergeLines ist global definiert
 
     // PRÄP und ZEM Lines aus allen Fällen getrennt sammeln
     // Bei PZ: splitten am ersten 0708 (PRÄP endet mit 0708, dann kommt ZEM)

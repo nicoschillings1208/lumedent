@@ -6389,11 +6389,19 @@ function buildGkvGlobalOutput(results){
 
     const allLines = [];
     const seenNachbarCodes = new Set();
+    const seenEinmaligCodes = new Set(); // einmalige Pos nur 1x (0040, m0030, etc.)
     dedupedCases.forEach(r=>{
       r.billingOut.lines.forEach(line=>{
+        // nachbar_c/nachbar_ke nur 1x
         if((line.type==="behandlung"||line.type==="nachbar") && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
+        }
+        // Einmalige Positionen (kein Zahnbezug) nur 1x ausgeben
+        if(line.type==="basis"){
+          const key = line.text||line.code;
+          if(seenEinmaligCodes.has(key)) return;
+          seenEinmaligCodes.add(key);
         }
         allLines.push(line);
       });

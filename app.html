@@ -6356,9 +6356,8 @@ function buildGkvGlobalOutput(results){
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
   // ── Fast-Path für Krone/TK/Inlay/Brücke/Schiene Cases ──────────────
-  if(gkvKroneCases.length > 0){
-    // Brücke: nur ersten Fall pro Falltyp nehmen (isBruecke sammelt alle Zähne intern)
-    // TK/KR/Inlay/Schiene: alle behalten
+  if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
+    // Brücke: nur ersten Fall pro Falltyp nehmen
     const seenFallTypes = new Set();
     const dedupedCases = gkvKroneCases.filter(r => {
       const fg = FALL_POS_MAP[r.ctx && r.ctx.fall];
@@ -6368,7 +6367,7 @@ function buildGkvGlobalOutput(results){
       return true;
     });
 
-    const kroneLines = [];
+    const allLines = [];
     const seenNachbarCodes = new Set();
     dedupedCases.forEach(r=>{
       r.billingOut.lines.forEach(line=>{
@@ -6376,18 +6375,10 @@ function buildGkvGlobalOutput(results){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
         }
-        kroneLines.push(line);
+        allLines.push(line);
       });
     });
 
-    // Füllungs-Cases separat durch normalen Merger
-    let fuellLines = [];
-    if(gkvFuellCases.length > 0){
-      const fuellResult = buildGkvGlobalOutput(gkvFuellCases);
-      fuellLines = fuellResult.lines || [];
-    }
-
-    const allLines = [...kroneLines, ...fuellLines];
     const allTexts = [...errorLines, ...allLines.map(l=>l.text)];
     return{ lines:allLines, multiline:allTexts.join("\n"), inline:allTexts.join("  "), hasErrors:errors.length>0, errorLines };
   }

@@ -2040,6 +2040,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     // Bei GKV Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne
     if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
       const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
+      console.log("DEBUG _allTeeth:", sortedAll, "tooth:", tooth);
       sortedAll.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
     } else {
       allRelevant.push({ tooth, rootCount, isTarget:true, side:"Zielzahn" });

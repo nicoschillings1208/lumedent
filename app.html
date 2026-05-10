@@ -6353,18 +6353,17 @@ function buildGkvGlobalOutput(results){
     "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
   const isGkvKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&GKV_KRONE_GRUPPEN.has(fg); };
   const gkvKroneCases = valid.filter(isGkvKroneCase);
-  console.log("DEBUG valid:", valid.length, valid.map(r=>r.ctx&&r.ctx.fall));
-  console.log("DEBUG kroneCase:", gkvKroneCases.length, "fuellCases:", valid.filter(v=>!isGkvKroneCase(v)).length);
-  gkvKroneCases.forEach((r,i)=>console.log("DEBUG case",i,"fall:",r.ctx&&r.ctx.fall,"lines:",r.billingOut&&r.billingOut.lines&&r.billingOut.lines.length,"brueckeInfo:",JSON.stringify(r.billingOut&&r.billingOut.brueckeInfo)));
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
   // ── Fast-Path für Krone/TK/Inlay/Brücke/Schiene Cases ──────────────
   if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
     // Brücke: nur ersten Fall pro Falltyp nehmen
+    // Für alle GKV Krone/TK/Inlay/Brücke: nur ersten Fall pro Falltyp nehmen
+    // Die Zahn-Aggregation passiert bereits in buildSitzung via allRelevant/treatmentTeeth
     const seenFallTypes = new Set();
     const dedupedCases = gkvKroneCases.filter(r => {
       const fg = FALL_POS_MAP[r.ctx && r.ctx.fall];
-      if(!fg || !fg.startsWith('gkv-br')) return true;
+      if(!fg) return true;
       if(seenFallTypes.has(fg)) return false;
       seenFallTypes.add(fg);
       return true;

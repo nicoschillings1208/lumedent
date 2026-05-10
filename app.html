@@ -2289,7 +2289,13 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
       }
       // Füllung Krone
       if(typ==="fuellung"){
-        lines.push({ type:"fill", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        // GKV Bundle: alle _allTeeth als Füllungszähne
+        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+          const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
+          lines.push({ type:"fill", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
+        } else {
+          lines.push({ type:"fill", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        }
         return;
       }
       // Inlay-Flächen-spezifisch

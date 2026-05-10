@@ -6168,11 +6168,19 @@ function buildPrivatGlobalOutput(results){
           zemRest.filter(l=>l.code==="0708").forEach(l=>zemLines.push(l));
         }
       });
-      // Debug: tmfront position
-      console.log("praepLines tmfront idx:", praepLines.findIndex(l=>l.code==="tmfront"), "tmlprov idx:", praepLines.findIndex(l=>l.code==="tmlprov"));
-      console.log("zemLines tmfront:", zemLines.filter(l=>l.code==="tmfront").length);
+      // tmfront direkt nach tmlprov/tmprovl einsortieren
+      const mergedPraepRaw = mergeLines(praepLines);
+      const tmlprovIdx = mergedPraepRaw.findIndex(l=>l.code==="tmprovl"||l.code==="tmlprov");
+      const tmfrontLine = mergedPraepRaw.find(l=>l.code==="tmfront");
+      let mergedPraep;
+      if(tmfrontLine && tmlprovIdx >= 0){
+        const without = mergedPraepRaw.filter(l=>l.code!=="tmfront");
+        without.splice(tmlprovIdx+1, 0, tmfrontLine);
+        mergedPraep = without;
+      } else {
+        mergedPraep = mergedPraepRaw;
+      }
 
-      const mergedPraep = mergeLines(praepLines);
       const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","2150","2160","2170"]);
       const mergedZemRaw = mergeLines(zemLines);
       const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code)&&l.code!=="0708"&&l.code!=="4025"&&l.code!=="M4025"&&l.code!=="1020"&&l.code!=="6484");

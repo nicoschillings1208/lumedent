@@ -6455,9 +6455,10 @@ function buildGkvGlobalOutput(results){
     const mergedZemRaw = mergeLines(zemLines);
     const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code) && l.code!=="0708" && l.code!=="4025" && l.code!=="M4025" && l.code!=="1020" && l.code!=="6484");
     const zemFill   = mergedZemRaw.filter(l=>FILL_CODES.has(l.code));
-    const zemAfter  = mergedZemRaw.filter(l=>l.code==="4025"||l.code==="M4025"||l.code==="1020"||l.code==="6484");
+    const zemAfter  = mergedZemRaw.filter(l=>l.code==="4025"||l.code==="M4025"||l.code==="1020");
+    const zemEnd    = mergedZemRaw.filter(l=>l.code==="6484");
     const zem0708lines = mergedZemRaw.filter(l=>l.code==="0708");
-    const mergedZem = [...zemBefore, ...zemFill, ...zemAfter, ...zem0708lines];
+    const mergedZem = [...zemBefore, ...zemFill, ...zemEnd, ...zemAfter, ...zem0708lines];
     const allLines   = [...mergedPraep, ...mergedZem];
 
     const allTexts = [...errorLines, ...allLines.map(l=>l.text)];

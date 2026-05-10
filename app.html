@@ -2037,8 +2037,8 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     if(nbR) allRelevant.push({...nbR, isTarget:false, side:"rechts"});
   } else {
     if(neighborLeft)  allRelevant.push({...neighborLeft,  isTarget:false, side:"links"});
-    // Bei GKV Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne
-    if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+    // Bei Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne (GKV und PKV)
+    if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
       const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
       sortedAll.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
     } else {
@@ -2143,8 +2143,8 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
         }
         if(code==="0090"&&anaCode!=="0090") return;
         if(code==="0100"&&anaCode!=="0100") return;
-        // GKV Bundle: alle _allTeeth als Behandlungszähne
-        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+        // Bundle: alle _allTeeth als Behandlungszähne (GKV und PKV)
+        if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
           const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
           lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
         } else {
@@ -2154,7 +2154,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
       }
       // ── Material am Behandlungszahn
       if(typ==="material"){
-        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+        if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
           const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
           lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
         } else {
@@ -2289,8 +2289,8 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
       }
       // Füllung Krone
       if(typ==="fuellung"){
-        // GKV Bundle: alle _allTeeth als Füllungszähne
-        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+        // Bundle: alle _allTeeth als Füllungszähne (GKV und PKV)
+        if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
           const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
           lines.push({ type:"fill", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
         } else {
@@ -6153,17 +6153,7 @@ function buildPrivatGlobalOutput(results){
       const zemLines   = [];
       kroneCases.forEach(r=>{
         const fall = r.ctx && r.ctx.fall || "";
-        const allTeeth = r.ctx && r.ctx._allTeeth ? [...r.ctx._allTeeth].sort((a,b)=>a-b) : null;
-        // Lines mit korrekten Zähnen aus _allTeeth neu aufbauen
-        const lines = r.billingOut.lines.filter(l=>l.type!=="trenner").map(l=>{
-          if(!allTeeth || allTeeth.length <= 1) return l;
-          if(l.teeth && l.teeth.length === 1 && !BEB97_CODES.has(l.code)){
-            // Einzelzahn-Line: durch alle _allTeeth ersetzen
-            const newText = mergeTeethForSameCode(allTeeth) + " " + l.code;
-            return {...l, text:newText, teeth:allTeeth};
-          }
-          return l;
-        });
+        const lines = r.billingOut.lines.filter(l=>l.type!=="trenner");
         if(fall.endsWith("-PRAEP")){
           lines.forEach(l=>praepLines.push(l));
         } else if(fall.endsWith("-ZEM")){

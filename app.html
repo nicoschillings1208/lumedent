@@ -6615,7 +6615,7 @@ function generate(){
     // → je Zahn eine eigene Berechnung, dann global zusammengeführt
     // Ausnahme: Bundle-Fälle (PZ-*, SCHIENE-PZ) nutzen nur ersten Zahn
     //   da billingOut bereits beide Sitzungen enthält
-    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle","gkv-tk-bundle"]);
+    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle","gkv-tk-bundle","gkv-kr-bundle","gkv-br-bundle"]);
     const expandedCases = [];
     validCases.forEach(tc=>{
       const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);

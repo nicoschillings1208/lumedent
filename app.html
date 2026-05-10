@@ -6148,6 +6148,7 @@ function buildPrivatGlobalOutput(results){
     const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ" || refFall === "SKM-PZ" || refFall === "SKM-B-PZ" || refFall === "UPS-PZ" || (refFall.endsWith("-PZ") && (refFall.startsWith("GKV-IN") || refFall.startsWith("GKV-TK") || refFall.startsWith("GKV-KR") || refFall.startsWith("GKV-BR")));
 
     if(IS_BUNDLE){
+      console.log("PKV Bundle kroneCases:", kroneCases.map(r=>({fall:r.ctx.fall, lines:r.billingOut.lines.length, teeth:r.billingOut.lines.slice(0,3).map(l=>l.text)})));
       // Bundle-Fälle: PRÄP + ZEM getrennt mergen (wie GKV Fast-Path)
       const praepLines = [];
       const zemLines   = [];

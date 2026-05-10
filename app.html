@@ -6355,8 +6355,8 @@ function buildGkvGlobalOutput(results){
   const gkvKroneCases = valid.filter(isGkvKroneCase);
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
-  if(gkvKroneCases.length > 0 && gkvFuellCases.length === 0){
-    // Nur GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
+  if(gkvKroneCases.length > 0){
+    // GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
     // GKV-BR: Brückenfälle deduplizieren – isBruecke verarbeitet alle Ankerzähne in einem Aufruf
     // → nur einen Fall pro Falltyp nehmen (PRAEP, ZEM, PZ je einmal)
     const seenFallTypes = new Set();
@@ -6382,6 +6382,13 @@ function buildGkvGlobalOutput(results){
       });
     });
     const errorsFirst = [...errorLines];
+    // Füllungs-Cases normal verarbeiten und ans Ende
+    if(gkvFuellCases.length > 0){
+      const fuellResult = buildGkvGlobalOutput(gkvFuellCases);
+      const combined = [...allLines, ...fuellResult.lines];
+      const combinedTexts = [...errorsFirst, ...combined.map(l=>l.text)];
+      return{ lines:combined, multiline:combinedTexts.join("\n"), inline:combinedTexts.join("  "), hasErrors:errors.length>0, errorLines };
+    }
     const allTexts = [...errorsFirst, ...allLines.map(l=>l.text)];
     const multiline = allTexts.join("\n");
     const inline    = allTexts.join("  ");
@@ -6570,7 +6577,8 @@ function buildGkvGlobalOutput(results){
   });
 
   // Fehlermeldungen am Ende anhängen wenn Teilfälle fehlerhaft
-  const allTexts = [...errorLines, ...lines.map(l=>l.text)];
+  const finalLines = lines;
+  const allTexts = [...errorLines, ...finalLines.map(l=>l.text)];
   const multiline = allTexts.join("\n");
   const inline    = allTexts.join("  ");
   return{ lines, multiline, inline, hasErrors:errors.length>0, errorLines };

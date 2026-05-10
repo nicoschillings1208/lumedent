@@ -6381,35 +6381,34 @@ function buildPrivatGlobalOutput(results){
   return{ lines:allLines, multiline, inline };
 }
 
-// ================================================================
 function mergeLines(lines){
-      const mergeMap = new Map();
-      const orderedCodes = [];
-      const seenNachbar = new Set();
-      lines.forEach(line=>{
-        const code = line.code || line.text;
-        if((line.type==="behandlung"||line.type==="nachbar") && (code==="2320"||code==="8229"||code==="2130")){
-          if(seenNachbar.has(code)) return;
-          seenNachbar.add(code);
-        }
-        if(!mergeMap.has(code)){
-          mergeMap.set(code, { line:{...line}, teeth:new Set(line.teeth||[]) });
-          orderedCodes.push(code);
-        } else {
-          (line.teeth||[]).forEach(t=>mergeMap.get(code).teeth.add(t));
-        }
-      });
-      const result = [];
-      orderedCodes.forEach(code=>{
-        const {line, teeth} = mergeMap.get(code);
-        const sortedTeeth = [...teeth].sort((a,b)=>a-b);
-        let text = line.text;
-        if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
-          text = mergeTeethForSameCode(sortedTeeth) + " " + code;
-        }
-        result.push({...line, text, teeth:sortedTeeth});
-      });
-      return result;
+  const mergeMap = new Map();
+  const orderedCodes = [];
+  const seenNachbar = new Set();
+  lines.forEach(line=>{
+    const code = line.code || line.text;
+    if((line.type==="behandlung"||line.type==="nachbar") && (code==="2320"||code==="8229"||code==="2130")){
+      if(seenNachbar.has(code)) return;
+      seenNachbar.add(code);
+    }
+    if(!mergeMap.has(code)){
+      mergeMap.set(code, { line:{...line}, teeth:new Set(line.teeth||[]) });
+      orderedCodes.push(code);
+    } else {
+      (line.teeth||[]).forEach(t=>mergeMap.get(code).teeth.add(t));
+    }
+  });
+  const result = [];
+  orderedCodes.forEach(code=>{
+    const {line, teeth} = mergeMap.get(code);
+    const sortedTeeth = [...teeth].sort((a,b)=>a-b);
+    let text = line.text;
+    if(sortedTeeth.length > 0 && !BEB97_CODES.has(code)){
+      text = mergeTeethForSameCode(sortedTeeth) + " " + code;
+    }
+    result.push({...line, text, teeth:sortedTeeth});
+  });
+  return result;
 }
 
 // buildGkvGlobalOutput – GKV Global-Zusammenführer mit Reihenfolge

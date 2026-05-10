@@ -1227,6 +1227,15 @@ const FALL_TYPEN = {
   "SCHIENE-EINGL":{ label:"Schiene Eingl.",     desc:"Eingliederung Schiene",                    gruppe:"pkv-schiene" },
   "SCHIENE-PZ":   { label:"Schiene Abf.+Eingl.",desc:"Abformung + Eingliederung (gebündelt)",    gruppe:"pkv-schiene-bundle" },
   // ── GKV Inlay ─────────────────────────────────────────────────────
+  "GKV-IN1-DIG-PRAEP": { label:"Präparation",  desc:"GKV Inlay 1-flächig Digital Präp",  gruppe:"gkv-inlay-dig" },
+  "GKV-IN1-DIG-ZEM":   { label:"Zementierung",  desc:"GKV Inlay 1-flächig Digital Zem",   gruppe:"gkv-inlay-dig" },
+  "GKV-IN1-DIG-PZ":    { label:"Präp + Zem",    desc:"GKV Inlay 1-flächig Digital P+Z",   gruppe:"gkv-inlay-dig-bundle" },
+  "GKV-IN2-DIG-PRAEP": { label:"Präparation",  desc:"GKV Inlay 2-flächig Digital Präp",  gruppe:"gkv-inlay-dig" },
+  "GKV-IN2-DIG-ZEM":   { label:"Zementierung",  desc:"GKV Inlay 2-flächig Digital Zem",   gruppe:"gkv-inlay-dig" },
+  "GKV-IN2-DIG-PZ":    { label:"Präp + Zem",    desc:"GKV Inlay 2-flächig Digital P+Z",   gruppe:"gkv-inlay-dig-bundle" },
+  "GKV-IN3-DIG-PRAEP": { label:"Präparation",  desc:"GKV Inlay 3-flächig Digital Präp",  gruppe:"gkv-inlay-dig" },
+  "GKV-IN3-DIG-ZEM":   { label:"Zementierung",  desc:"GKV Inlay 3-flächig Digital Zem",   gruppe:"gkv-inlay-dig" },
+  "GKV-IN3-DIG-PZ":    { label:"Präp + Zem",    desc:"GKV Inlay 3-flächig Digital P+Z",   gruppe:"gkv-inlay-dig-bundle" },
   "GKV-IN1-PRAEP": { label:"Präparation",  desc:"GKV Inlay 1-flächig Präparation",  gruppe:"gkv-inlay" },
   "GKV-IN1-ZEM":   { label:"Zementierung",   desc:"GKV Inlay 1-flächig Zementierung", gruppe:"gkv-inlay" },
   "GKV-IN1-PZ":    { label:"Präp + Zem",   desc:"GKV Inlay 1-flächig Präp+Zem",     gruppe:"gkv-inlay-bundle" },
@@ -3250,6 +3259,97 @@ const GKV_INLAY3_ZEM_POS = [
   { code:"6484",    typ:"bereich"          },
   { code:"0708",    typ:"einmalig"         },
 ];
+const GKV_INLAY_DIG_PRAEP_POS = [
+  { code:"0040",        typ:"global"      },
+  { code:"m0030",       typ:"global"      },
+  { code:"0802",        typ:"global"      },
+  { code:"OK,UK 4020F", typ:"kiefer"      },
+  { code:"2040o",       typ:"kiefer"      },
+  { code:"1433",        typ:"behandlung"  },
+  { code:"M506M",       typ:"behandlung"  },
+  { code:"0080",        typ:"bereich"     },
+  { code:"0090",        typ:"behandlung"  },
+  { code:"0100",        typ:"behandlung"  },
+  { code:"M100",        typ:"behandlung"  },
+  { code:"4050",        typ:"zahn"        },
+  { code:"4055",        typ:"zahn"        },
+  { code:"2030",        typ:"bereich"     },
+  { code:"2060D",       typ:"behandlung"  },
+  { code:"2130",        typ:"nachbar_c"   },
+  { code:"2320",        typ:"nachbar_ke"  },
+  { code:"8229",        typ:"nachbar_ke"  },
+  { code:"OK,UK 0065",  typ:"kiefer"      },
+  { code:"8035",        typ:"einmalig"    },
+  { code:"8065",        typ:"einmalig"    },
+  { code:"0812",        typ:"einmalig"    },
+  { code:"0901",        typ:"einmalig"    },
+  { code:"0902",        typ:"einmalig"    },
+  { code:"0904",        typ:"einmalig"    },
+  { code:"0911",        typ:"einmalig"    },
+  { code:"09055",       typ:"einmalig"    },
+  { code:"2270",        typ:"behandlung"  },
+  { code:"tmlprov",     typ:"temp_seite"  },
+  { code:"tmprovl",     typ:"einmalig"    },
+  { code:"4025",        typ:"zahn"        },
+  { code:"M4025",       typ:"material"    },
+  { code:"1020",        typ:"bereich"     },
+  { code:"0708",        typ:"einmalig"    },
+];
+
+const GKV_INLAY1_DIG_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"          },
+  { code:"0080",        typ:"bereich"          },
+  { code:"4060",        typ:"bereich"          },
+  { code:"2040",        typ:"bereich"          },
+  { code:"t0203",       typ:"bereich"          },
+  { code:"2197",        typ:"behandlung"       },
+  { code:"tmkon",       typ:"behandlung"       },
+  { code:"tmätz",       typ:"behandlung"       },
+  { code:"5305",        typ:"behandlung"       },
+  { code:"2150-f",      typ:"fuellung_inlay_1" },
+  { code:"4025",        typ:"zahn"             },
+  { code:"M4025",       typ:"material"         },
+  { code:"1020",        typ:"bereich"          },
+  { code:"6484",        typ:"bereich"          },
+  { code:"0708",        typ:"einmalig"         },
+];
+
+const GKV_INLAY2_DIG_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"          },
+  { code:"0080",        typ:"bereich"          },
+  { code:"4060",        typ:"bereich"          },
+  { code:"2040",        typ:"bereich"          },
+  { code:"t0203",       typ:"bereich"          },
+  { code:"2197",        typ:"behandlung"       },
+  { code:"tmkon",       typ:"behandlung"       },
+  { code:"tmätz",       typ:"behandlung"       },
+  { code:"5305",        typ:"behandlung"       },
+  { code:"2160-f",      typ:"fuellung_inlay_2" },
+  { code:"4025",        typ:"zahn"             },
+  { code:"M4025",       typ:"material"         },
+  { code:"1020",        typ:"bereich"          },
+  { code:"6484",        typ:"bereich"          },
+  { code:"0708",        typ:"einmalig"         },
+];
+
+const GKV_INLAY3_DIG_ZEM_POS = [
+  { code:"OK,UK 4020F", typ:"kiefer"          },
+  { code:"0080",        typ:"bereich"          },
+  { code:"4060",        typ:"bereich"          },
+  { code:"2040",        typ:"bereich"          },
+  { code:"t0203",       typ:"bereich"          },
+  { code:"2197",        typ:"behandlung"       },
+  { code:"tmkon",       typ:"behandlung"       },
+  { code:"tmätz",       typ:"behandlung"       },
+  { code:"5305",        typ:"behandlung"       },
+  { code:"2170-f",      typ:"fuellung_inlay_3" },
+  { code:"4025",        typ:"zahn"             },
+  { code:"M4025",       typ:"material"         },
+  { code:"1020",        typ:"bereich"          },
+  { code:"6484",        typ:"bereich"          },
+  { code:"0708",        typ:"einmalig"         },
+];
+
 
 // ── ABFORMUNG SCHIENE ─────────────────────────────────────────────
 const SCHIENE_ABF_POS = [
@@ -3305,6 +3405,9 @@ const FALL_POS_MAP = {
   "GKV-BR-PRAEP":"gkv-br-praep","GKV-BR-ZEM":"gkv-br-zem","GKV-BR-PZ":"gkv-br-pz",
   "GKV-KR-PRAEP":"gkv-kr-praep","GKV-KR-ZEM":"gkv-kr-zem","GKV-KR-PZ":"gkv-kr-pz",
   "GKV-TK-PRAEP":"gkv-tk-praep","GKV-TK-ZEM":"gkv-tk-zem","GKV-TK-PZ":"gkv-tk-pz",
+  "GKV-IN1-DIG-PRAEP":"gkv-in1-dig-praep","GKV-IN1-DIG-ZEM":"gkv-in1-dig-zem","GKV-IN1-DIG-PZ":"gkv-in1-dig-pz",
+  "GKV-IN2-DIG-PRAEP":"gkv-in2-dig-praep","GKV-IN2-DIG-ZEM":"gkv-in2-dig-zem","GKV-IN2-DIG-PZ":"gkv-in2-dig-pz",
+  "GKV-IN3-DIG-PRAEP":"gkv-in3-dig-praep","GKV-IN3-DIG-ZEM":"gkv-in3-dig-zem","GKV-IN3-DIG-PZ":"gkv-in3-dig-pz",
   "GKV-IN1-PRAEP":"gkv-in1-praep","GKV-IN1-ZEM":"gkv-in1-zem","GKV-IN1-PZ":"gkv-in1-pz",
   "GKV-IN2-PRAEP":"gkv-in2-praep","GKV-IN2-ZEM":"gkv-in2-zem","GKV-IN2-PZ":"gkv-in2-pz",
   "GKV-IN3-PRAEP":"gkv-in3-praep","GKV-IN3-ZEM":"gkv-in3-zem","GKV-IN3-PZ":"gkv-in3-pz",
@@ -5347,7 +5450,7 @@ function calculateCaseResult(caseInput, findings, kassentyp, treatmentTeeth=null
   // ── GKV Inlay: trotz kassentyp kasse über Krone-Engine routen ────
   if(kassentyp === "kasse"){
     const _fg = FALL_POS_MAP[caseInput.caseType];
-    if(_fg && (_fg.startsWith("gkv-in") || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br"))){
+    if(_fg && ((_fg.startsWith("gkv-in")) || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br"))){
       return calculateKroneResult(caseInput, findings, {}, treatmentTeeth, true);
     }
   }
@@ -5833,7 +5936,7 @@ function renderCasesList(){
           "Brücke":  Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-br"||v.gruppe==="gkv-br-bundle"),
           "Krone":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-kr"||v.gruppe==="gkv-kr-bundle"),
           "Teilkrone":Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-tk"||v.gruppe==="gkv-tk-bundle"),
-          "Inlay":   Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle"),
+          "Inlay":   Object.entries(FALL_TYPEN).filter(([k,v])=>isDigital ? (v.gruppe==="gkv-inlay-dig"||v.gruppe==="gkv-inlay-dig-bundle") : (v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle")),
         } : {
           "Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
           "Schiene": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-sch"),
@@ -6078,6 +6181,15 @@ function getPosReihenfolge(fall){
     "gkv-tk-praep":GKV_TK_PRAEP_POS,
     "gkv-tk-zem":GKV_TK_ZEM_POS,
     "gkv-tk-pz":[...GKV_TK_PRAEP_POS,...GKV_TK_ZEM_POS],
+    "gkv-in1-dig-praep":GKV_INLAY_DIG_PRAEP_POS,
+    "gkv-in1-dig-zem":GKV_INLAY1_DIG_ZEM_POS,
+    "gkv-in1-dig-pz":[...GKV_INLAY_DIG_PRAEP_POS,...GKV_INLAY1_DIG_ZEM_POS],
+    "gkv-in2-dig-praep":GKV_INLAY_DIG_PRAEP_POS,
+    "gkv-in2-dig-zem":GKV_INLAY2_DIG_ZEM_POS,
+    "gkv-in2-dig-pz":[...GKV_INLAY_DIG_PRAEP_POS,...GKV_INLAY2_DIG_ZEM_POS],
+    "gkv-in3-dig-praep":GKV_INLAY_DIG_PRAEP_POS,
+    "gkv-in3-dig-zem":GKV_INLAY3_DIG_ZEM_POS,
+    "gkv-in3-dig-pz":[...GKV_INLAY_DIG_PRAEP_POS,...GKV_INLAY3_DIG_ZEM_POS],
     "gkv-in1-praep":GKV_INLAY_PRAEP_POS,
     "gkv-in1-zem":GKV_INLAY1_ZEM_POS,
     "gkv-in1-pz":[...GKV_INLAY_PRAEP_POS,...GKV_INLAY1_ZEM_POS],
@@ -6434,7 +6546,7 @@ function buildGkvGlobalOutput(results){
   }
 
   // ── GKV-TK / GKV-Inlay: direkt aus billingOut.lines übernehmen ──
-  const GKV_KRONE_GRUPPEN = new Set(["gkv-sch-abf","gkv-sch-dig","gkv-br-praep","gkv-br-zem","gkv-br-pz","gkv-kr-praep","gkv-kr-zem","gkv-kr-pz","gkv-tk-praep","gkv-tk-zem","gkv-tk-pz",
+  const GKV_KRONE_GRUPPEN = new Set(["gkv-in1-dig-praep","gkv-in1-dig-zem","gkv-in1-dig-pz","gkv-in2-dig-praep","gkv-in2-dig-zem","gkv-in2-dig-pz","gkv-in3-dig-praep","gkv-in3-dig-zem","gkv-in3-dig-pz","gkv-sch-abf","gkv-sch-dig","gkv-br-praep","gkv-br-zem","gkv-br-pz","gkv-kr-praep","gkv-kr-zem","gkv-kr-pz","gkv-tk-praep","gkv-tk-zem","gkv-tk-pz",
     "gkv-in1-praep","gkv-in1-zem","gkv-in1-pz",
     "gkv-in2-praep","gkv-in2-zem","gkv-in2-pz",
     "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
@@ -7417,6 +7529,7 @@ const FALL_GRUPPEN = {
   "GKV Brücke":      ["GKV-BR-PRAEP","GKV-BR-ZEM","GKV-BR-PZ"],
   "GKV Krone":       ["GKV-KR-PRAEP","GKV-KR-ZEM","GKV-KR-PZ"],
   "GKV Teilkrone":   ["GKV-TK-PRAEP","GKV-TK-ZEM","GKV-TK-PZ"],
+  "GKV Inlay Digital":["GKV-IN1-DIG-PRAEP","GKV-IN1-DIG-ZEM","GKV-IN1-DIG-PZ","GKV-IN2-DIG-PRAEP","GKV-IN2-DIG-ZEM","GKV-IN2-DIG-PZ","GKV-IN3-DIG-PRAEP","GKV-IN3-DIG-ZEM","GKV-IN3-DIG-PZ"],
   "GKV Inlay":       ["GKV-IN1-PRAEP","GKV-IN1-ZEM","GKV-IN1-PZ","GKV-IN2-PRAEP","GKV-IN2-ZEM","GKV-IN2-PZ","GKV-IN3-PRAEP","GKV-IN3-ZEM","GKV-IN3-PZ"],
 };
 const FALL_LABELS = {
@@ -8303,6 +8416,14 @@ const STANDARD_RULES_BY_GRUPPE = {
     { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
   ],
   "gkv-tk-bundle": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-inlay-dig": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-inlay-dig-bundle": [
     { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
     { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
   ],

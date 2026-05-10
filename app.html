@@ -6450,7 +6450,11 @@ function buildGkvGlobalOutput(results){
     });
 
     const mergedPraep = mergeLines(praepLines);
-    const mergedZem  = mergeLines(zemLines);
+    // ZEM: 0708 ans Ende verschieben (nach 2210/2220 etc.)
+    const mergedZemRaw = mergeLines(zemLines);
+    const zem0708lines = mergedZemRaw.filter(l=>l.code==="0708");
+    const zemOtherLines = mergedZemRaw.filter(l=>l.code!=="0708");
+    const mergedZem = [...zemOtherLines, ...zem0708lines];
     const allLines   = [...mergedPraep, ...mergedZem];
 
     const allTexts = [...errorLines, ...allLines.map(l=>l.text)];

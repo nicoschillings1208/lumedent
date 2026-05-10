@@ -6149,6 +6149,7 @@ function buildPrivatGlobalOutput(results){
 
     if(IS_BUNDLE){
       // Bundle-Fälle: PRÄP + ZEM getrennt mergen dann zusammenführen
+      try{
       const praepLines = [];
       const zemLines   = [];
       kroneCases.forEach(r=>{
@@ -6180,6 +6181,7 @@ function buildPrivatGlobalOutput(results){
       const zem0708l  = mergedZemRaw.filter(l=>l.code==="0708");
       const mergedZem = [...zemBefore, ...zemFill, ...zemEnd, ...zemAfter, ...zem0708l];
       [...mergedPraep, ...mergedZem].forEach(l=>allLines.push(l));
+      } catch(e){ console.error("PKV Bundle Merge Fehler:", e); }
     } else {
     const posListe  = getPosReihenfolge(refFall) || [];
 

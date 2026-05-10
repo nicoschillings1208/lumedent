@@ -6419,24 +6419,23 @@ function buildGkvGlobalOutput(results){
     }
 
     // PRÄP und ZEM Lines aus allen Fällen getrennt sammeln
-    // Erkennung: ZEM-Cases haben caseType endend auf -ZEM oder -PZ (dann beide)
+    // Bei PZ: splitten am ersten 0708 (PRÄP endet mit 0708, dann kommt ZEM)
     const praepLines = [];
     const zemLines = [];
     dedupedCases.forEach(r=>{
       const fall = r.ctx && r.ctx.fall || "";
-      const isZemOnly = fall.endsWith("-ZEM");
-      const isPraepOnly = fall.endsWith("-PRAEP");
-      const isPZ = fall.endsWith("-PZ");
-      // Bei PZ: erste Hälfte PRÄP, zweite ZEM — splitten nach ZEM-spezifischen Codes
-      const ZEM_CODES = new Set(["4060","2197","tmkon","tmätz","5305","2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","5010","5070","6484"]);
-      r.billingOut.lines.forEach(line=>{
-        const code = line.code||line.text;
-        if(isZemOnly || (isPZ && ZEM_CODES.has(code))){
-          zemLines.push(line);
-        } else if(isPraepOnly || isPZ){
-          praepLines.push(line);
-        }
-      });
+      const lines = r.billingOut.lines;
+      if(fall.endsWith("-PRAEP")){
+        lines.forEach(l=>praepLines.push(l));
+      } else if(fall.endsWith("-ZEM")){
+        lines.forEach(l=>zemLines.push(l));
+      } else if(fall.endsWith("-PZ")){
+        // Split am ersten 0708
+        let splitIdx = lines.findIndex(l=>l.code==="0708");
+        if(splitIdx === -1) splitIdx = lines.length;
+        lines.slice(0, splitIdx+1).forEach(l=>praepLines.push(l));
+        lines.slice(splitIdx+1).forEach(l=>zemLines.push(l));
+      }
     });
 
     const mergedPraep = mergeLines(praepLines);

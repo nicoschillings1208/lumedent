@@ -6436,11 +6436,16 @@ function buildGkvGlobalOutput(results){
       } else if(fall.endsWith("-ZEM")){
         lines.forEach(l=>zemLines.push(l));
       } else if(fall.endsWith("-PZ")){
-        // Split am ersten 0708
+        // Split am ersten 0708 — 0708 geht zu PRÄP, zweites 0708 zu ZEM
         let splitIdx = lines.findIndex(l=>l.code==="0708");
         if(splitIdx === -1) splitIdx = lines.length;
         lines.slice(0, splitIdx+1).forEach(l=>praepLines.push(l));
-        lines.slice(splitIdx+1).forEach(l=>zemLines.push(l));
+        // ZEM: alles nach erstem 0708, aber 0708 ans Ende verschieben
+        const zemRest = lines.slice(splitIdx+1);
+        const zem0708 = zemRest.filter(l=>l.code==="0708");
+        const zemOther = zemRest.filter(l=>l.code!=="0708");
+        zemOther.forEach(l=>zemLines.push(l));
+        zem0708.forEach(l=>zemLines.push(l));
       }
     });
 

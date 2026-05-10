@@ -7028,7 +7028,7 @@ function generate(){
     // → je Zahn eine eigene Berechnung, dann global zusammengeführt
     // Ausnahme: Bundle-Fälle (PZ-*, SCHIENE-PZ) nutzen nur ersten Zahn
     //   da billingOut bereits beide Sitzungen enthält
-    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle","gkv-tk-bundle","gkv-kr-bundle","gkv-br-bundle"]);
+    const BUNDLE_GRUPPEN = new Set(["pkv-bundle","pkv-schiene-bundle","pkv-skm-bundle","pkv-skm-b-bundle","pkv-ups-bundle","gkv-inlay-bundle","gkv-inlay-dig-bundle","gkv-tk-bundle","gkv-tk-dig-bundle","gkv-kr-bundle","gkv-kr-dig-bundle","gkv-br-bundle","gkv-br-dig-bundle"]);
     const expandedCases = [];
     validCases.forEach(tc=>{
       const teethArr = [...(tc.teeth||new Set())].sort((a,b)=>a-b);
@@ -7036,6 +7036,10 @@ function generate(){
       if(isBundle){
         // Bundle: nur einen Case mit dem ersten Zahn, aber allTeeth weitergeben
         expandedCases.push({ ...tc, tooth: teethArr[0], _allTeeth: tc.teeth, workflow: tc.workflow||'digital', _parentId: tc.id });
+      } else if(teethArr.length > 1 && FALL_TYPEN[tc.caseType]?.gruppe?.includes('-dig')){
+        // Digital Einzelfälle mit mehreren Zähnen: auch _allTeeth übergeben
+        // aber jeden Zahn einzeln expandieren damit Zahnspezifisches (4050/4055) stimmt
+        teethArr.forEach(t => expandedCases.push({ ...tc, tooth: t, _allTeeth: tc.teeth, workflow: tc.workflow||'digital', _parentId: tc.id }));
       } else {
         teethArr.forEach(tooth=>{
           expandedCases.push({ ...tc, tooth, workflow: tc.workflow||'digital', _parentId: tc.id, _multiTooth: teethArr.length > 1 });

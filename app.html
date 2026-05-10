@@ -6355,44 +6355,41 @@ function buildGkvGlobalOutput(results){
   const gkvKroneCases = valid.filter(isGkvKroneCase);
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
+  // ── Fast-Path für Krone/TK/Inlay/Brücke/Schiene Cases ──────────────
   if(gkvKroneCases.length > 0){
-    // GKV-Krone/Inlay-Fälle → billingOut.lines direkt zusammenführen
-    // GKV-BR: Brückenfälle deduplizieren – isBruecke verarbeitet alle Ankerzähne in einem Aufruf
-    // → nur einen Fall pro Falltyp nehmen (PRAEP, ZEM, PZ je einmal)
+    // Brücke: nur ersten Fall pro Falltyp nehmen (isBruecke sammelt alle Zähne intern)
+    // TK/KR/Inlay/Schiene: alle behalten
     const seenFallTypes = new Set();
     const dedupedCases = gkvKroneCases.filter(r => {
       const fg = FALL_POS_MAP[r.ctx && r.ctx.fall];
-      if(!fg) return true;
-      const isBr = fg.startsWith('gkv-br');
-      if(!isBr) return true; // TK/KR/Inlay: alle behalten
-      if(seenFallTypes.has(fg)) return false; // Brücke: nur ersten nehmen
+      if(!fg || !fg.startsWith('gkv-br')) return true;
+      if(seenFallTypes.has(fg)) return false;
       seenFallTypes.add(fg);
       return true;
     });
-    const allLines = [];
-    const seenNachbarCodes = new Set(); // 2320/8229/2130 nur 1x (aus PRÄP)
+
+    const kroneLines = [];
+    const seenNachbarCodes = new Set();
     dedupedCases.forEach(r=>{
       r.billingOut.lines.forEach(line=>{
-        // nachbar_c/nachbar_ke global deduplizieren – gehören nur zur PRÄP
         if((line.type==="behandlung"||line.type==="nachbar") && (line.code==="2320"||line.code==="8229"||line.code==="2130")){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
         }
-        allLines.push(line);
+        kroneLines.push(line);
       });
     });
-    const errorsFirst = [...errorLines];
-    // Füllungs-Cases normal verarbeiten und ans Ende
+
+    // Füllungs-Cases separat durch normalen Merger
+    let fuellLines = [];
     if(gkvFuellCases.length > 0){
       const fuellResult = buildGkvGlobalOutput(gkvFuellCases);
-      const combined = [...allLines, ...fuellResult.lines];
-      const combinedTexts = [...errorsFirst, ...combined.map(l=>l.text)];
-      return{ lines:combined, multiline:combinedTexts.join("\n"), inline:combinedTexts.join("  "), hasErrors:errors.length>0, errorLines };
+      fuellLines = fuellResult.lines || [];
     }
-    const allTexts = [...errorsFirst, ...allLines.map(l=>l.text)];
-    const multiline = allTexts.join("\n");
-    const inline    = allTexts.join("  ");
-    return{ lines:allLines, multiline, inline, hasErrors:errors.length>0, errorLines };
+
+    const allLines = [...kroneLines, ...fuellLines];
+    const allTexts = [...errorLines, ...allLines.map(l=>l.text)];
+    return{ lines:allLines, multiline:allTexts.join("\n"), inline:allTexts.join("  "), hasErrors:errors.length>0, errorLines };
   }
 
   // Alle Zähne + Codes aus allen Fällen sammeln

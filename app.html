@@ -2342,19 +2342,22 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     "GKV-IN1-ZEM":"gkv-in1","GKV-IN1-PZ":"gkv-in1",
     "GKV-IN2-ZEM":"gkv-in2","GKV-IN2-PZ":"gkv-in2",
     "GKV-IN3-ZEM":"gkv-in3","GKV-IN3-PZ":"gkv-in3",
+    "GKV-IN1-DIG-ZEM":"gkv-in1-dig","GKV-IN1-DIG-PZ":"gkv-in1-dig",
+    "GKV-IN2-DIG-ZEM":"gkv-in2-dig","GKV-IN2-DIG-PZ":"gkv-in2-dig",
+    "GKV-IN3-DIG-ZEM":"gkv-in3-dig","GKV-IN3-DIG-PZ":"gkv-in3-dig",
   };
 
   if(isSinglePraep||isBundle){
     // Bundle: nur den PRAEP-Teil verwenden, nicht die kombinierte Liste
     const praepOnlyList = isBundle
-      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="SKM-PZ" ? SKM_ABF_POS : fall==="SKM-B-PZ" ? SKM_ABF_POS : fall==="UPS-PZ" ? UPS_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : fall==="GKV-BR-PZ" ? GKV_BR_PRAEP_POS : fall==="GKV-KR-PZ" ? GKV_KR_PRAEP_POS : fall==="GKV-TK-PZ" ? GKV_TK_PRAEP_POS : fall.startsWith("GKV-IN") ? GKV_INLAY_PRAEP_POS : PRAEP_POS_REIHENFOLGE)
+      ? (fall==="SCHIENE-PZ" ? SCHIENE_ABF_POS : fall==="SKM-PZ" ? SKM_ABF_POS : fall==="SKM-B-PZ" ? SKM_ABF_POS : fall==="UPS-PZ" ? UPS_ABF_POS : fall==="PZ-B" ? PRAEP_B_POS_REIHENFOLGE : fall==="GKV-BR-PZ" ? GKV_BR_PRAEP_POS : fall==="GKV-KR-PZ" ? GKV_KR_PRAEP_POS : fall==="GKV-TK-PZ" ? GKV_TK_PRAEP_POS : fall.startsWith("GKV-IN") ? (fall.includes("-DIG-") ? GKV_INLAY_DIG_PRAEP_POS : GKV_INLAY_PRAEP_POS) : PRAEP_POS_REIHENFOLGE)
       : (getPosReihenfolge(fall) || (isBruecke ? PRAEP_B_POS_REIHENFOLGE : PRAEP_POS_REIHENFOLGE));
     const praepList = filterPosByOpt(praepOnlyList, opt);
     const praepLines = buildSitzung(praepList, "Präparation", tempCode);
     allLines = [...allLines, ...praepLines];
   }
   if(isSingleZem||isBundle){
-    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS, skm:SKM_ZEM_POS, "skm-b":SKM_B_ZEM_POS, ups:UPS_EINGL_POS, "gkv-br":GKV_BR_ZEM_POS,"gkv-kr":GKV_KR_ZEM_POS,"gkv-tk":GKV_TK_ZEM_POS, "gkv-in1":GKV_INLAY1_ZEM_POS, "gkv-in2":GKV_INLAY2_ZEM_POS, "gkv-in3":GKV_INLAY3_ZEM_POS };
+    const zemPosMap = { k:ZEM_KRONE_POS, tk:ZEM_TK_POS, in:ZEM_INLAY_POS, b:ZEM_B_POS, schiene:SCHIENE_EINGL_POS, skm:SKM_ZEM_POS, "skm-b":SKM_B_ZEM_POS, ups:UPS_EINGL_POS, "gkv-br":GKV_BR_ZEM_POS,"gkv-kr":GKV_KR_ZEM_POS,"gkv-tk":GKV_TK_ZEM_POS, "gkv-in1":GKV_INLAY1_ZEM_POS, "gkv-in2":GKV_INLAY2_ZEM_POS, "gkv-in3":GKV_INLAY3_ZEM_POS, "gkv-in1-dig":GKV_INLAY1_DIG_ZEM_POS, "gkv-in2-dig":GKV_INLAY2_DIG_ZEM_POS, "gkv-in3-dig":GKV_INLAY3_DIG_ZEM_POS };
     const typ2 = zemMap[fall];
     if(typ2){
       // Bundle: nur den ZEM-Teil verwenden

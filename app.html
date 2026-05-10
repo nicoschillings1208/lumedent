@@ -6168,6 +6168,13 @@ function buildPrivatGlobalOutput(results){
           zemRest.filter(l=>l.code==="0708").forEach(l=>zemLines.push(l));
         }
       });
+      // tmfront/tmlprov gehören zu PRÄP, nicht ZEM — verschieben falls falsch
+      const PRAEP_ONLY_CODES = new Set(["tmfront","tmlprov","tmprovl"]);
+      zemLines.filter(l=>PRAEP_ONLY_CODES.has(l.code)).forEach(l=>praepLines.push(l));
+      const zemLinesFiltered = zemLines.filter(l=>!PRAEP_ONLY_CODES.has(l.code));
+      zemLines.length = 0;
+      zemLinesFiltered.forEach(l=>zemLines.push(l));
+
       const mergedPraep = mergeLines(praepLines);
       const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","2150","2160","2170"]);
       const mergedZemRaw = mergeLines(zemLines);

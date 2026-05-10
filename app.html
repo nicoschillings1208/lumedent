@@ -2040,7 +2040,6 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     // Bei GKV Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne
     if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
       const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
-      console.log("DEBUG _allTeeth:", sortedAll, "tooth:", tooth);
       sortedAll.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
     } else {
       allRelevant.push({ tooth, rootCount, isTarget:true, side:"Zielzahn" });
@@ -2144,12 +2143,23 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
         }
         if(code==="0090"&&anaCode!=="0090") return;
         if(code==="0100"&&anaCode!=="0100") return;
-        lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        // GKV Bundle: alle _allTeeth als Behandlungszähne
+        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+          const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
+          lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
+        } else {
+          lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        }
         return;
       }
       // ── Material am Behandlungszahn
       if(typ==="material"){
-        lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        if(isGkv && caseInput._allTeeth && caseInput._allTeeth.size > 1){
+          const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
+          lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
+        } else {
+          lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
+        }
         return;
       }
       // ── Anatomische Abformung / Abdrücklöffel / Modelle etc. – OK,UK zusammengefasst

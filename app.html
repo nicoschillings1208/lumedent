@@ -6355,6 +6355,7 @@ function buildGkvGlobalOutput(results){
   const gkvKroneCases = valid.filter(isGkvKroneCase);
   console.log("DEBUG valid:", valid.length, valid.map(r=>r.ctx&&r.ctx.fall));
   console.log("DEBUG kroneCase:", gkvKroneCases.length, "fuellCases:", valid.filter(v=>!isGkvKroneCase(v)).length);
+  gkvKroneCases.forEach((r,i)=>console.log("DEBUG case",i,"fall:",r.ctx&&r.ctx.fall,"lines:",r.billingOut&&r.billingOut.lines&&r.billingOut.lines.length,"brueckeInfo:",JSON.stringify(r.billingOut&&r.billingOut.brueckeInfo)));
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
   // ── Fast-Path für Krone/TK/Inlay/Brücke/Schiene Cases ──────────────

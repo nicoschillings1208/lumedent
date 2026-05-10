@@ -6397,9 +6397,10 @@ function buildGkvGlobalOutput(results){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
         }
-        // Einmalige Positionen ohne Zahnbezug nur 1x (basis = kein teeth array)
-        if(line.type==="basis" && (!line.teeth || line.teeth.length === 0)){
-          const key = line.text||line.code;
+        // Nur wirklich globale Einmalpositionen deduplizieren
+        const GLOBAL_CODES = new Set(["0040","m0030","0802","1433","mabf4m"]);
+        if(line.type==="basis" && GLOBAL_CODES.has(line.code)){
+          const key = line.code;
           if(seenEinmaligCodes.has(key)) return;
           seenEinmaligCodes.add(key);
         }

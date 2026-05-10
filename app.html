@@ -6147,8 +6147,8 @@ function buildPrivatGlobalOutput(results){
     const refFall   = kroneCases[0].ctx.fall;
     const IS_BUNDLE = refFall.startsWith("PZ-") || refFall === "SCHIENE-PZ" || refFall === "SKM-PZ" || refFall === "SKM-B-PZ" || refFall === "UPS-PZ" || (refFall.endsWith("-PZ") && (refFall.startsWith("GKV-IN") || refFall.startsWith("GKV-TK") || refFall.startsWith("GKV-KR") || refFall.startsWith("GKV-BR")));
 
-    if(IS_BUNDLE && kroneCases.length > 1){
-      // Mehrere Bundle-Fälle: PRÄP + ZEM getrennt mergen dann zusammenführen
+    if(IS_BUNDLE){
+      // Bundle-Fälle: PRÄP + ZEM getrennt mergen (wie GKV Fast-Path)
       const praepLines = [];
       const zemLines   = [];
       kroneCases.forEach(r=>{
@@ -6158,30 +6158,26 @@ function buildPrivatGlobalOutput(results){
           lines.forEach(l=>praepLines.push(l));
         } else if(fall.endsWith("-ZEM")){
           lines.forEach(l=>zemLines.push(l));
-        } else if(fall.endsWith("-PZ")){
+        } else {
+          // PZ oder Einzelfall: am ersten 0708 splitten
           let splitIdx = lines.findIndex(l=>l.code==="0708");
           if(splitIdx === -1) splitIdx = lines.length - 1;
           lines.slice(0, splitIdx+1).forEach(l=>praepLines.push(l));
           const zemRest  = lines.slice(splitIdx+1);
-          const zem0708  = zemRest.filter(l=>l.code==="0708");
-          const zemOther = zemRest.filter(l=>l.code!=="0708");
-          zemOther.forEach(l=>zemLines.push(l));
-          zem0708.forEach(l=>zemLines.push(l));
+          zemRest.filter(l=>l.code!=="0708").forEach(l=>zemLines.push(l));
+          zemRest.filter(l=>l.code==="0708").forEach(l=>zemLines.push(l));
         }
       });
       const mergedPraep = mergeLines(praepLines);
-      const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","2130","2150","2160","2170"]);
+      const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200","2150","2160","2170"]);
       const mergedZemRaw = mergeLines(zemLines);
-      const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code) && l.code!=="0708" && l.code!=="4025" && l.code!=="M4025" && l.code!=="1020" && l.code!=="6484");
+      const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code)&&l.code!=="0708"&&l.code!=="4025"&&l.code!=="M4025"&&l.code!=="1020"&&l.code!=="6484");
       const zemFill   = mergedZemRaw.filter(l=>FILL_CODES.has(l.code));
       const zemEnd    = mergedZemRaw.filter(l=>l.code==="6484");
       const zemAfter  = mergedZemRaw.filter(l=>l.code==="4025"||l.code==="M4025"||l.code==="1020");
       const zem0708l  = mergedZemRaw.filter(l=>l.code==="0708");
       const mergedZem = [...zemBefore, ...zemFill, ...zemEnd, ...zemAfter, ...zem0708l];
       [...mergedPraep, ...mergedZem].forEach(l=>allLines.push(l));
-    } else if(IS_BUNDLE){
-      // Einzelner Bundle-Fall: direkt ausgeben
-      kroneCases[0].billingOut.lines.forEach(l=>{ if(l.type!=="trenner") allLines.push(l); });
     } else {
     const posListe  = getPosReihenfolge(refFall) || [];
 

@@ -6450,11 +6450,14 @@ function buildGkvGlobalOutput(results){
     });
 
     const mergedPraep = mergeLines(praepLines);
-    // ZEM: 0708 ans Ende verschieben (nach 2210/2220 etc.)
+    // ZEM: Füllungs-Codes (2210,2220,2150-f etc.) nach 5305 einordnen, 0708 ans Ende
+    const FILL_CODES = new Set(["2210","2220","2170-f","2160-f","2150-f","2591","2978","2200"]);
     const mergedZemRaw = mergeLines(zemLines);
+    const zemBefore = mergedZemRaw.filter(l=>!FILL_CODES.has(l.code) && l.code!=="0708" && l.code!=="4025" && l.code!=="M4025" && l.code!=="1020" && l.code!=="6484");
+    const zemFill   = mergedZemRaw.filter(l=>FILL_CODES.has(l.code));
+    const zemAfter  = mergedZemRaw.filter(l=>l.code==="4025"||l.code==="M4025"||l.code==="1020"||l.code==="6484");
     const zem0708lines = mergedZemRaw.filter(l=>l.code==="0708");
-    const zemOtherLines = mergedZemRaw.filter(l=>l.code!=="0708");
-    const mergedZem = [...zemOtherLines, ...zem0708lines];
+    const mergedZem = [...zemBefore, ...zemFill, ...zemAfter, ...zem0708lines];
     const allLines   = [...mergedPraep, ...mergedZem];
 
     const allTexts = [...errorLines, ...allLines.map(l=>l.text)];

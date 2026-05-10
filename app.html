@@ -6397,8 +6397,8 @@ function buildGkvGlobalOutput(results){
           if(seenNachbarCodes.has(line.code)) return;
           seenNachbarCodes.add(line.code);
         }
-        // Einmalige Positionen (kein Zahnbezug) nur 1x ausgeben
-        if(line.type==="basis"){
+        // Einmalige Positionen ohne Zahnbezug nur 1x (basis = kein teeth array)
+        if(line.type==="basis" && (!line.teeth || line.teeth.length === 0)){
           const key = line.text||line.code;
           if(seenEinmaligCodes.has(key)) return;
           seenEinmaligCodes.add(key);

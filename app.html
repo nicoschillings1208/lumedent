@@ -6814,9 +6814,8 @@ function buildGkvGlobalOutput(results){
     "gkv-in2-praep","gkv-in2-zem","gkv-in2-pz",
     "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
   const isGkvKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&GKV_KRONE_GRUPPEN.has(fg); };
-  console.log("GKV buildGkvGlobalOutput valid:", valid.length, valid.map(r=>({fall:r.ctx?.fall, fg:FALL_POS_MAP[r.ctx?.fall], inKrone:GKV_KRONE_GRUPPEN.has(FALL_POS_MAP[r.ctx?.fall])})));
   const gkvKroneCases = valid.filter(isGkvKroneCase);
-  console.log("GKV kroneCases:", gkvKroneCases.length);
+  console.log("SKM lines:", gkvKroneCases[0]?.billingOut?.lines?.length, gkvKroneCases[0]?.billingOut?.lines?.slice(0,3)?.map(l=>l.text));
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
   // ── Fast-Path für Krone/TK/Inlay/Brücke/Schiene Cases ──────────────

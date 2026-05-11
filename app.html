@@ -2435,7 +2435,7 @@ function calculatePrivatCaseResult(caseInput, findings, treatmentTeeth=null){
   // ── Routing: Krone/TK/Inlay Fälle ──────────────────────────────
   const fallGruppe = FALL_POS_MAP[fall];
   if(fallGruppe && fallGruppe !== "privat-fuellung" && fallGruppe !== "gkv"){
-    const _isGkvFall = fallGruppe.startsWith("gkv-tk") || fallGruppe.startsWith("gkv-in") || fallGruppe.startsWith("gkv-kr") || fallGruppe.startsWith("gkv-br");
+    const _isGkvFall = fallGruppe.startsWith("gkv-tk") || fallGruppe.startsWith("gkv-in") || fallGruppe.startsWith("gkv-kr") || fallGruppe.startsWith("gkv-br") || fallGruppe.startsWith("gkv-skm");
     return calculateKroneResult(caseInput, findings, opt, treatmentTeeth, _isGkvFall);
   }
 
@@ -5700,7 +5700,7 @@ function calculateCaseResult(caseInput, findings, kassentyp, treatmentTeeth=null
   // ── GKV Inlay: trotz kassentyp kasse über Krone-Engine routen ────
   if(kassentyp === "kasse"){
     const _fg = FALL_POS_MAP[caseInput.caseType];
-    if(_fg && ((_fg.startsWith("gkv-in")) || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br"))){
+    if(_fg && ((_fg.startsWith("gkv-in")) || _fg.startsWith("gkv-tk") || _fg.startsWith("gkv-kr") || _fg.startsWith("gkv-br") || _fg.startsWith("gkv-skm"))){
       return calculateKroneResult(caseInput, findings, {}, treatmentTeeth, true);
     }
   }

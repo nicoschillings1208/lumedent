@@ -2084,8 +2084,8 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
   const inlayCode = inlayMap[inlayFlaechen] || "2160";
 
   // Gebündelt = Präp + Zem nacheinander
-  const isBundle      = fall.startsWith("PZ-") || fall === "SCHIENE-PZ" || fall === "SKM-PZ" || fall === "SKM-B-PZ" || fall === "UPS-PZ" || (fall.endsWith("-PZ") && (fall.startsWith("GKV-IN") || fall.startsWith("GKV-TK") || fall.startsWith("GKV-KR") || fall.startsWith("GKV-BR")));
-  const isSinglePraep = fall.startsWith("PRAEP-") || fall === "SCHIENE-ABF" || fall === "SKM-ABF" || fall === "SKM-B-ABF" || fall === "UPS-ABF" || (fall.endsWith("-PRAEP") && (fall.startsWith("GKV-IN") || fall.startsWith("GKV-TK") || fall.startsWith("GKV-KR") || fall.startsWith("GKV-BR")));
+  const isBundle      = fall.startsWith("PZ-") || fall === "SCHIENE-PZ" || fall === "SKM-PZ" || fall === "SKM-B-PZ" || fall === "UPS-PZ" || (fall.endsWith("-PZ") && (fall.startsWith("GKV-IN") || fall.startsWith("GKV-TK") || fall.startsWith("GKV-KR") || fall.startsWith("GKV-BR"))) || fall === "GKV-SKM-KR-DIG-PZ";
+  const isSinglePraep = fall.startsWith("PRAEP-") || fall === "SCHIENE-ABF" || fall === "SKM-ABF" || fall === "SKM-B-ABF" || fall === "UPS-ABF" || fall === "GKV-SKM-KR-DIG-ABF" || (fall.endsWith("-PRAEP") && (fall.startsWith("GKV-IN") || fall.startsWith("GKV-TK") || fall.startsWith("GKV-KR") || fall.startsWith("GKV-BR")));
   const isSingleZem   = (fall.startsWith("ZEM-") || fall === "SCHIENE-EINGL" || fall === "SKM-ZEM" || fall === "SKM-B-ZEM" || fall === "UPS-EINGL" || (fall.endsWith("-ZEM") && (fall.startsWith("GKV-IN") || fall.startsWith("GKV-TK") || fall.startsWith("GKV-KR") || fall.startsWith("GKV-BR") || fall === "GKV-SKM-KR-DIG-ZEM"))) && !isBundle;
 
   // Hilfsfunktion: Glieder der n-ten Spanne ermitteln

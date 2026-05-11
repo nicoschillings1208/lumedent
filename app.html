@@ -6187,6 +6187,7 @@ function renderCasesList(){
           "Krone":   Object.entries(FALL_TYPEN).filter(([k,v])=>isDigital ? (v.gruppe==="gkv-kr-dig"||v.gruppe==="gkv-kr-dig-bundle") : (v.gruppe==="gkv-kr"||v.gruppe==="gkv-kr-bundle")),
           "Teilkrone":Object.entries(FALL_TYPEN).filter(([k,v])=>isDigital ? (v.gruppe==="gkv-tk-dig"||v.gruppe==="gkv-tk-dig-bundle") : (v.gruppe==="gkv-tk"||v.gruppe==="gkv-tk-bundle")),
           "Inlay":   Object.entries(FALL_TYPEN).filter(([k,v])=>isDigital ? (v.gruppe==="gkv-inlay-dig"||v.gruppe==="gkv-inlay-dig-bundle") : (v.gruppe==="gkv-inlay"||v.gruppe==="gkv-inlay-bundle")),
+          "Impl. Krone": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-skm-kr-dig"||v.gruppe==="gkv-skm-kr-dig-bundle"),
         } : {
           "Füllung": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-fuellung"),
           "Schiene": Object.entries(FALL_TYPEN).filter(([k,v])=>v.gruppe==="gkv-sch"),

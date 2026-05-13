@@ -6999,8 +6999,10 @@ function buildPrivatGlobalOutput(results){
             const neighborL = r.ctx?.neighborLeft?.tooth;
             const neighborR = r.ctx?.neighborRight?.tooth;
             if(isNachbar){
-              if(neighborL) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
-              if(neighborR) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
+              const hasL = neighborL && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborL}, findings);
+              const hasR = neighborR && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborR}, findings);
+              if(hasL) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
+              if(hasR) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
             } else {
               allLines.push({ type:isGlobal?"basis":isArea?"area":"behandlung", label:"Regel", text:isGlobal?code:isArea?`${areaT.join(",")} ${code}`:`${tooth} ${code}`, code, teeth:isArea?areaT:[tooth] });
             }
@@ -7316,8 +7318,10 @@ function buildGkvGlobalOutput(results){
           codes.forEach(code => {
             if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             if(isNachbar){
-              if(neighborL) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
-              if(neighborR) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
+              const hasL = neighborL && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborL}, findings);
+              const hasR = neighborR && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborR}, findings);
+              if(hasL) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
+              if(hasR) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
             } else {
               lines.push({ type:isGlobal?"basis":isArea?"area":"behandlung", label:"Regel", text:isGlobal?code:`${tooth} ${code}`, code, teeth:[tooth] });
             }

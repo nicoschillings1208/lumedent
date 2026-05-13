@@ -2038,7 +2038,7 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
   const tempCode = getTempCode(tooth);
 
   // ── Brücke: frühzeitig erkennen ──────────────────────────────────
-  const isBruecke    = fall.startsWith("PRAEP-B")||fall.startsWith("ZEM-B")||fall.startsWith("PZ-B")||fall.startsWith("SKM-B")||fall.startsWith("GKV-BR");
+  const isBruecke    = fall.startsWith("PRAEP-B")||fall.startsWith("ZEM-B")||fall.startsWith("PZ-B")||fall.startsWith("SKM-B")||fall.startsWith("GKV-BR")||fall.startsWith("GKV-SKM-BR");
   const brueckeInfo  = isBruecke ? getBrueckenInfo(findings) : null;
   const brueckenAnker= brueckeInfo ? brueckeInfo.anker : [];
 

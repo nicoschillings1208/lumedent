@@ -2243,8 +2243,14 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
       // je Ankerzahn → alle Anker sammeln, gruppiert ausgeben
       if(typ==="bruecke_anker_je"){
         if(_bi && _bi.anker.length){
-          const sorted = [..._bi.anker].sort((a,b)=>a-b);
-          lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sorted)} ${code}`, teeth:sorted, code });
+          // Anker + äußere Nachbarn
+          const ankerSorted = [..._bi.anker].sort((a,b)=>a-b);
+          const withNachbar = [...new Set([
+            ...(neighborLeft ? [neighborLeft.tooth] : []),
+            ...ankerSorted,
+            ...(neighborRight ? [neighborRight.tooth] : []),
+          ])].sort((a,b)=>a-b);
+          lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(withNachbar)} ${code}`, teeth:withNachbar, code });
         } else {
           lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
         }

@@ -2064,12 +2064,16 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     // Bei Bundle mit mehreren Zähnen: alle _allTeeth als Zielzähne (GKV und PKV)
     if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
       const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
-      // Linker Nachbar des ersten Zahns
-      const nbLeft  = getNearestRelevantNeighbor(sortedAll[0], "left", findings, new Set(sortedAll));
+      // Bei Brücke: nur Ankerzähne als Zielzähne, keine Glieder
+      const targetTeeth = (isBruecke && brueckeInfo && brueckeInfo.anker.length)
+        ? [...brueckeInfo.anker].sort((a,b)=>a-b)
+        : sortedAll;
+      // Linker Nachbar des ersten Zielzahns
+      const nbLeft  = getNearestRelevantNeighbor(targetTeeth[0], "left", findings, new Set(targetTeeth));
       if(nbLeft) allRelevant.push({...nbLeft, isTarget:false, side:"links"});
-      sortedAll.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
-      // Rechter Nachbar des letzten Zahns
-      const nbRight = getNearestRelevantNeighbor(sortedAll[sortedAll.length-1], "right", findings, new Set(sortedAll));
+      targetTeeth.forEach(t=>allRelevant.push({ tooth:t, rootCount:getRootCount(t), isTarget:true, side:"Zielzahn" }));
+      // Rechter Nachbar des letzten Zielzahns
+      const nbRight = getNearestRelevantNeighbor(targetTeeth[targetTeeth.length-1], "right", findings, new Set(targetTeeth));
       if(nbRight) allRelevant.push({...nbRight, isTarget:false, side:"rechts"});
     } else {
       allRelevant.push({ tooth, rootCount, isTarget:true, side:"Zielzahn" });
@@ -2084,7 +2088,6 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
         ...brueckeInfo.anker                                       // nur Anker
       ])].sort((a,b)=>a-b)
     : [...new Set(allRelevant.map(n=>n.tooth))].sort((a,b)=>a-b);
-  console.log("areaTeeth:", areaTeeth, "isBruecke:", isBruecke, "anker:", brueckeInfo?.anker);
 
   // Inlay-Flächen: aus caseInput.inlayFlaechen ODER aus FALL_TYPEN[fall].inlayFlaechen
   const inlayFlaechen = caseInput.inlayFlaechen

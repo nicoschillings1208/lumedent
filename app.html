@@ -6530,12 +6530,16 @@ function renderCasesList(){
       // Chips direkt aus den echten Positions-Arrays bauen
       const _defs = getFallOptDefs(c.caseType);
       const _rsOvC = rsGetOverride(c.caseType);
-      const _rsChipDel = new Set([
-        ...((_rsOvC?.removePositions||[]).filter(x=>!(_rsOvC?.toggledOff||[]).includes(x))),
-        ...(_rsOvC?.toggledOff||[])
-      ]);
+      // Nur wirklich gelöschte Pos aus Dropdown entfernen (nicht toggledOff)
+      const _rsChipDel = new Set(
+        (_rsOvC?.removePositions||[]).filter(x=>!(_rsOvC?.toggledOff||[]).includes(x))
+      );
+      const _rsChipOff = new Set(_rsOvC?.toggledOff||[]);
       const uniqueDefs = _defs.filter(d => !_rsChipDel.has(d.label));
-      const aktiv = uniqueDefs.filter(d => { const bk = d.baseKey||d.key; return bk in opt ? opt[bk]!==false : true; }).length;
+      const aktiv = uniqueDefs.filter(d => {
+        if(_rsChipOff.has(d.label)) return false;
+        const bk = d.baseKey||d.key; return bk in opt ? opt[bk]!==false : true;
+      }).length;
 
       privatOptHTML = `
       <details style="margin-top:8px">
@@ -6548,17 +6552,20 @@ function renderCasesList(){
           ${uniqueDefs.map(d=>{
             const code = d.label;
             const baseKey = d.baseKey || d.key;
-            const active = baseKey in opt ? opt[baseKey]!==false : true;
+            const isOff = _rsChipOff.has(code); // vom Regelstudio deaktiviert
+            const active = !isOff && (baseKey in opt ? opt[baseKey]!==false : true);
             const safeKey = encodeURIComponent(baseKey);
-            const lborder = active?'var(--accent)':'var(--border)';
-            const lbg = active?'#FFFBF0':'var(--surface)';
-            const lcolor = active?'var(--text-primary)':'var(--text-muted)';
+            const lborder = isOff?'var(--border-strong)':active?'var(--accent)':'var(--border)';
+            const lbg = isOff?'var(--surface-2)':active?'#FFFBF0':'var(--surface)';
+            const lcolor = isOff?'var(--text-muted)':active?'var(--text-primary)':'var(--text-muted)';
             const lweight = active?'600':'400';
-            return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:'+lcolor+';cursor:pointer;padding:3px 8px;border-radius:6px;border:1px solid '+lborder+';background:'+lbg+';transition:all .12s;white-space:nowrap">'
-              +'<input type="checkbox" '+(active?'checked':'')
+            const lOpacity = isOff?'0.45':'1';
+            return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:'+lcolor+';cursor:'+(isOff?'not-allowed':'pointer')+';padding:3px 8px;border-radius:6px;border:1px solid '+lborder+';background:'+lbg+';transition:all .12s;white-space:nowrap;opacity:'+lOpacity+';'+(isOff?'text-decoration:line-through;':'')+'">'
+              +'<input type="checkbox" '+(active?'checked':'')+' '+(isOff?'disabled':'')
               +' data-case-id="'+c.id+'" data-opt-key="'+safeKey+'"'
               +' class="privat-opt-cb" style="accent-color:var(--accent);width:13px;height:13px"/>'
               +'<span style="font-weight:'+lweight+'">'+code.replace(/^OK,UK\s+/,'')+'</span>'
+              +(isOff?'<span style="font-size:9px;margin-left:3px;color:var(--text-muted)">[off]</span>':'')
               +'</label>';
           }).join("")}
         </div>

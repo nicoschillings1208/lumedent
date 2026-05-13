@@ -6992,10 +6992,10 @@ function buildPrivatGlobalOutput(results){
           const ruleTyp = rule.typ || "behandlung";
           const areaT = r.ctx?.areaTeeth || [tooth];
           codes.forEach(code => {
-            if(allLines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             const isGlobal = ruleTyp==="einmalig"||ruleTyp==="global";
             const isArea   = ruleTyp==="bereich";
             const isNachbar = ruleTyp==="nachbar";
+            if(!isNachbar && allLines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             const neighborL = typeof r.ctx?.neighborLeft === "object" ? r.ctx.neighborLeft?.tooth : r.ctx?.neighborLeft;
             const neighborR = typeof r.ctx?.neighborRight === "object" ? r.ctx.neighborRight?.tooth : r.ctx?.neighborRight;
             if(isNachbar){
@@ -7320,7 +7320,7 @@ function buildGkvGlobalOutput(results){
           const neighborR = typeof r.ctx?.neighborRight === "object" ? r.ctx.neighborRight?.tooth : r.ctx?.neighborRight;
           const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
           codes.forEach(code => {
-            if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
+            if(!isNachbar && lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             if(isNachbar){
               const hasL = neighborL && rsCheckNeighborTooth(rule.condition, neighborL, findings);
               const hasR = neighborR && rsCheckNeighborTooth(rule.condition, neighborR, findings);

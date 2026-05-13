@@ -7309,6 +7309,7 @@ function buildGkvGlobalOutput(results){
     if(_rsOvFall.customRules?.length > 0){
       valid.forEach(r => {
         _rsOvFall.customRules.forEach(rule => {
+          console.log("customRule check:", rule.condition, "ctx.tooth:", r.ctx?.tooth, "nbL:", r.ctx?.neighborLeft?.tooth, "nbR:", r.ctx?.neighborRight?.tooth, "result:", rsCheckCondition(rule.condition, r.ctx, findings));
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
           const ruleTyp = rule.typ || "behandlung";

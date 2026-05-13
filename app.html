@@ -2177,7 +2177,11 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
         if(code==="0090"&&anaCode!=="0090") return;
         if(code==="0100"&&anaCode!=="0100") return;
         // Bundle: alle _allTeeth als Behandlungszähne (GKV und PKV)
-        if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
+        // Bei Brücke: nur Ankerzähne, keine Glieder
+        if(isBruecke && brueckeInfo && brueckeInfo.anker.length){
+          const sorted = [...brueckeInfo.anker].sort((a,b)=>a-b);
+          lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sorted)} ${code}`, teeth:sorted, code });
+        } else if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
           const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
           lines.push({ type:"behandlung", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
         } else {
@@ -2187,7 +2191,10 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
       }
       // ── Material am Behandlungszahn
       if(typ==="material"){
-        if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
+        if(isBruecke && brueckeInfo && brueckeInfo.anker.length){
+          const sorted = [...brueckeInfo.anker].sort((a,b)=>a-b);
+          lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sorted)} ${code}`, teeth:sorted, code });
+        } else if(caseInput._allTeeth && caseInput._allTeeth.size > 1){
           const sortedAll = [...caseInput._allTeeth].sort((a,b)=>a-b);
           lines.push({ type:"material", text: BEB97_CODES.has(code)?code:`${mergeTeethForSameCode(sortedAll)} ${code}`, teeth:sortedAll, code });
         } else {

@@ -6530,6 +6530,16 @@ function renderCasesList(){
       // Chips direkt aus den echten Positions-Arrays bauen
       const _defs = getFallOptDefs(c.caseType);
       const _rsOvC = rsGetOverride(c.caseType);
+      // Regelstudio Reihenfolge auf _defs anwenden
+      if(_rsOvC?.reorder?.length){
+        const _reorderMap = {};
+        _rsOvC.reorder.forEach((code,i)=>{ _reorderMap[code]=i; });
+        _defs.sort((a,b)=>{
+          const ia = _reorderMap[a.label]??999;
+          const ib = _reorderMap[b.label]??999;
+          return ia-ib;
+        });
+      }
       // Nur wirklich gelöschte Pos aus Dropdown entfernen (nicht toggledOff)
       const _rsChipDel = new Set(
         (_rsOvC?.removePositions||[]).filter(x=>!(_rsOvC?.toggledOff||[]).includes(x))

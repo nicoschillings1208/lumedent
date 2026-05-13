@@ -8455,18 +8455,23 @@ let _rsDragSrc = null;
 // ── Storage ──────────────────────────────────────────────────────
 function rsLoadProfiles(){
   try {
-  // Behandler-Profile laden
   const behandler = loadProfile();
-  // Gespeicherte RS-Overrides aus localStorage laden
-  let savedRS = {};
-  try { savedRS = JSON.parse(localStorage.getItem('ld_rs_profiles') || '{}'); } catch(e) {}
-  // Basis-Profil mit gespeicherten Overrides
-  const rsFromBehandler = [{id: '__basis', name: 'Standard', overrides: savedRS['__basis']?.overrides || {}}];
-  // Behandler-Profile mit ihren gespeicherten Overrides zusammenführen
+  // Gespeicherte Profiles laden (Array-Format)
+  let savedProfiles = [];
+  try { savedProfiles = JSON.parse(localStorage.getItem('ld_rs_profiles') || '[]'); } catch(e) {}
+  // Als Map für schnellen Zugriff
+  const savedMap = {};
+  if(Array.isArray(savedProfiles)){
+    savedProfiles.forEach(p=>{ if(p.id) savedMap[p.id] = p; });
+  } else {
+    // Legacy Objekt-Format
+    Object.entries(savedProfiles).forEach(([id,p])=>{ savedMap[id] = p; });
+  }
+  const rsFromBehandler = [{id: '__basis', name: 'Standard', overrides: savedMap['__basis']?.overrides || {}}];
   behandler.forEach(p => rsFromBehandler.push({
     id: p.id,
     name: p.name,
-    overrides: savedRS[p.id]?.overrides || {}
+    overrides: savedMap[p.id]?.overrides || {}
   }));
   return rsFromBehandler;
   } catch(e) { return _rsProfiles; }
@@ -8512,14 +8517,7 @@ function rsEnsureOverride(fallKey){
 }
 
 function rsSaveOverride(profiles){
-  // Overrides als eigenes Objekt in ld_rs_profiles speichern
-  const rsData = {};
-  profiles.forEach(p => {
-    if (p.overrides && Object.keys(p.overrides).length > 0) {
-      rsData[p.id] = { overrides: p.overrides };
-    }
-  });
-  try { localStorage.setItem('ld_rs_profiles', JSON.stringify(rsData)); } catch(e) {}
+  // Overrides in dasselbe Format wie rsSaveProfiles speichern
   rsSaveProfiles(profiles);
 }
 

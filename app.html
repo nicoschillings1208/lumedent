@@ -7306,10 +7306,21 @@ function buildGkvGlobalOutput(results){
         _rsOvFall.customRules.forEach(rule => {
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
+          const ruleTyp = rule.typ || "behandlung";
+          const isGlobal = ruleTyp==="einmalig"||ruleTyp==="global";
+          const isArea   = ruleTyp==="bereich";
+          const isNachbar = ruleTyp==="nachbar";
+          const neighborL = r.ctx?.neighborLeft?.tooth;
+          const neighborR = r.ctx?.neighborRight?.tooth;
           const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
           codes.forEach(code => {
             if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
-            lines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
+            if(isNachbar){
+              if(neighborL) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
+              if(neighborR) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
+            } else {
+              lines.push({ type:isGlobal?"basis":isArea?"area":"behandlung", label:"Regel", text:isGlobal?code:`${tooth} ${code}`, code, teeth:[tooth] });
+            }
           });
         });
       });

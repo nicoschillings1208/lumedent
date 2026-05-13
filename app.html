@@ -8862,9 +8862,11 @@ function renderRsFallContent(){
         <div style="flex-direction:column;display:flex;gap:4px">
           <label style="font-size:10px;color:var(--text-muted);font-weight:600">Kategorie</label>
           <select id="rs-add-typ">
-            <option value="behandlung">Behandlungszahn</option><option value="bereich">Bereich</option>
-            <option value="einmalig">Einmalig</option><option value="global">Global</option>
-            <option value="nachbar">Nachbarzahn</option><option value="kiefer">Kiefer</option>
+            <option value="behandlung">Behandlungszahn</option>
+            <option value="bereich">Behandlungszahn + Nachbar</option>
+            <option value="einmalig">Einmalig (ohne Zahnangabe)</option>
+            <option value="nachbar">Nachbarzahn</option>
+            <option value="kiefer">Kiefer (OK/UK automatisch)</option>
           </select>
         </div>
         <div style="flex-direction:column;display:flex;gap:4px;min-width:160px">

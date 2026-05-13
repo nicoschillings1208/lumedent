@@ -6989,9 +6989,21 @@ function buildPrivatGlobalOutput(results){
           if(!rsCheckCondition(rule.condition, r.ctx, findings)) return;
           const tooth = r.ctx?.tooth;
           const codes = rule.pos.split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean);
+          const ruleTyp = rule.typ || "behandlung";
+          const areaT = r.ctx?.areaTeeth || [tooth];
           codes.forEach(code => {
             if(allLines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
-            allLines.push({ type:"behandlung", label:"Regel", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, code });
+            const isGlobal = ruleTyp==="einmalig"||ruleTyp==="global";
+            const isArea   = ruleTyp==="bereich";
+            const isNachbar = ruleTyp==="nachbar";
+            const neighborL = r.ctx?.neighborLeft?.tooth;
+            const neighborR = r.ctx?.neighborRight?.tooth;
+            if(isNachbar){
+              if(neighborL) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
+              if(neighborR) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
+            } else {
+              allLines.push({ type:isGlobal?"basis":isArea?"area":"behandlung", label:"Regel", text:isGlobal?code:isArea?`${areaT.join(",")} ${code}`:`${tooth} ${code}`, code, teeth:isArea?areaT:[tooth] });
+            }
           });
         });
       });
@@ -8791,7 +8803,7 @@ function renderRsFallContent(){
     const metColor = met === true ? "#3DB87A" : "rgba(0,0,0,0.08)";
     const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
     return codes.map((code, ci) => `<div class="rs-pos-row custom${isDisabled?" disabled":""}" draggable="true"
-      ondragstart="rsDragStart(event,'custRule_${idx}_${ci}')" ondragover="rsDragOver(event,'custRule_${idx}_${ci}')" ondragend="rsDragEnd(event)"
+      ondragstart="rsDragStart(event,'custRule_${idx}_${ci}')" ondragover="rsDragOver(event,'custRule_${idx}_${ci}')" ondrop="rsDropCustomRule(event,'${fall}',${idx})" ondragend="rsDragEnd(event)"
       style="border-left:3px solid ${metColor}">
       <span class="rs-drag">⠿</span>
       <span class="rs-code">${escHtml(code)}</span>
@@ -8877,7 +8889,7 @@ function rsAddPositionOrRule(fall){
   if(cond) {
     if(!override.customRules) override.customRules = [];
     const label = {"neighborKrone":"Nachbar = Krone/Keramik","neighborKunststoff":"Nachbar = Kunststoff","neighborImplantat":"Nachbar = Implantat","neighborFehlt":"Nachbar = fehlt","zahnWF":"Zahn = WF vorhanden","zahnKrone":"Zahn = Krone vorhanden","zahnFront":"Zahn = Frontzahn","zahnSeite":"Zahn = Seitenzahn"}[cond] || cond;
-    override.customRules.push({ id:"custom_"+Date.now(), condition:cond, label, pos:code });
+    override.customRules.push({ id:"custom_"+Date.now(), condition:cond, label, pos:code, typ });
   } else {
     if(!override.addPositions) override.addPositions = [];
     const existIdx = override.addPositions.findIndex(p=>p.code===code);
@@ -9118,6 +9130,20 @@ function rsAddCustomRule(fall){
   rsSaveOverride(profiles);
   const posEl = document.getElementById("rs-rule-pos");
   if(posEl) posEl.value="";
+  renderRsFallContent();
+}
+
+function rsDropCustomRule(event, fall, targetIdx){
+  event.preventDefault();
+  if(!_rsDragSrc || !_rsDragSrc.startsWith("custRule_")) return;
+  const srcIdx = parseInt(_rsDragSrc.split("_")[1]);
+  if(srcIdx === targetIdx) return;
+  const {profiles, override} = rsEnsureOverride(fall);
+  if(!override?.customRules) return;
+  const rules = override.customRules;
+  const [moved] = rules.splice(srcIdx, 1);
+  rules.splice(targetIdx, 0, moved);
+  rsSaveOverride(profiles);
   renderRsFallContent();
 }
 

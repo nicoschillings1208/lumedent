@@ -2077,7 +2077,10 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     }
   }
 
-  const areaTeeth = [...new Set(allRelevant.map(n=>n.tooth))].sort((a,b)=>a-b);
+  // Bei Brücke: Glieder aus areaTeeth ausschliessen
+  const areaTeeth = isBruecke && brueckeInfo && brueckeInfo.anker.length
+    ? [...new Set(allRelevant.filter(n=>brueckeInfo.anker.includes(n.tooth)||!n.isTarget).map(n=>n.tooth))].sort((a,b)=>a-b)
+    : [...new Set(allRelevant.map(n=>n.tooth))].sort((a,b)=>a-b);
 
   // Inlay-Flächen: aus caseInput.inlayFlaechen ODER aus FALL_TYPEN[fall].inlayFlaechen
   const inlayFlaechen = caseInput.inlayFlaechen

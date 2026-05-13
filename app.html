@@ -6999,8 +6999,8 @@ function buildPrivatGlobalOutput(results){
             const neighborL = r.ctx?.neighborLeft?.tooth;
             const neighborR = r.ctx?.neighborRight?.tooth;
             if(isNachbar){
-              const hasL = neighborL && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborL}, findings);
-              const hasR = neighborR && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborR}, findings);
+              const hasL = neighborL && rsCheckNeighborTooth(rule.condition, neighborL, findings);
+              const hasR = neighborR && rsCheckNeighborTooth(rule.condition, neighborR, findings);
               if(hasL) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
               if(hasR) allLines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
             } else {
@@ -7318,8 +7318,8 @@ function buildGkvGlobalOutput(results){
           codes.forEach(code => {
             if(lines.find(l=>l.code===code||l.text===code||l.text?.endsWith(" "+code))) return;
             if(isNachbar){
-              const hasL = neighborL && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborL}, findings);
-              const hasR = neighborR && rsCheckCondition(rule.condition, {...r.ctx, tooth:neighborR}, findings);
+              const hasL = neighborL && rsCheckNeighborTooth(rule.condition, neighborL, findings);
+              const hasR = neighborR && rsCheckNeighborTooth(rule.condition, neighborR, findings);
               if(hasL) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborL} ${code}`, code, teeth:[neighborL] });
               if(hasR) lines.push({ type:"nachbar", label:"Regel", text:BEB97_CODES.has(code)?code:`${neighborR} ${code}`, code, teeth:[neighborR] });
             } else {
@@ -9457,6 +9457,17 @@ function rsDragEnd(event){
 // ── Integration mit Generator ──────────────────────────────────────
 // rsGetOverride(fallKey) wird in calculateCaseResult genutzt
 // um addPositions/removePositions anzuwenden
+
+function rsCheckNeighborTooth(cond, tooth, findings){
+  const f = findings?.[tooth] || new Set();
+  switch(cond){
+    case "neighborKrone":      return f.has("KR")||f.has("KE")||f.has("TK")||f.has("K")||f.has("VMK");
+    case "neighborKunststoff": return f.has("KU")||f.has("K5");
+    case "neighborImplantat":  return f.has("I")||f.has("IK");
+    case "neighborFehlt":      return f.has("F")||f.has("FU");
+    default: return false;
+  }
+}
 
 function rsCheckCondition(cond, ctx, findings){
   const tooth = ctx?.tooth;

@@ -2077,10 +2077,14 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
     }
   }
 
-  // Bei Brücke: Glieder aus areaTeeth ausschliessen
+  // Bei Brücke: nur Ankerzähne + äußere Nachbarn in areaTeeth
   const areaTeeth = isBruecke && brueckeInfo && brueckeInfo.anker.length
-    ? [...new Set(allRelevant.filter(n=>brueckeInfo.anker.includes(n.tooth)||!n.isTarget).map(n=>n.tooth))].sort((a,b)=>a-b)
+    ? [...new Set([
+        ...allRelevant.filter(n=>!n.isTarget).map(n=>n.tooth),  // Nachbarn
+        ...brueckeInfo.anker                                       // nur Anker
+      ])].sort((a,b)=>a-b)
     : [...new Set(allRelevant.map(n=>n.tooth))].sort((a,b)=>a-b);
+  console.log("areaTeeth:", areaTeeth, "isBruecke:", isBruecke, "anker:", brueckeInfo?.anker);
 
   // Inlay-Flächen: aus caseInput.inlayFlaechen ODER aus FALL_TYPEN[fall].inlayFlaechen
   const inlayFlaechen = caseInput.inlayFlaechen

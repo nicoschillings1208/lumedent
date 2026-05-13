@@ -7068,7 +7068,6 @@ function buildGkvGlobalOutput(results){
     "gkv-in3-praep","gkv-in3-zem","gkv-in3-pz"]);
   const isGkvKroneCase = v => { const fg=FALL_POS_MAP[v.ctx&&v.ctx.fall]; return fg&&GKV_KRONE_GRUPPEN.has(fg); };
   const gkvKroneCases = valid.filter(isGkvKroneCase);
-  gkvKroneCases.forEach(r=>{ if(r.ctx?.fall?.includes("SKM-BR")) console.log("SKM-BR lines:", r.billingOut?.lines?.map(l=>l.text)); });
 
   const gkvFuellCases = valid.filter(v=>!isGkvKroneCase(v));
 
@@ -7380,7 +7379,10 @@ function generate(){
   // Alle Behandlungszähne aller Fälle sammeln
   // → wird an calculateCaseResult weitergegeben damit Nachbarlogik
   //   einen Behandlungszahn eines anderen Falls überspringt
-  const allTreatmentTeeth = new Set(expandedCases.map(ec=>ec.tooth));
+  // allTreatmentTeeth: alle Behandlungszähne inkl. _allTeeth aus Bundle-Fällen
+  const allTreatmentTeeth = new Set(expandedCases.flatMap(ec=>
+    ec._allTeeth ? [...ec._allTeeth] : [ec.tooth]
+  ));
 
   lastResults = expandedCases.map(ec=>{
     const r = calculateCaseResult(rsApplyToCase(ec, findings, kassentyp), findings, kassentyp, allTreatmentTeeth);

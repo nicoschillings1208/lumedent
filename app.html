@@ -2999,9 +2999,10 @@ const GKV_SKM_KR_DIG_PRAEP_POS = [
   { code:"4050",        typ:"zahn"        },
   { code:"4055",        typ:"zahn"        },
   { code:"4080",        typ:"zahn"        },
-  { code:"4025",        typ:"zahn"        },
-  { code:"M4025",       typ:"zahn"        },
-  { code:"9050",        typ:"einmalig"    },
+  { code:"2130",        typ:"nachbar_c"   },
+  { code:"2320",        typ:"nachbar_ke"  },
+  { code:"8229",        typ:"nachbar_ke"  },
+  { code:"9050",        typ:"behandlung"  },
   { code:"miab",        typ:"einmalig"    },
   { code:"0817",        typ:"einmalig"    },
   { code:"0221i",       typ:"einmalig"    },
@@ -8997,8 +8998,14 @@ const STANDARD_RULES_BY_GRUPPE = {
   "gkv-skm-br-dig-bundle": [
     { id:"kbk", nr:1, label:"Brückenplanung (Anker/Glied)", pos:"KBK" },
   ],
-  "gkv-skm-kr-dig": [],
-  "gkv-skm-kr-dig-bundle": [],
+  "gkv-skm-kr-dig": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
+  "gkv-skm-kr-dig-bundle": [
+    { id:"2320", nr:1, label:"Nachbar hat Krone/Keramik",    pos:"2320 + 8229" },
+    { id:"2130", nr:2, label:"Nachbar hat Kunststofffüllung", pos:"2130" },
+  ],
   "gkv-sch": [],
   "gkv-sch-dig": [],
   "gkv-br-dig": [

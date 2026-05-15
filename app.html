@@ -2376,17 +2376,9 @@ function calculateKroneResult(caseInput, findings, opt, treatmentTeeth=null, isG
         }
         return;
       }
-      // Inlay-Flächen-spezifisch
-      if(typ==="fuellung_inlay_1"&&inlayCode==="2150"){
-        lines.push({ type:"fill", text:`${tooth} 2150-f`, teeth:[tooth], code:"2150-f" });
-        return;
-      }
-      if(typ==="fuellung_inlay_2"&&inlayCode==="2160"){
-        lines.push({ type:"fill", text:`${tooth} 2160-f`, teeth:[tooth], code:"2160-f" });
-        return;
-      }
-      if(typ==="fuellung_inlay_3"&&inlayCode==="2170"){
-        lines.push({ type:"fill", text:`${tooth} 2170-f`, teeth:[tooth], code:"2170-f" });
+      // Inlay-Flächen-spezifisch — code kommt direkt aus der Positions-Liste (GKV: 2150-f, PKV: 2150)
+      if((typ==="fuellung_inlay_1"&&inlayCode==="2150")||(typ==="fuellung_inlay_2"&&inlayCode==="2160")||(typ==="fuellung_inlay_3"&&inlayCode==="2170")){
+        lines.push({ type:"fill", text:BEB97_CODES.has(code)?code:`${tooth} ${code}`, teeth:[tooth], code });
         return;
       }
     });

@@ -748,6 +748,25 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let _currentUserId = null;
 let _saveTimeout = null;
 let _sessionToken = null;
+async function registerSession(userId, plan) {
+  const PLAN_LIMITS = { solo:1, praxis:3, team:999 };
+  const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const limit = PLAN_LIMITS[plan] || 1;
+  const cutoff = new Date(Date.now() - 4 * 60 * 1000).toISOString();
+  const { data: sessions } = await sb.from('active_sessions').select('id,created_at').eq('user_id', userId).gte('last_seen', cutoff).order('created_at', { ascending: true });
+  const active = sessions || [];
+  if (active.length >= limit) {
+    const ids = active.slice(0, active.length - limit + 1).map(s => s.id);
+    await sb.from('active_sessions').delete().in('id', ids);
+  }
+  await sb.from('active_sessions').insert({ user_id: userId, session_token: token, plan, device_info: navigator.userAgent.slice(0,120), last_seen: new Date().toISOString() });
+  localStorage.setItem('ld_session_token', token);
+  localStorage.setItem('ld_user_id', userId);
+  localStorage.setItem('ld_plan', plan);
+  return token;
+}
+
+
 let _heartbeatInterval = null;
 
 // ── AUTH GUARD + SESSION CONCURRENCY CONTROL ─────────────
@@ -755,13 +774,24 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   if (!session) { window.location.href = '/auth.html'; return; }
 
   _currentUserId = session.user.id;
-  _sessionToken = sessionStorage.getItem('ld_session_token');
+  _sessionToken = localStorage.getItem('ld_session_token');
 
   // Kein Token = noch nie eingeloggt oder anderer Browser
   // Admins dürfen ohne Token rein
   if (!_sessionToken) {
     if (!ADMIN_EMAILS.includes(session.user.email)) {
-      window.location.href = '/auth.html';
+      try {
+        const { data: sub } = await sb.from('subscriptions').select('plan,status').eq('user_id', session.user.id).single();
+        if (!sub || !['active','trialing'].includes(sub.status)) {
+          window.location.href = '/auth.html';
+          return;
+        }
+        const newToken = await registerSession(session.user.id, sub.plan || 'solo');
+        _sessionToken = newToken;
+      } catch(e) {
+        window.location.href = '/auth.html';
+        return;
+      }
       return;
     }
   } else {
@@ -776,7 +806,7 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
     if (!sessionError && mySession === null) {
       // Session existiert nicht mehr → wurde gekickt
       await sb.auth.signOut();
-      sessionStorage.clear();
+      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
       window.location.href = '/auth.html?reason=session_kicked';
       return;
     }
@@ -804,7 +834,7 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
     if (!error && updated && updated.length === 0) {
       clearInterval(_heartbeatInterval);
       await sb.auth.signOut();
-      sessionStorage.clear();
+      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
       showKickedOverlay();
     }
   }
@@ -871,7 +901,7 @@ window.addEventListener('DOMContentLoaded', () => {
           .eq('session_token', _sessionToken);
       }
       clearInterval(_heartbeatInterval);
-      sessionStorage.clear();
+      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
       await sb.auth.signOut();
       window.location.href = '/auth.html';
     };

@@ -80,6 +80,8 @@ module.exports = async (req, res) => {
       payment_method_collection: 'always',
       'automatic_tax[enabled]': 'true',
       'tax_id_collection[enabled]': 'true',
+      'customer_update[address]': 'auto',
+      'customer_update[name]': 'auto',
     });
 
     if (session.error) {

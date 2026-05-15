@@ -8703,12 +8703,17 @@ function renderRsProfileTabs(){
   </div>`;
 }
 
-function renderRsFallTabs(){
-  const tabsEl = document.getElementById("rs-fall-tabs");
-  if(!tabsEl) return;
+function rsOnFallSelectChange(fall){
+  _rsActiveFall = fall;
+  renderRsFallContent();
+}
 
-  if(!rsGetActiveId()){ 
-    tabsEl.innerHTML = "";
+function renderRsFallTabs(){
+  const selectEl = document.getElementById("rs-fall-select");
+  if(!selectEl) return;
+
+  if(!rsGetActiveId()){
+    selectEl.innerHTML = "<option>— Kein Profil —</option>";
     document.getElementById("rs-fall-content").innerHTML = `
       <div style="text-align:center;padding:40px 20px;color:var(--text-muted)">
         <div style="font-size:32px;margin-bottom:12px">⚙</div>
@@ -8718,26 +8723,22 @@ function renderRsFallTabs(){
     return;
   }
 
-  // Wenn kein aktiver Fall, ersten nehmen
   if(!_rsActiveFall) _rsActiveFall = "PF1";
 
-  let tabsHtml = "";
+  let optHtml = "";
   Object.entries(FALL_GRUPPEN).forEach(([gruppeLabel, falls]) => {
-    tabsHtml += `<span class="rs-fall-group-label">${gruppeLabel}</span>`;
+    optHtml += `<optgroup label="${gruppeLabel}">`;
     falls.forEach(fall => {
-      const isActive = fall === _rsActiveFall;
       const hasOverride = rsGetOverride(fall) && (
         (rsGetOverride(fall).removePositions||[]).length > 0 ||
         (rsGetOverride(fall).addPositions||[]).length > 0 ||
         (rsGetOverride(fall).reorder||[]).length > 0
       );
-      tabsHtml += `<button class="rs-fall-tab${isActive?" active":""}" 
-        onclick="rs_selectFall('${fall}')">
-        ${FALL_LABELS[fall]||fall}${hasOverride?` <span style="color:var(--accent);font-size:10px">●</span>`:""}
-      </button>`;
+      optHtml += `<option value="${fall}" ${fall===_rsActiveFall?"selected":""}>${FALL_LABELS[fall]||fall}${hasOverride?" ●":""}</option>`;
     });
+    optHtml += `</optgroup>`;
   });
-  tabsEl.innerHTML = tabsHtml;
+  selectEl.innerHTML = optHtml;
   renderRsFallContent();
 }
 
@@ -9633,9 +9634,6 @@ document.addEventListener("DOMContentLoaded",()=>{
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Aktives Profil</div>
       <div id="rs-profile-tabs" style="display:flex;gap:6px;flex-wrap:wrap;flex:1"></div>
       <div style="display:flex;gap:6px">
-        <button onclick="rs_duplicateProfile()" class="bs" style="font-size:11px;padding:6px 12px" title="Profil duplizieren">⧉ Duplizieren</button>
-        <button onclick="rs_exportProfile()" class="bs" style="font-size:11px;padding:6px 12px" title="Exportieren">↓ Export</button>
-        <label class="bs" style="font-size:11px;padding:6px 12px;cursor:pointer" title="Importieren">↑ Import<input type="file" accept=".json" onchange="rs_importProfile(event)" style="display:none"/></label>
         <button onclick="rs_deleteProfile()" class="bs" style="font-size:11px;padding:6px 12px;color:var(--red)" title="Profil löschen">✕</button>
       </div>
     </div>
@@ -9643,20 +9641,13 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   <!-- Falltyp-Navigation -->
   <div class="card" style="padding:0;overflow:hidden">
-    <div style="padding:14px 20px 0;border-bottom:1px solid var(--border)">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Behandlungsfall wählen</div>
-      <div style="display:flex;align-items:center;gap:4px">
-        <button onclick="document.getElementById('rs-fall-tabs').scrollBy({left:-200,behavior:'smooth'})"
-          style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .12s"
-          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">‹</button>
-        <div id="rs-fall-tabs" style="display:flex;gap:0;overflow-x:auto;flex:1;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth"></div>
-        <button onclick="document.getElementById('rs-fall-tabs').scrollBy({left:200,behavior:'smooth'})"
-          style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .12s"
-          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">›</button>
-      </div>
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Behandlungsfall</div>
+      <select id="rs-fall-select" onchange="rsOnFallSelectChange(this.value)"
+        style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text-primary);font-size:13px;font-family:var(--font);cursor:pointer;outline:none">
+      </select>
     </div>
+    <div id="rs-fall-tabs" style="display:none"></div>
     <div id="rs-fall-content" style="padding:20px"></div>
   </div>
 

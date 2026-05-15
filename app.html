@@ -748,25 +748,6 @@ const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 let _currentUserId = null;
 let _saveTimeout = null;
 let _sessionToken = null;
-async function registerSession(userId, plan) {
-  const PLAN_LIMITS = { solo:1, praxis:3, team:999 };
-  const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
-  const limit = PLAN_LIMITS[plan] || 1;
-  const cutoff = new Date(Date.now() - 4 * 60 * 1000).toISOString();
-  const { data: sessions } = await sb.from('active_sessions').select('id,created_at').eq('user_id', userId).gte('last_seen', cutoff).order('created_at', { ascending: true });
-  const active = sessions || [];
-  if (active.length >= limit) {
-    const ids = active.slice(0, active.length - limit + 1).map(s => s.id);
-    await sb.from('active_sessions').delete().in('id', ids);
-  }
-  await sb.from('active_sessions').insert({ user_id: userId, session_token: token, plan, device_info: navigator.userAgent.slice(0,120), last_seen: new Date().toISOString() });
-  localStorage.setItem('ld_session_token', token);
-  localStorage.setItem('ld_user_id', userId);
-  localStorage.setItem('ld_plan', plan);
-  return token;
-}
-
-
 let _heartbeatInterval = null;
 
 // ── AUTH GUARD + SESSION CONCURRENCY CONTROL ─────────────
@@ -774,25 +755,13 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   if (!session) { window.location.href = '/auth.html'; return; }
 
   _currentUserId = session.user.id;
-  _sessionToken = localStorage.getItem('ld_session_token');
+  _sessionToken = sessionStorage.getItem('ld_session_token');
 
   // Kein Token = noch nie eingeloggt oder anderer Browser
   // Admins dürfen ohne Token rein
   if (!_sessionToken) {
     if (!ADMIN_EMAILS.includes(session.user.email)) {
-      // Kein Token aber Session aktiv → neu registrieren statt redirect
-      try {
-        const { data: sub } = await sb.from('subscriptions').select('plan,status').eq('user_id', session.user.id).single();
-        if (!sub || !['active','trialing'].includes(sub.status)) {
-          window.location.href = '/auth.html';
-          return;
-        }
-        const newToken = await registerSession(session.user.id, sub.plan || 'solo');
-        _sessionToken = newToken;
-      } catch(e) {
-        window.location.href = '/auth.html';
-        return;
-      }
+      window.location.href = '/auth.html';
       return;
     }
   } else {
@@ -807,7 +776,7 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
     if (!sessionError && mySession === null) {
       // Session existiert nicht mehr → wurde gekickt
       await sb.auth.signOut();
-      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
+      sessionStorage.clear();
       window.location.href = '/auth.html?reason=session_kicked';
       return;
     }
@@ -835,7 +804,7 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
     if (!error && updated && updated.length === 0) {
       clearInterval(_heartbeatInterval);
       await sb.auth.signOut();
-      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
+      sessionStorage.clear();
       showKickedOverlay();
     }
   }
@@ -902,7 +871,7 @@ window.addEventListener('DOMContentLoaded', () => {
           .eq('session_token', _sessionToken);
       }
       clearInterval(_heartbeatInterval);
-      localStorage.removeItem('ld_session_token'); localStorage.removeItem('ld_user_id'); localStorage.removeItem('ld_plan');
+      sessionStorage.clear();
       await sb.auth.signOut();
       window.location.href = '/auth.html';
     };
@@ -1036,7 +1005,6 @@ localStorage.setItem = function(key, value) {
 
 <nav class="nav-tabs">
   <button class="nav-tab on" onclick="switchView('generator',this)">Generator</button>
-  <button class="nav-tab" onclick="switchView('katalog',this)">Katalog</button>
   <button class="nav-tab" onclick="switchView('regelstudio',this)">Regelstudio</button>
 
 </nav>
@@ -1102,42 +1070,7 @@ localStorage.setItem = function(key, value) {
 </div>
 
 <!-- ══ KATALOG ══ -->
-<div class="view" id="view-katalog">
-<main>
-  <div class="card">
-    <div class="card-hd"><div class="cdot"></div><span class="ctitle">Abrechnungskatalog</span></div>
-    <div class="kat-toolbar">
-      <input class="kat-search" type="text" id="kat-search" placeholder="Position, Stichwort oder Beschreibung suchen …" oninput="renderKatalog()"/>
-      <div class="kat-filters">
-        <button class="kfbtn on" data-sys="ALL" onclick="setKatFilter('ALL')">Alle</button>
-        <button class="kfbtn" data-sys="BEMA" onclick="setKatFilter('BEMA')">BEMA</button>
-        <button class="kfbtn" data-sys="GOZ"  onclick="setKatFilter('GOZ')">GOZ</button>
-        <button class="kfbtn" data-sys="BEB"  onclick="setKatFilter('BEB')">BEB 97</button>
-      </div>
-      <span class="kat-count" id="kat-count"></span>
-    </div>
-    <div class="kat-grid" id="kat-grid"></div>
-  </div>
-  
-</main>
-</div>
 
-<!-- ══ PROFIL-EDITOR MODAL ══ -->
-<div id="profil-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;overflow-y:auto">
-  <div style="background:#fff;max-width:640px;margin:20px auto;border-radius:16px;overflow:hidden;min-height:400px">
-    <!-- Modal Header -->
-    <div style="background:var(--dark);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:16px 16px 0 0">
-      <div>
-        <div style="color:#fff;font-size:15px;font-weight:700;font-family:var(--font-h)" id="pe-title">Profil bearbeiten</div>
-        <div style="color:rgba(255,255,255,.5);font-size:11px" id="pe-subtitle"></div>
-      </div>
-      <button onclick="closeProfilEditor()" style="color:#fff;background:none;border:none;font-size:20px;cursor:pointer;opacity:.7">✕</button>
-    </div>
-    <!-- Modal Body -->
-    <div style="padding:16px 20px" id="pe-body">
-    </div>
-  </div>
-</div>
 
 <script>
 // ================================================================
@@ -9582,51 +9515,15 @@ function switchView(v,btn){
       if(km) km.style.display="none";
     } else { renderKonfigFallTabs(); }
   }
-  if(v==="katalog") renderKatalog();
 }
 
 function setKatFilter(sys){
   katFilter=sys;
   document.querySelectorAll(".kfbtn").forEach(b=>b.classList.remove("on"));
   document.querySelector(`.kfbtn[data-sys="${sys}"]`).classList.add("on");
-  renderKatalog();
 }
 
-function renderKatalog(){
-  const q=(document.getElementById("kat-search")?.value||"").toLowerCase().trim();
-  const grid=document.getElementById("kat-grid");
-  const countEl=document.getElementById("kat-count");
-  let items=KATALOG;
-  if(katFilter!=="ALL") items=items.filter(p=>p.system===katFilter);
-  if(q) items=items.filter(p=>
-    p.code.toLowerCase().includes(q)||p.title.toLowerCase().includes(q)||
-    p.description.toLowerCase().includes(q)||(p.hints||[]).some(h=>h.toLowerCase().includes(q))
-  );
-  countEl.textContent=`${items.length} Position${items.length!==1?"en":""}`;
-  if(!items.length){ grid.innerHTML=`<div class="kat-no-results">Keine Positionen gefunden.</div>`; return; }
-  grid.innerHTML=items.map(p=>{
-    const hintsHTML=(p.hints||[]).filter(h=>!h.match(/Punkte:|fach:|€|\d+,\d+/)).map(h=>`<li style="margin-left:14px;font-size:12px;color:var(--brown-400)">${escHtml(h)}</li>`).join("");
-    const fields=[
-      {lbl:"Häufigkeit",val:p.frequency},{lbl:"Einschränkungen",val:p.restrictions},{lbl:"Kombinationen",val:p.combinations}
-    ].map(f=>`<div class="kat-detail-field">
-      <div class="kat-detail-field-lbl">${f.lbl}</div>
-      <div class="kat-detail-field-val ${f.val==="Platzhalter"||!f.val?"empty":""}">${escHtml(f.val||"—")}</div>
-    </div>`).join("");
-    return`<div class="kat-item" id="kitem-${escHtml(p.code)}" onclick="toggleKatItem('${escHtml(p.code)}')">
-      <div class="kat-item-hd">
-        <span class="kat-item-code">${escHtml(p.code)}</span>
-        <span class="kat-item-sys sys-${p.system}">${p.system}</span>
-        <span class="kat-item-title">${escHtml(p.title)}</span>
-        <span class="kat-item-chevron">▾</span>
-      </div>
-      <div class="kat-item-body">
-        <p class="kat-detail-desc">${escHtml(p.description)}</p>
-        ${hintsHTML?`<ul style="margin-bottom:14px">${hintsHTML}</ul>`:""}
-        <div class="kat-detail-grid">${fields}</div>
-      </div>
-    </div>`;
-  }).join("");
-}
+
 
 function toggleKatItem(code){
   const el=document.getElementById(`kitem-${code}`);
@@ -9643,7 +9540,6 @@ function toggleKatItem(code){
 document.addEventListener("DOMContentLoaded",()=>{
   buildLegend();
   buildSchema();
-  renderKatalog();
   addCase(); // starte mit einem leeren Fall
 
   // Event-Delegation für Privat-Optionen Checkboxen

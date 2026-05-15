@@ -158,7 +158,7 @@ input::placeholder { color: var(--muted); }
       </div>
       <button class="btn" onclick="doRegister()" id="btn-register">14 Tage kostenlos starten →</button>
       <div class="trial-note">
-        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat inkl. MwSt.<br>
+        <strong>14 Tage kostenlos</strong> · Danach ab 49 €/Monat<br>
         Zahlungsmittel wird nach Registrierung hinterlegt · Jederzeit kündbar
       </div>
     </div>
@@ -278,9 +278,9 @@ async function registerSession(userId, plan) {
     last_seen: new Date().toISOString()
   });
 
-  sessionStorage.setItem('ld_session_token', token);
-  sessionStorage.setItem('ld_user_id', userId);
-  sessionStorage.setItem('ld_plan', plan);
+  localStorage.setItem('ld_session_token', token);
+  localStorage.setItem('ld_user_id', userId);
+  localStorage.setItem('ld_plan', plan);
   return token;
 }
 

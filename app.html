@@ -7904,7 +7904,7 @@ function renderPePositionen(){
   editor.innerHTML = `
     <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <span><strong style="color:rgba(255,255,255,.65)">${FALL_LABELS[fall]||fall}</strong> · ${pos.filter(p=>p.active!==false).length}/${pos.length} aktiv</span>
-      <button onclick="peResetFall()" style="font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;color:rgba(255,255,255,.4)">↺ Zurücksetzen</button>
+      <button onclick="peResetFall()" style="font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;color:var(--text-3)">↺ Zurücksetzen</button>
     </div>
     <div id="pe-list">${items}</div>
     <!-- Neue Position hinzufügen -->
@@ -8409,17 +8409,19 @@ function renderRsFallContent(){
     if(isDeleted) return null;
     const isDisabled = isWenn ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr) : !p.active;
     if(isWenn) {
-      return `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${p.code}" data-idx="${i}"
-        ondragstart="rsDragStart(event,'${p.code}')" ondragover="rsDragOver(event,'${p.code}')" ondrop="rsDrop(event,'${fall}','${p.code}')" ondragend="rsDragEnd(event)"
+      // Split multi-code rules into separate rows
+      const ruleCodes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
+      return ruleCodes.map(rCode => `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${rCode}" data-idx="${i}"
+        ondragstart="rsDragStart(event,'${rCode}')" ondragover="rsDragOver(event,'${rCode}')" ondrop="rsDrop(event,'${fall}','${rCode}')" ondragend="rsDragEnd(event)"
         style="border-left:3px solid ${metColor}">
         <span class="rs-drag">⠿</span>
-        <span class="rs-code">${escHtml(p.code)}</span>
+        <span class="rs-code">${escHtml(rCode)}</span>
         <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
         <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
         ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
         <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
-        <button class="rs-btn-del" onclick="rsDeleteRuleByPos('${fall}','${escHtml(rule.pos)}')" title="Löschen">✕</button>
-      </div>`;
+        <button class="rs-btn-del" onclick="rsDeleteRuleByPos('${fall}','${escHtml(rCode)}')" title="Löschen">✕</button>
+      </div>`).join("");
     } else {
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" class="rs-typ-select">
         ${TYP_OPTIONS.map(([v,l])=>`<option value="${v}"${p.typ===v?" selected":""}>${l}</option>`).join("")}
@@ -8464,7 +8466,7 @@ function renderRsFallContent(){
         <span style="font-size:14px;font-weight:700;color:var(--text-1)">${FALL_LABELS[fall]||fall}</span>
         <span style="font-size:11px;color:var(--text-3);margin-left:8px">${activeCount}/${totalCount} aktiv</span>
       </div>
-      ${hasOverride?`<button class="rs-btn-sm" onclick="rsResetFall('${fall}')" style="color:var(--red)">↺ Zurücksetzen</button>`:""}
+      ${hasOverride?`<button style="font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font)" onclick="rsResetFall('${fall}')">↺ Zurücksetzen</button>`:""}
     </div>
     <div class="rs-section-title">Positionen</div>
     <div class="rs-pos-list" id="rs-pos-list">${allRowsHtml}</div>

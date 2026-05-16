@@ -8970,9 +8970,11 @@ function rsResetFall(fall){
 function rsDeleteRule(fall, ruleId){}
 function rsDeleteRuleByPos(fall, posStr){
   const codes = posStr.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
-  const override = rsGetOverride(fall) || {};
+  const ensured = rsEnsureOverride(fall);
+  if(!ensured) return;
+  const { profiles, override } = ensured;
   override.removePositions = [...new Set([...(override.removePositions||[]), ...codes])];
-  rsSaveOverride(fall, override);
+  rsSaveOverride(profiles);
   renderRsFallContent();
 }
 

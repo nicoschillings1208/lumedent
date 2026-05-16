@@ -8968,9 +8968,14 @@ function rsResetFall(fall){
 }
 
 function rsDeleteRule(fall, ruleId){
+  // Find the position code for this rule
+  const stdRules = getStandardRules(fall);
+  const rule = stdRules.find(r=>(r.id||r.nr)===ruleId);
+  if(!rule) return;
+  // Remove each position code in this rule
+  const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
   const override = rsGetOverride(fall) || {};
-  override.rulesDisabled = (override.rulesDisabled||[]).filter(id=>id!==ruleId);
-  override.rulesDeleted = [...(override.rulesDeleted||[]), ruleId];
+  override.removePositions = [...new Set([...(override.removePositions||[]), ...codes])];
   rsSaveOverride(fall, override);
   renderRsFallContent();
 }

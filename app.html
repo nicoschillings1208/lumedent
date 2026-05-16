@@ -8405,6 +8405,8 @@ function renderRsFallContent(){
     const cond = isWenn ? ruleCondFromLabel(rule.label) : null;
     const met = isWenn ? conditionMet(cond) : null;
     const metColor = met === true ? "#3DB87A" : "rgba(0,0,0,0.08)";
+    const isDeleted = isWenn && (override?.rulesDeleted||[]).includes(rule.id||rule.nr);
+    if(isDeleted) return null;
     const isDisabled = isWenn ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr) : !p.active;
     if(isWenn) {
       return `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${p.code}" data-idx="${i}"
@@ -8416,6 +8418,7 @@ function renderRsFallContent(){
         <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
         ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
         <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
+        <button class="rs-btn-del" onclick="rsDeleteRule('${fall}','${rule.id||rule.nr}')" title="Löschen">✕</button>
       </div>`;
     } else {
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" class="rs-typ-select">
@@ -8451,7 +8454,7 @@ function renderRsFallContent(){
     </div>`).join("");
   });
 
-  const allRowsHtml = [...allRows, ...customRuleRows].join("");
+  const allRowsHtml = [...allRows, ...customRuleRows].filter(Boolean).join("");
   const activeCount = positions.filter(p => { const rule=ruleByCode[p.code]; return rule ? !(override?.rulesDisabled||[]).includes(rule.id||rule.nr) : p.active; }).length + customRules.filter(r=>!(override?.rulesDisabled||[]).includes(r.id)).length;
   const totalCount = positions.length + customRules.length;
 
@@ -8962,6 +8965,14 @@ function rsResetFall(fall){
   rsSaveProfiles(profiles);
   renderRsFallContent();
   renderRsFallTabs();
+}
+
+function rsDeleteRule(fall, ruleId){
+  const override = rsGetOverride(fall) || {};
+  override.rulesDisabled = (override.rulesDisabled||[]).filter(id=>id!==ruleId);
+  override.rulesDeleted = [...(override.rulesDeleted||[]), ruleId];
+  rsSaveOverride(fall, override);
+  renderRsFallContent();
 }
 
 function rsToggleRule(fall, ruleId, active){

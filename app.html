@@ -8409,8 +8409,9 @@ function renderRsFallContent(){
     if(isDeleted) return null;
     const isDisabled = isWenn ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr) : !p.active;
     if(isWenn) {
-      // Split multi-code rules into separate rows
+      // Only render rule once (for first matching code)
       const ruleCodes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
+      if(ruleCodes[0] !== p.code) return ""; // Skip duplicate renders
       return ruleCodes.map(rCode => `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${rCode}" data-idx="${i}"
         ondragstart="rsDragStart(event,'${rCode}')" ondragover="rsDragOver(event,'${rCode}')" ondrop="rsDrop(event,'${fall}','${rCode}')" ondragend="rsDragEnd(event)"
         style="border-left:3px solid ${metColor}">

@@ -152,7 +152,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .case-fall-btns{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
 .case-fall-btn{
   padding:5px 11px;border:1px solid var(--border);border-radius:5px;
-  background:#1A2030;color:rgba(255,255,255,.55);
+  background:var(--bg-3);color:rgba(255,255,255,.7);
   font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;font-family:var(--font);
 }
 .case-fall-btn:hover{border-color:var(--accent-border);color:var(--accent)}
@@ -267,7 +267,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .rs-toggle.off::after{left:2px}
 .rs-btn-del{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-4);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .rs-btn-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.rs-typ-select{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--border);background:#1A2030;color:rgba(255,255,255,.55);font-family:var(--font);cursor:pointer;outline:none;font-weight:600}
+.rs-typ-select{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--border);background:var(--bg-3);color:rgba(255,255,255,.7);font-family:var(--font);cursor:pointer;outline:none;font-weight:600}
 .rs-add-panel{
   background:var(--bg-3);border:1px solid var(--border);
   border-radius:8px;padding:14px;margin-top:10px;
@@ -656,7 +656,7 @@ localStorage.setItem = function(key, value) {
   <!-- ZAHNSCHEMA -->
   <div class="card">
     <div class="card-hd"><div class="cdot"></div><span class="ctitle">Zahnschema &amp; Minibefund</span>
-    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(201,168,76,.12);color:#C9A84C;margin-left:8px;font-weight:700;border:1px solid rgba(201,168,76,.25)"></span>
+    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);margin-left:8px;font-weight:600;border:1px solid rgba(255,255,255,.12)"></span>
   </div>
     <div class="legend" id="legend"></div>
     <div class="srow-lbl">Oberkiefer</div>
@@ -680,7 +680,7 @@ localStorage.setItem = function(key, value) {
     <div class="cases-list" id="cases-list"></div>
     <div style="display:flex;gap:8px;align-items:stretch">
       <button class="case-add-btn" style="border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)" onclick="addCase()">+ Fall hinzufügen</button>
-      <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid var(--border);color:var(--text-3);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Fall vorschlagen</button>
+      <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid var(--border);color:rgba(255,255,255,.5);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Fall vorschlagen</button>
     </div>
   </div>
 
@@ -6087,7 +6087,7 @@ function renderCasesList(){
               transition:all .12s;min-width:100px;"
           >
             <option value="" disabled ${gruppe!==currentKat?'selected':''} style="color:rgba(255,255,255,.3)">${gruppe}</option>
-            ${items.map(([k,v])=>`<option value="${k}" ${c.caseType===k?'selected':''} style="background:#1a1a2e;color:#fff">${v.label} – ${v.desc}</option>`).join('')}
+            ${items.map(([k,v])=>`<option value="${k}" ${c.caseType===k?'selected':''} style="background:var(--bg-4);color:var(--text-1)">${v.label} – ${v.desc}</option>`).join('')}
           </select>
           <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:9px;color:${gruppe===currentKat?'rgba(255,255,255,.7)':'var(--text-muted)'}">▾</span>
         </div>
@@ -7666,9 +7666,9 @@ function updateAktivBadge(){
   const hasCustom = (prof && prof.positionen && Object.keys(prof.positionen).length>0)
     || (id==="__basis" && basis.positionen && Object.keys(basis.positionen).length>0);
   badge.textContent = hasCustom ? `✎ ${name}` : "";
-  badge.style.background = hasCustom ? "rgba(201,168,76,.12)" : "";
-  badge.style.color = hasCustom ? "#C9A84C" : "";
-  badge.style.border = hasCustom ? "1px solid rgba(201,168,76,.25)" : "";
+  badge.style.background = hasCustom ? "rgba(255,255,255,.07)" : "";
+  badge.style.color = hasCustom ? "rgba(255,255,255,.5)" : "";
+  badge.style.border = hasCustom ? "1px solid rgba(255,255,255,.1)" : "";
 }
 
 function deleteProfil(id){

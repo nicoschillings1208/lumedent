@@ -882,8 +882,9 @@ function outputDragStart(event,idx){
 }
 function outputDragOver(event){
   event.preventDefault();
-  document.querySelectorAll(".gline").forEach(el=>el.classList.remove("drag-over"));
-  event.currentTarget.classList.add("drag-over");
+  event.dataTransfer.dropEffect = "move";
+  document.querySelectorAll("#output-lines-container .gline").forEach(el=>el.classList.remove("drag-over"));
+  event.currentTarget.closest(".gline")?.classList.add("drag-over");
 }
 function outputDrop(event,targetIdx){
   event.preventDefault();
@@ -908,12 +909,9 @@ function outputDrop(event,targetIdx){
         ondragstart="outputDragStart(event,${i})"
         ondragover="outputDragOver(event)"
         ondrop="outputDrop(event,${i})"
-        ondragend="outputDragEnd(event)"
-        style="cursor:grab;user-select:none">
+        ondragend="outputDragEnd(event)">
         <span class="gline-drag" title="Verschieben">⠿</span>
-        <span class="gline-tag ${tc}">${tl}</span>
         <span class="gline-text">${escHtml(l.text)}</span>
-        ${meta}
       </div>`;
     }).join("");
   }
@@ -7554,11 +7552,9 @@ function renderAllResults(results, combined, cases){
       ondragover="outputDragOver(event)"
       ondrop="outputDrop(event,${i})"
       ondragend="outputDragEnd(event)"
-      style="cursor:grab;user-select:none">
+>
       <span class="gline-drag" title="Verschieben">⠿</span>
-      <span class="gline-tag ${tagCls}">${tagLbl}</span>
       <span class="gline-text">${escHtml(l.text)}</span>
-      ${meta}
     </div>`;
   }).join("") : `<div style="color:var(--accent);font-size:12px">Keine Daten.</div>`
   const globalRawText = go ? escHtml(go.multiline) : "";
@@ -7575,7 +7571,6 @@ function renderAllResults(results, combined, cases){
         </div>
       </div>
       <div id="output-lines-container" class="global-lines">${globalLinesHTML}</div>
-      <div class="global-raw" id="output-raw-text">${globalRawText}</div>
       <div class="global-btns">
         <button class="copy-btn-global-sec" onclick="copyOutputLines('inline')">⎘ Einzeilig kopieren</button>
         <button class="copy-btn-global-sec" onclick="copyOutputLines('multi')">⎘ Mehrzeilig</button>

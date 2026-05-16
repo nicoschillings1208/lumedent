@@ -6013,7 +6013,7 @@ function updateCaseFall(id, fall){
 function renderCasesList(){
   const list = document.getElementById("cases-list");
   if(!treatmentCases.length){
-    list.innerHTML=`<div style="font-size:12px;color:var(--brown-300);padding:4px 0">Noch keine Fälle. Klicke "+ Fall hinzufügen".</div>`;
+    list.innerHTML=`<div style="font-size:12px;color:rgba(255,255,255,.3);padding:4px 0">Noch keine Fälle. Klicke "+ Fall hinzufügen".</div>`;
     return;
   }
 
@@ -6115,11 +6115,11 @@ function renderCasesList(){
     const teethArr = [...cTeeth].sort((a,b)=>a-b);
     const hasMissing = teethArr.some(t=>isMissingTooth(t,findings));
     const toothDisplay = teethArr.length > 0
-      ? `<strong style="color:${hasMissing?"#c0392b":"var(--gold-d)"}">
+      ? `<strong style="color:${hasMissing?"#c0392b":"var(--accent)"}">
           ${teethArr.length===1?`Zahn ${teethArr[0]}`:`Zähne ${mergeTeethForSameCode(teethArr)}`}
           ${hasMissing?" ⚠ fehlend":""}
          </strong>`
-      : `<span style="color:var(--brown-300)">Zahn/Zähne wählen</span>`;
+      : `<span style="color:rgba(255,255,255,.3)">Zahn/Zähne wählen</span>`;
 
     // Privat-Optionen: dynamisch aus echtem Output des gewählten Zahns
     const opt = c.optionen || {};
@@ -6202,14 +6202,14 @@ function renderCasesList(){
         </div>
       </div>
         <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
-          <div style="font-size:11px;color:var(--brown-400)">${toothDisplay}
-            ${c.caseType?`<span style="margin-left:8px;color:var(--brown-300)">·</span>
-            <span style="margin-left:8px;font-weight:600;color:var(--brown-600)">${c.caseType}</span>`:""}
-            ${kassentyp==="privat"?`<span style="margin-left:8px;font-size:9px;color:var(--gold-d);border:1px solid var(--gold-d);border-radius:4px;padding:1px 5px;letter-spacing:.06em">PKV</span>`:""}
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">${toothDisplay}
+            ${c.caseType?`<span style="margin-left:8px;color:rgba(255,255,255,.3)">·</span>
+            <span style="margin-left:8px;font-weight:600;color:rgba(255,255,255,.65)">${c.caseType}</span>`:""}
+            ${kassentyp==="privat"?`<span style="margin-left:8px;font-size:9px;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:1px 5px;letter-spacing:.06em">PKV</span>`:""}
           </div>
-          <div style="font-size:9px;color:var(--brown-300);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">Oberkiefer</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">Oberkiefer</div>
           <div class="case-tooth-select">${upperBtns}</div>
-          <div style="font-size:9px;color:var(--brown-300);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">Unterkiefer</div>
+          <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">Unterkiefer</div>
           <div class="case-tooth-select">${lowerBtns}</div>
           <div class="case-fall-btns">${fallBtns}</div>
           ${privatOptHTML}
@@ -7781,10 +7781,10 @@ function renderPeBody(){
   // Passwort-Screen für Basis
   if(peState.isBasis && !peState.pwUnlocked){
     body.innerHTML = `
-      <p style="font-size:13px;color:var(--brown-400);margin-bottom:14px">Praxis-Standard bearbeiten — Passwort erforderlich:</p>
+      <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:14px">Praxis-Standard bearbeiten — Passwort erforderlich:</p>
       <div style="display:flex;gap:8px">
         <input type="password" id="pe-pw" placeholder="Passwort …"
-          style="padding:8px 12px;border:1px solid var(--brown-100);border-radius:8px;font-size:13px;flex:1"
+          style="padding:8px 12px;border:1px solid var(--border-2);border-radius:8px;font-size:13px;flex:1;background:var(--bg-4);color:var(--text-1)"
           onkeydown="if(event.key==='Enter')checkPePw()"/>
         <button class="bp" onclick="checkPePw()" style="font-size:12px;padding:8px 16px">OK</button>
       </div>
@@ -7795,20 +7795,20 @@ function renderPeBody(){
   // Name-Eingabe für neues Profil
   const nameSection = peState.isNew ? `
     <div style="margin-bottom:16px">
-      <label style="font-size:11px;color:var(--brown-400);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px">Profilname</label>
+      <label style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px">Profilname</label>
       <input type="text" id="pe-name" placeholder="z.B. Dr. Müller, Assistenz-Team …"
-        style="width:100%;padding:8px 12px;border:1px solid var(--brown-100);border-radius:8px;font-size:13px;box-sizing:border-box"/>
+        style="width:100%;padding:8px 12px;border:1px solid var(--border-2);border-radius:8px;font-size:13px;box-sizing:border-box;background:var(--bg-4);color:var(--text-1)"/>
     </div>` : "";
 
   // Fall-Tabs
   let fallTabsHtml = "";
   Object.entries(FALL_GRUPPEN).forEach(([grp, falls])=>{
-    fallTabsHtml += `<div style="font-size:10px;color:var(--brown-300);letter-spacing:.09em;text-transform:uppercase;margin:8px 0 4px;width:100%">${grp}</div>`;
+    fallTabsHtml += `<div style="font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.09em;text-transform:uppercase;margin:8px 0 4px;width:100%">${grp}</div>`;
     falls.forEach(f=>{
       const isActive = f === peState.activeFall;
       const isEdited = !!peState.editedPos[f];
       fallTabsHtml += `<button onclick="selectPeFall('${f}')"
-        style="padding:5px 11px;border:1px solid ${isActive?"var(--gold)":"var(--brown-100)"};border-radius:20px;font-size:11px;cursor:pointer;background:${isActive?"var(--gold)":"#fff"};color:${isActive?"#fff":"var(--brown-400)"};margin-bottom:4px;font-weight:${isActive?"700":"400"}">
+        style="padding:5px 11px;border:1px solid ${isActive?"var(--accent)":"var(--border)"};border-radius:20px;font-size:11px;cursor:pointer;background:${isActive?"var(--accent)":"#fff"};color:${isActive?"#fff":"rgba(255,255,255,.4)"};margin-bottom:4px;font-weight:${isActive?"700":"400"}">
         ${FALL_LABELS[f]||f}${isEdited?"*":""}
       </button>`;
     });
@@ -7816,7 +7816,7 @@ function renderPeBody(){
 
   // Export/Import
   const exportRow = `
-    <div style="display:flex;gap:6px;margin-top:4px;padding-top:10px;border-top:1px solid var(--brown-100)">
+    <div style="display:flex;gap:6px;margin-top:4px;padding-top:10px;border-top:1px solid var(--border)">
       <button onclick="exportProfil()" class="bs" style="font-size:11px;padding:4px 10px">↓ Exportieren</button>
       <label class="bs" style="font-size:11px;padding:4px 10px;cursor:pointer">↑ Importieren<input type="file" accept=".json" onchange="importProfil(event)" style="display:none"/></label>
     </div>`;
@@ -7832,7 +7832,7 @@ function renderPeBody(){
       <!-- Rechte Spalte: Positions-Editor -->
       <div style="flex:1;overflow-y:auto" id="pe-pos-editor"></div>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--brown-100)">
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
       <button onclick="closeProfilEditor()" class="bs" style="font-size:12px">Abbrechen</button>
       <button onclick="saveProfil()" class="bp" style="font-size:12px">✓ Speichern</button>
     </div>`;
@@ -7888,13 +7888,13 @@ function renderPePositionen(){
       ondrop="peDrop(event,${i})"
       ondragend="peDragEnd(event)">
       <span class="pe-drag">⠿</span>
-      <input type="checkbox" ${p.active!==false?"checked":""} style="accent-color:var(--gold);width:14px;height:14px;flex-shrink:0"
+      <input type="checkbox" ${p.active!==false?"checked":""} style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0"
         onchange="peToggle(${i},this.checked)"/>
       <span class="pe-code">${p.code}</span>
       <span class="pe-typ">${PE_TYP_LABEL[p.typ]||p.typ||""}</span>
       ${p.regel?`<span class="pe-rule">▸ ${escHtml(p.regel)}</span>`:""}
       <button onclick="peEditRegel(${i})" title="Regel/Kommentar"
-        style="font-size:10px;padding:1px 6px;border:1px solid var(--brown-100);border-radius:5px;background:#fff;cursor:pointer;color:var(--brown-300);flex-shrink:0"
+        style="font-size:10px;padding:1px 6px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;color:rgba(255,255,255,.3);flex-shrink:0"
         >ƒ</button>
       <span class="pe-move" onclick="peMove(${i},-1)" title="Nach oben">↑</span>
       <span class="pe-move" onclick="peMove(${i},1)" title="Nach unten">↓</span>
@@ -7902,21 +7902,21 @@ function renderPePositionen(){
     </div>`).join("");
 
   editor.innerHTML = `
-    <div style="font-size:11px;color:var(--brown-400);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-      <span><strong style="color:var(--brown-600)">${FALL_LABELS[fall]||fall}</strong> · ${pos.filter(p=>p.active!==false).length}/${pos.length} aktiv</span>
-      <button onclick="peResetFall()" style="font-size:10px;padding:2px 8px;border:1px solid var(--brown-100);border-radius:5px;background:#fff;cursor:pointer;color:var(--brown-400)">↺ Zurücksetzen</button>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+      <span><strong style="color:rgba(255,255,255,.65)">${FALL_LABELS[fall]||fall}</strong> · ${pos.filter(p=>p.active!==false).length}/${pos.length} aktiv</span>
+      <button onclick="peResetFall()" style="font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:5px;background:#fff;cursor:pointer;color:rgba(255,255,255,.4)">↺ Zurücksetzen</button>
     </div>
     <div id="pe-list">${items}</div>
     <!-- Neue Position hinzufügen -->
-    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--brown-100)">
-      <div style="font-size:10px;color:var(--brown-300);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Position hinzufügen</div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)">
+      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Position hinzufügen</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <input id="pe-add-code" list="pe-code-list" placeholder="Code (z.B. 0802)"
-          style="padding:6px 10px;border:1px solid var(--brown-100);border-radius:7px;font-size:12px;width:110px"/>
+          style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:110px"/>
         <datalist id="pe-code-list">
           ${Object.keys(POSITIONEN).sort().map(k=>`<option value="${k}">`).join("")}
         </datalist>
-        <select id="pe-add-typ" style="padding:6px 8px;border:1px solid var(--brown-100);border-radius:7px;font-size:12px">
+        <select id="pe-add-typ" style="padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-size:12px">
           <option value="behandlung">Behandlungszahn</option>
           <option value="bereich">Bereich (alle Zähne)</option>
           <option value="einmalig">Einmalig (1× pro Fall)</option>
@@ -7937,7 +7937,7 @@ function renderPePositionen(){
           <option value="temp_front">Provisorium Frontzahn</option>
         </select>
         <input id="pe-add-regel" placeholder="Regel/Kommentar (optional)"
-          style="padding:6px 10px;border:1px solid var(--brown-100);border-radius:7px;font-size:12px;flex:1;min-width:120px"/>
+          style="padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;flex:1;min-width:120px"/>
         <button onclick="peAdd()" class="bp" style="font-size:12px;padding:6px 14px">+ Hinzufügen</button>
       </div>
     </div>`;

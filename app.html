@@ -922,11 +922,10 @@ function outputDragOver(e){e.preventDefault();}
 function outputDrop(e,i){}
 function outputDragEnd(){}
 
-function copyOutputLines(mode){
+function copyOutputLines(mode, btn){
   const texts = _outputLines.map(l => l.text);
   const text = mode === "inline" ? texts.join("  ") : texts.join("\n");
   navigator.clipboard.writeText(text).then(() => {
-    const btn = event.currentTarget;
     const orig = btn.textContent;
     btn.textContent = "✓ Kopiert";
     setTimeout(() => { btn.textContent = orig; }, 1500);
@@ -7572,7 +7571,7 @@ function renderAllResults(results, combined, cases){
       </div>
       <div id="output-lines-container" class="global-lines"></div>
       <div class="global-btns">
-        <button class="copy-btn-global" onclick="copyOutputLines('inline')">⎘ Einzeilig kopieren</button>
+        <button class="copy-btn-global" onclick="copyOutputLines('inline', this)">⎘ Einzeilig kopieren</button>
       </div>
     </div>
   `;

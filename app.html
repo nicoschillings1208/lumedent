@@ -141,7 +141,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .case-fall-btns{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
 .case-fall-btn{
   padding:5px 11px;border:1px solid var(--border);border-radius:5px;
-  background:var(--bg-4);color:var(--text-3);
+  background:#1A2030;color:rgba(255,255,255,.55);
   font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;font-family:var(--font);
 }
 .case-fall-btn:hover{border-color:var(--accent-border);color:var(--accent)}
@@ -256,7 +256,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .rs-toggle.off::after{left:2px}
 .rs-btn-del{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-4);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .rs-btn-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.rs-typ-select{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--border);background:var(--bg-4);color:var(--text-3);font-family:var(--font);cursor:pointer;outline:none;font-weight:600}
+.rs-typ-select{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--border);background:#1A2030;color:rgba(255,255,255,.55);font-family:var(--font);cursor:pointer;outline:none;font-weight:600}
 .rs-add-panel{
   background:var(--bg-3);border:1px solid var(--border);
   border-radius:8px;padding:14px;margin-top:10px;
@@ -587,7 +587,7 @@ localStorage.setItem = function(key, value) {
     <!-- Profil Dropdown -->
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
-        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-2);border-radius:20px;background:#141924;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);" onmouseover="this.style.background='#1A2030'" onmouseout="this.style.background='#141924'">
+        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#0F1421 !important;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);-webkit-appearance:none;appearance:none;" onmouseover="this.style.background='#1A2030'" onmouseout="this.style.background='#141924'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span id="profil-btn-label">Standard</span>
         <span style="font-size:10px;opacity:.5">▾</span>
@@ -645,7 +645,7 @@ localStorage.setItem = function(key, value) {
   <!-- ZAHNSCHEMA -->
   <div class="card">
     <div class="card-hd"><div class="cdot"></div><span class="ctitle">Zahnschema &amp; Minibefund</span>
-    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent);margin-left:8px;font-weight:700;border:1px solid var(--accent-border)"></span>
+    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(201,168,76,.12);color:#C9A84C;margin-left:8px;font-weight:700;border:1px solid rgba(201,168,76,.25)"></span>
   </div>
     <div class="legend" id="legend"></div>
     <div class="srow-lbl">Oberkiefer</div>
@@ -668,7 +668,7 @@ localStorage.setItem = function(key, value) {
     <div class="slabel">Behandlungsfälle</div>
     <div class="cases-list" id="cases-list"></div>
     <div style="display:flex;gap:8px;align-items:stretch">
-      <button class="case-add-btn" onclick="addCase()">+ Fall hinzufügen</button>
+      <button class="case-add-btn" style="border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)" onclick="addCase()">+ Fall hinzufügen</button>
       <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid var(--border);color:var(--text-3);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Fall vorschlagen</button>
     </div>
   </div>

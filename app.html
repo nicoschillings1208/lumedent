@@ -8418,7 +8418,7 @@ function renderRsFallContent(){
         <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
         ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
         <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
-        <button class="rs-btn-del" onclick="rsDeleteRule('${fall}','${rule.id||rule.nr}')" title="Löschen">✕</button>
+        <button class="rs-btn-del" onclick="rsDeleteRuleByPos('${fall}','${escHtml(rule.pos)}')" title="Löschen">✕</button>
       </div>`;
     } else {
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" class="rs-typ-select">
@@ -8967,13 +8967,9 @@ function rsResetFall(fall){
   renderRsFallTabs();
 }
 
-function rsDeleteRule(fall, ruleId){
-  // Find the position code for this rule
-  const stdRules = getStandardRules(fall);
-  const rule = stdRules.find(r=>(r.id||r.nr)===ruleId);
-  if(!rule) return;
-  // Remove each position code in this rule
-  const codes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
+function rsDeleteRule(fall, ruleId){}
+function rsDeleteRuleByPos(fall, posStr){
+  const codes = posStr.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
   const override = rsGetOverride(fall) || {};
   override.removePositions = [...new Set([...(override.removePositions||[]), ...codes])];
   rsSaveOverride(fall, override);

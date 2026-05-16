@@ -7312,25 +7312,22 @@ function refreshToothIcon(n){
 
   if(s.size===0){
     icon.textContent="·";
-    icon.style.borderColor="var(--brown-100)";
-    icon.style.background="#faf8f4";
-    icon.style.color="var(--brown-400)";
+    icon.style.borderColor="var(--border)";
+    icon.style.background="var(--bg-3)";
+    icon.style.color="var(--text-4)";
+    icon.style.fontSize="";
     icon.title=`Zahn ${n} – klicken für Befund`;
     return;
   }
 
   const codes = [...s];
-  // Kurzanzeige: alle Kürzel, max 3
   icon.textContent = codes.slice(0,2).join("+") + (codes.length>2?"…":"");
   icon.style.fontSize = codes.length>1?"8px":"11px";
 
-  // Farbe: erstes Kürzel bestimmt die Hauptfarbe
-  const firstInfo = BEFUND_KUERZEL[codes[0]];
-  if(firstInfo){
-    icon.style.borderColor = firstInfo.color;
-    icon.style.background  = firstInfo.color+"22";
-    icon.style.color       = firstInfo.color;
-  }
+  // Dezent gold für alle Befunde — kein Bunt mehr
+  icon.style.borderColor = "var(--accent)";
+  icon.style.background  = "var(--accent-dim)";
+  icon.style.color       = "var(--accent)";
   icon.title = `Zahn ${n}: ${codes.map(k=>BEFUND_KUERZEL[k]?.label||k).join(", ")}`;
 }
 

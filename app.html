@@ -8409,10 +8409,11 @@ function renderRsFallContent(){
     if(isDeleted) return null;
     const isDisabled = isWenn ? (override?.rulesDisabled||[]).includes(rule.id||rule.nr) : !p.active;
     if(isWenn) {
-      // Only render rule once (for first matching code)
+      // Only render once per rule (skip if this code is not first in rule.pos)
       const ruleCodes = rule.pos.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
-      if(ruleCodes[0] !== p.code) return ""; // Skip duplicate renders
-      return ruleCodes.map(rCode => `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${rCode}" data-idx="${i}"
+      if(ruleCodes[0] !== p.code) return "";
+      // Show one row per code, each with own delete, shared toggle
+      return ruleCodes.map((rCode,ri) => `<div class="rs-pos-row${isDisabled?" disabled":""}" draggable="true" data-code="${rCode}" data-idx="${i}"
         ondragstart="rsDragStart(event,'${rCode}')" ondragover="rsDragOver(event,'${rCode}')" ondrop="rsDrop(event,'${fall}','${rCode}')" ondragend="rsDragEnd(event)"
         style="border-left:3px solid ${metColor}">
         <span class="rs-drag">⠿</span>
@@ -8420,8 +8421,8 @@ function renderRsFallContent(){
         <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
         <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
         ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
-        <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
-        <button class="rs-btn-del" onclick="rsDeleteRuleByPos('${fall}','${escHtml(rCode)}')" title="Löschen">✕</button>
+        ${ri===0?`<button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>`:`<span style="width:28px;flex-shrink:0"></span>`}
+        <button class="rs-btn-del" onclick="rsDeleteSingleCode('${fall}','${escHtml(rCode)}')" title="Löschen">✕</button>
       </div>`).join("");
     } else {
       const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" class="rs-typ-select">
@@ -8971,6 +8972,15 @@ function rsResetFall(fall){
 }
 
 function rsDeleteRule(fall, ruleId){}
+function rsDeleteSingleCode(fall, code){
+  const ensured = rsEnsureOverride(fall);
+  if(!ensured) return;
+  const { profiles, override } = ensured;
+  override.removePositions = [...new Set([...(override.removePositions||[]), code])];
+  rsSaveOverride(profiles);
+  renderRsFallContent();
+}
+
 function rsDeleteRuleByPos(fall, posStr){
   const codes = posStr.split(/[+,\/\s]+/).map(s=>s.trim()).filter(Boolean);
   const ensured = rsEnsureOverride(fall);

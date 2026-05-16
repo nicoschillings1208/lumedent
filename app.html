@@ -875,62 +875,61 @@ function showKickedOverlay() {
 }
 
 // ── OUTPUT DRAG & DROP ──────────────────────────────────
-function outputDragStart(event,idx){
-  _outputDragSrc=idx;
-  event.currentTarget.classList.add("dragging");
-  event.dataTransfer.effectAllowed="move";
+function _renderOutputLines(){
+  const container = document.getElementById("output-lines-container");
+  if(!container) return;
+  container.innerHTML = _outputLines.map((l,i) =>
+    `<div class="gline" draggable="true" data-idx="${i}">
+      <span class="gline-drag">⠿</span>
+      <span class="gline-text">${escHtml(l.text)}</span>
+    </div>`
+  ).join("");
+  // Attach events after render
+  container.querySelectorAll(".gline").forEach((el, i) => {
+    el.addEventListener("dragstart", e => {
+      _outputDragSrc = i;
+      el.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(i));
+    });
+    el.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      container.querySelectorAll(".gline").forEach(x => x.classList.remove("drag-over"));
+      el.classList.add("drag-over");
+    });
+    el.addEventListener("drop", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if(_outputDragSrc === null || _outputDragSrc === i) return;
+      const lines = [..._outputLines];
+      const [moved] = lines.splice(_outputDragSrc, 1);
+      lines.splice(i, 0, moved);
+      _outputLines = lines;
+      _outputDragSrc = null;
+      _renderOutputLines();
+    });
+    el.addEventListener("dragend", e => {
+      el.classList.remove("dragging");
+      container.querySelectorAll(".gline").forEach(x => x.classList.remove("drag-over"));
+      _outputDragSrc = null;
+    });
+  });
 }
-function outputDragOver(event){
-  event.preventDefault();
-  event.dataTransfer.dropEffect = "move";
-  document.querySelectorAll("#output-lines-container .gline").forEach(el=>el.classList.remove("drag-over"));
-  event.currentTarget.closest(".gline")?.classList.add("drag-over");
-}
-function outputDrop(event,targetIdx){
-  event.preventDefault();
-  if(_outputDragSrc===null||_outputDragSrc===targetIdx) return;
-  const lines=[..._outputLines];
-  const [moved]=lines.splice(_outputDragSrc,1);
-  lines.splice(targetIdx,0,moved);
-  _outputLines=lines;
-  const container=document.getElementById("output-lines-container");
-  if(container){
-    container.innerHTML=_outputLines.map((l,i)=>{
-      const tc=l.type==="area"?"glt-area":l.type==="fill"?"glt-fill":
-               l.type==="paro"?"glt-paro":l.type==="behandlung"?"glt-behandlung":
-               l.type==="nachbar"?"glt-nachbar":l.type==="material"?"glt-material":
-               l.type==="basis"?"glt-basis":l.type==="kiefer"?"glt-kiefer":"glt-clean";
-      const tl=l.type==="area"?"Bereich":l.type==="fill"?"Füllung":
-               l.type==="paro"?"Paro":l.type==="behandlung"?"Behandlung":
-               l.type==="nachbar"?"Nachbar":l.type==="material"?"Material":
-               l.type==="basis"?"Basis":l.type==="kiefer"?"Kiefer":"Reinigung";
-      const meta=l.meta?`<span class="gline-meta">${escHtml(l.meta)}</span>`:"";
-      return `<div class="gline" draggable="true" data-idx="${i}"
-        ondragstart="outputDragStart(event,${i})"
-        ondragover="outputDragOver(event)"
-        ondrop="outputDrop(event,${i})"
-        ondragend="outputDragEnd(event)">
-        <span class="gline-drag" title="Verschieben">⠿</span>
-        <span class="gline-text">${escHtml(l.text)}</span>
-      </div>`;
-    }).join("");
-  }
-  const rawEl=document.getElementById("output-raw-text");
-  if(rawEl) rawEl.textContent=_outputLines.map(l=>l.text).join("\n");
-}
-function outputDragEnd(event){
-  event.currentTarget.classList.remove("dragging");
-  document.querySelectorAll(".gline").forEach(el=>el.classList.remove("drag-over"));
-  _outputDragSrc=null;
-}
+
+function outputDragStart(){}
+function outputDragOver(e){e.preventDefault();}
+function outputDrop(e,i){}
+function outputDragEnd(){}
+
 function copyOutputLines(mode){
-  const texts=_outputLines.map(l=>l.text);
-  const text=mode==="inline"?texts.join("  "):texts.join("\n");
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn=event.currentTarget;
-    const orig=btn.textContent;
-    btn.textContent="✓ Kopiert";
-    setTimeout(()=>{btn.textContent=orig;},1500);
+  const texts = _outputLines.map(l => l.text);
+  const text = mode === "inline" ? texts.join("  ") : texts.join("\n");
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.currentTarget;
+    const orig = btn.textContent;
+    btn.textContent = "✓ Kopiert";
+    setTimeout(() => { btn.textContent = orig; }, 1500);
   });
 }
 
@@ -7507,6 +7506,7 @@ function generate(){
 
     card.style.display="block";
     inner.innerHTML = renderAllResults(lastResults, lastCombined, validCases);
+    if(_outputLines.length) setTimeout(_renderOutputLines, 0);
     renderInfoHinweise(lastResults);
     card.scrollIntoView({behavior:"smooth",block:"nearest"});
   } catch(err) {
@@ -7570,10 +7570,9 @@ function renderAllResults(results, combined, cases){
           </div>
         </div>
       </div>
-      <div id="output-lines-container" class="global-lines">${globalLinesHTML}</div>
+      <div id="output-lines-container" class="global-lines"></div>
       <div class="global-btns">
-        <button class="copy-btn-global-sec" onclick="copyOutputLines('inline')">⎘ Einzeilig kopieren</button>
-        <button class="copy-btn-global-sec" onclick="copyOutputLines('multi')">⎘ Mehrzeilig</button>
+        <button class="copy-btn-global" onclick="copyOutputLines('inline')">⎘ Einzeilig kopieren</button>
       </div>
     </div>
   `;

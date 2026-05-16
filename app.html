@@ -587,7 +587,7 @@ localStorage.setItem = function(key, value) {
     <!-- Profil Dropdown -->
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
-        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-2);border-radius:20px;background:var(--bg-3);color:var(--text-2);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='var(--bg-3)'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span id="profil-btn-label">Standard</span>
         <span style="font-size:10px;opacity:.5">▾</span>
@@ -645,7 +645,7 @@ localStorage.setItem = function(key, value) {
   <!-- ZAHNSCHEMA -->
   <div class="card">
     <div class="card-hd"><div class="cdot"></div><span class="ctitle">Zahnschema &amp; Minibefund</span>
-    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent-dark);margin-left:8px;font-weight:500;border:1px solid var(--accent-glow)"></span>
+    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent);margin-left:8px;font-weight:700;border:1px solid var(--accent-border)"></span>
   </div>
     <div class="legend" id="legend"></div>
     <div class="srow-lbl">Oberkiefer</div>

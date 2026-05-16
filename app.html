@@ -7539,7 +7539,7 @@ function renderAllResults(results, combined, cases){
       default:         return"glt-clean";
     }
   }
-  const _outputLines = go && go.lines.length ? [...go.lines] : [];
+  _outputLines = go && go.lines.length ? [...go.lines] : [];
   const globalLinesHTML = _outputLines.length ? _outputLines.map((l,i)=>{
     const tagCls = glineTagCss(l.type);
     const tagLbl = l.type==="area"?"Bereich":l.type==="fill"?"Füllung":

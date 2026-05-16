@@ -86,12 +86,12 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 /* ── CARD ── */
 .card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
 .card-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.cdot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
 .ctitle{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase}
 .slabel{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
 
 /* ── ZAHNSCHEMA ── */
-.srow-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.srow-lbl{font-size:9px;font-weight:700;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
 .trow{display:flex;gap:3px;flex-wrap:nowrap;margin-bottom:4px;overflow-x:auto}
 .sdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
 .tcell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .1s}
@@ -126,7 +126,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
   border-radius:var(--r);padding:11px 14px;transition:border-color .15s;
 }
 .case-row:hover{border-color:var(--border-2)}
-.case-num{font-size:9px;font-weight:800;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;min-width:42px;flex-shrink:0;margin-top:2px}
+.case-num{font-size:9px;font-weight:800;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;min-width:42px;flex-shrink:0;margin-top:2px}
 .case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
 .case-tooth-btn{
   min-width:28px;width:28px;padding:4px;
@@ -212,7 +212,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .glt-kiefer{background:rgba(157,110,245,.1);color:#9D6EF5}
 .gline-text{font-family:var(--font);font-size:14px;font-weight:800;color:var(--text-1);letter-spacing:.02em;flex:1}
 .gline-meta{font-size:9px;color:var(--text-4);flex-shrink:0}
-.global-raw{font-family:var(--font);font-size:11px;color:var(--text-3);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;line-height:2;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
+.global-raw{font-family:var(--font);font-size:11px;color:var(--accent);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;line-height:2;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
 .global-raw-lbl{font-size:9px;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
 .global-btns{display:flex;gap:8px;flex-wrap:wrap}
 .copy-btn-global{padding:11px 22px;border:none;border-radius:var(--r-sm);background:var(--accent);color:#0A0E18;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);letter-spacing:.02em;transition:all .14s}
@@ -587,7 +587,7 @@ localStorage.setItem = function(key, value) {
     <!-- Profil Dropdown -->
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
-        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-2);border-radius:20px;background:var(--bg-3);color:var(--text-2);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='var(--bg-3)'">
+        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border-2);border-radius:20px;background:#141924;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);" onmouseover="this.style.background='#1A2030'" onmouseout="this.style.background='#141924'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span id="profil-btn-label">Standard</span>
         <span style="font-size:10px;opacity:.5">▾</span>
@@ -601,12 +601,12 @@ localStorage.setItem = function(key, value) {
       </div>
     </div>
     <!-- Abo verwalten -->
-    <button id="btn-abo" onclick="doAboVerwalten()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border:1px solid rgba(201,168,76,0.3);border-radius:20px;background:transparent;color:rgba(201,168,76,0.8);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .14s;" onmouseover="this.style.borderColor='rgba(201,168,76,0.6)';this.style.color='#C9A84C'" onmouseout="this.style.borderColor='rgba(201,168,76,0.3)';this.style.color='rgba(201,168,76,0.8)'">
+    <button id="btn-abo" onclick="doAboVerwalten()" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border:1px solid rgba(201,168,76,0.4);border-radius:20px;background:rgba(201,168,76,.06);color:rgba(201,168,76,.9);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .14s;" onmouseover="this.style.borderColor='rgba(201,168,76,0.6)';this.style.color='#C9A84C'" onmouseout="this.style.borderColor='rgba(201,168,76,0.3)';this.style.color='rgba(201,168,76,0.8)'">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="3" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h11" stroke="currentColor" stroke-width="1.3"/></svg>
       Abo
     </button>
     <!-- Abmelden -->
-    <button onclick="doAbmelden()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:transparent;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .14s;" onmouseover="this.style.color='rgba(255,255,255,.7)';this.style.borderColor='rgba(255,255,255,.25)'" onmouseout="this.style.color='rgba(255,255,255,.4)';this.style.borderColor='rgba(255,255,255,.1)'">
+    <button onclick="doAbmelden()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:transparent;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer;font-family:var(--font);transition:all .14s;" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8 2H11V11H8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5 9L2 6.5L5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><line x1="2" y1="6.5" x2="9" y2="6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       Abmelden
     </button>

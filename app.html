@@ -66,13 +66,17 @@ header{
 .logo-dent{font-size:17px;font-weight:300;color:rgba(255,255,255,.3);letter-spacing:2px;font-family:Georgia,serif}
 .logo-tag{font-size:10px;color:var(--text-4);letter-spacing:.06em}
 .hpill{font-size:10px;color:var(--text-4);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.04em}
-#profil-btn{
+#profil-btn,#profil-btn:focus,#profil-btn:focus-visible,#profil-btn:active{
   background:#0F1421!important;
   color:rgba(255,255,255,.6)!important;
   border:1px solid rgba(255,255,255,.12)!important;
   -webkit-appearance:none!important;
   appearance:none!important;
+  outline:none!important;
+  box-shadow:none!important;
 }
+button{-webkit-appearance:none;appearance:none}
+header button{background:transparent}
 
 /* ── NAV ── */
 .nav-tabs{background:var(--bg-2);display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border)}
@@ -594,7 +598,7 @@ localStorage.setItem = function(key, value) {
     <!-- Profil Dropdown -->
     <div style="position:relative">
       <button id="profil-btn" onclick="toggleProfilMenu()"
-        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#0F1421 !important;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);-webkit-appearance:none;appearance:none;" onmouseover="this.style.background='#1A2030'" onmouseout="this.style.background='#141924'">
+        style="display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:#0F1421;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .14s;font-family:var(--font);-webkit-appearance:none;appearance:none;" onmouseover="this.style.background='#1A2030'" onmouseout="this.style.background='#141924'">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         <span id="profil-btn-label">Standard</span>
         <span style="font-size:10px;opacity:.5">▾</span>
@@ -7662,8 +7666,9 @@ function updateAktivBadge(){
   const hasCustom = (prof && prof.positionen && Object.keys(prof.positionen).length>0)
     || (id==="__basis" && basis.positionen && Object.keys(basis.positionen).length>0);
   badge.textContent = hasCustom ? `✎ ${name}` : "";
-  badge.style.background = hasCustom ? "#fdf6e0" : "";
-  badge.style.color = hasCustom ? "var(--gold-d)" : "";
+  badge.style.background = hasCustom ? "rgba(201,168,76,.12)" : "";
+  badge.style.color = hasCustom ? "#C9A84C" : "";
+  badge.style.border = hasCustom ? "1px solid rgba(201,168,76,.25)" : "";
 }
 
 function deleteProfil(id){

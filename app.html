@@ -739,6 +739,11 @@ footer{text-align:center;font-size:9px;color:var(--brown-200);letter-spacing:.14
 ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.6); }
 * { scrollbar-width: thin; scrollbar-color: rgba(201,168,76,0.3) transparent; }
+/* Output Drag & Drop */
+.gline-drag{font-size:14px;color:var(--text-muted);cursor:grab;flex-shrink:0;padding:0 4px;user-select:none;transition:color .12s}
+.gline:hover .gline-drag{color:var(--text-secondary)}
+.gline.drag-over{border-color:var(--accent)!important;background:#FFFBF0!important}
+.gline.dragging{opacity:.4}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -867,6 +872,68 @@ function showKickedOverlay() {
     <button onclick="window.location.href='/auth.html'" style="background:#C9A84C;color:#08111F;border:none;padding:13px 32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">Neu anmelden</button>
   `;
   document.body.appendChild(el);
+}
+
+// ── OUTPUT DRAG & DROP ──────────────────────────────────
+function outputDragStart(event,idx){
+  _outputDragSrc=idx;
+  event.currentTarget.classList.add("dragging");
+  event.dataTransfer.effectAllowed="move";
+}
+function outputDragOver(event){
+  event.preventDefault();
+  document.querySelectorAll(".gline").forEach(el=>el.classList.remove("drag-over"));
+  event.currentTarget.classList.add("drag-over");
+}
+function outputDrop(event,targetIdx){
+  event.preventDefault();
+  if(_outputDragSrc===null||_outputDragSrc===targetIdx) return;
+  const lines=[..._outputLines];
+  const [moved]=lines.splice(_outputDragSrc,1);
+  lines.splice(targetIdx,0,moved);
+  _outputLines=lines;
+  const container=document.getElementById("output-lines-container");
+  if(container){
+    container.innerHTML=_outputLines.map((l,i)=>{
+      const tc=l.type==="area"?"glt-area":l.type==="fill"?"glt-fill":
+               l.type==="paro"?"glt-paro":l.type==="behandlung"?"glt-behandlung":
+               l.type==="nachbar"?"glt-nachbar":l.type==="material"?"glt-material":
+               l.type==="basis"?"glt-basis":l.type==="kiefer"?"glt-kiefer":"glt-clean";
+      const tl=l.type==="area"?"Bereich":l.type==="fill"?"Füllung":
+               l.type==="paro"?"Paro":l.type==="behandlung"?"Behandlung":
+               l.type==="nachbar"?"Nachbar":l.type==="material"?"Material":
+               l.type==="basis"?"Basis":l.type==="kiefer"?"Kiefer":"Reinigung";
+      const meta=l.meta?`<span class="gline-meta">${escHtml(l.meta)}</span>`:"";
+      return `<div class="gline" draggable="true" data-idx="${i}"
+        ondragstart="outputDragStart(event,${i})"
+        ondragover="outputDragOver(event)"
+        ondrop="outputDrop(event,${i})"
+        ondragend="outputDragEnd(event)"
+        style="cursor:grab;user-select:none">
+        <span class="gline-drag" title="Verschieben">⠿</span>
+        <span class="gline-tag ${tc}">${tl}</span>
+        <span class="gline-text">${escHtml(l.text)}</span>
+        ${meta}
+      </div>`;
+    }).join("");
+  }
+  const rawEl=document.getElementById("output-raw-text");
+  if(rawEl) rawEl.textContent=_outputLines.map(l=>l.text).join("\n");
+}
+function outputDragEnd(event){
+  event.currentTarget.classList.remove("dragging");
+  document.querySelectorAll(".gline").forEach(el=>el.classList.remove("drag-over"));
+  _outputDragSrc=null;
+}
+function copyOutputLines(mode){
+  const texts=_outputLines.map(l=>l.text);
+  const text=mode==="inline"?texts.join("  "):texts.join("\n");
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=event.currentTarget;
+    const orig=btn.textContent;
+    btn.textContent="✓ Kopiert";
+    setTimeout(()=>{btn.textContent=orig;},1500);
+  });
 }
 
 // ── ABO & LOGOUT ────────────────────────────────────────
@@ -7474,20 +7541,26 @@ function renderAllResults(results, combined, cases){
       default:         return"glt-clean";
     }
   }
-  const globalLinesHTML = go && go.lines.length ? go.lines.map(l=>{
+  const _outputLines = go && go.lines.length ? [...go.lines] : [];
+  const globalLinesHTML = _outputLines.length ? _outputLines.map((l,i)=>{
     const tagCls = glineTagCss(l.type);
     const tagLbl = l.type==="area"?"Bereich":l.type==="fill"?"Füllung":
                    l.type==="paro"?"Paro":l.type==="behandlung"?"Behandlung":
                    l.type==="nachbar"?"Nachbar":l.type==="material"?"Material":
                    l.type==="basis"?"Basis":l.type==="kiefer"?"Kiefer":"Reinigung";
-    const meta   = l.meta ? `<span class="gline-meta">${escHtml(l.meta)}</span>` : "";
-    return `<div class="gline">
+    const meta = l.meta ? `<span class="gline-meta">${escHtml(l.meta)}</span>` : "";
+    return `<div class="gline" draggable="true" data-idx="${i}"
+      ondragstart="outputDragStart(event,${i})"
+      ondragover="outputDragOver(event)"
+      ondrop="outputDrop(event,${i})"
+      ondragend="outputDragEnd(event)"
+      style="cursor:grab;user-select:none">
+      <span class="gline-drag" title="Verschieben">⠿</span>
       <span class="gline-tag ${tagCls}">${tagLbl}</span>
       <span class="gline-text">${escHtml(l.text)}</span>
       ${meta}
     </div>`;
-  }).join("") : `<div style="color:#5a4020;font-size:12px">Keine Daten.</div>`;
-
+  }).join("") : `<div style="color:var(--accent);font-size:12px">Keine Daten.</div>`
   const globalRawText = go ? escHtml(go.multiline) : "";
 
   const globalBoxHTML = `
@@ -7501,9 +7574,11 @@ function renderAllResults(results, combined, cases){
           </div>
         </div>
       </div>
-      <div class="global-raw">${globalRawText}</div>
+      <div id="output-lines-container" class="global-lines">${globalLinesHTML}</div>
+      <div class="global-raw" id="output-raw-text">${globalRawText}</div>
       <div class="global-btns">
-        <button class="copy-btn-global-sec" onclick="copyGlobal('inline')">⎘ Einzeilig kopieren</button>
+        <button class="copy-btn-global-sec" onclick="copyOutputLines('inline')">⎘ Einzeilig kopieren</button>
+        <button class="copy-btn-global-sec" onclick="copyOutputLines('multi')">⎘ Mehrzeilig</button>
       </div>
     </div>
   `;
@@ -8492,6 +8567,8 @@ function importProfil(event){
 let _rsProfiles = [];
 let _rsActiveId = null;
 let _rsActiveFall = null;
+let _outputLines = [];
+let _outputDragSrc = null;
 let _rsDragSrc = null;
 
 // ── Storage ──────────────────────────────────────────────────────

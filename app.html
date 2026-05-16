@@ -7665,10 +7665,10 @@ function updateAktivBadge(){
   const prof = id!=="__basis" ? loadProfile().find(p=>p.id===id) : null;
   const hasCustom = (prof && prof.positionen && Object.keys(prof.positionen).length>0)
     || (id==="__basis" && basis.positionen && Object.keys(basis.positionen).length>0);
-  badge.textContent = hasCustom ? `✎ ${name}` : "";
-  badge.style.background = hasCustom ? "rgba(255,255,255,.07)" : "";
-  badge.style.color = hasCustom ? "rgba(255,255,255,.5)" : "";
-  badge.style.border = hasCustom ? "1px solid rgba(255,255,255,.1)" : "";
+  badge.textContent = name;
+  badge.style.background = "rgba(255,255,255,.07)";
+  badge.style.color = "rgba(255,255,255,.5)";
+  badge.style.border = "1px solid rgba(255,255,255,.1)";
 }
 
 function deleteProfil(id){

@@ -7340,14 +7340,7 @@ function refreshToothIcon(n){
 
 function buildLegend(){
   document.getElementById("legend").innerHTML=
-    Object.entries(BEFUND_KUERZEL).map(([k,v])=>
-      `<span class="leg" style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);cursor:default"
-        title="${v.label}">
-        <strong>${k}</strong>&nbsp;<span style="color:var(--brown-400);font-weight:400">${v.label}</span>
-      </span>`).join("")+
-    `<span style="font-size:9px;color:var(--brown-300);margin-left:6px;align-self:center;letter-spacing:.06em">
-      Zahn anklicken für Befund · Mehrfachbefund möglich
-    </span>`;
+    `<span style="font-size:10px;color:var(--text-3);letter-spacing:.02em">Zahn anklicken für Befund · Mehrfachbefund möglich</span>`;
 }
 
 function buildToothCell(n, container){
@@ -7395,9 +7388,11 @@ function openBefundPicker(n){
   const btns = Object.entries(BEFUND_KUERZEL).map(([k,v])=>{
     const active = current.has(k);
     return `<button onclick="toggleBefund(${n},'${k}')"
-      style="margin:2px;padding:5px 10px;border-radius:6px;border:1.5px solid ${active?v.color:v.color+'44'};
-      background:${active?v.color+'22':'transparent'};color:${active?v.color:'rgba(255,255,255,.45)'};
-      font-size:11px;font-weight:${active?700:500};cursor:pointer;font-family:var(--font-u);
+      style="margin:2px;padding:6px 12px;border-radius:6px;
+      border:1px solid ${active?'var(--accent)':'var(--border-2)'};
+      background:${active?'var(--accent-dim)':'transparent'};
+      color:${active?'var(--accent)':'var(--text-3)'};
+      font-size:11px;font-weight:${active?800:500};cursor:pointer;font-family:var(--font);
       transition:all .12s">
       ${k} <span style="font-weight:400;font-size:10px">${v.label}</span>
     </button>`;

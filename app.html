@@ -234,6 +234,40 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 .gline.drag-over{border-color:var(--accent)!important;background:var(--accent-dim)!important}
 .gline.dragging{opacity:.4}
 
+/* ── REGELSTUDIO ── */
+.rs-pos-row{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg-3);
+  transition:all .12s;cursor:grab;
+}
+.rs-pos-row:hover{border-color:var(--border-2);background:var(--bg-4)}
+.rs-pos-row.disabled{opacity:.35}
+.rs-pos-row.drag-over{border-color:var(--accent)!important;background:var(--accent-dim)!important}
+.rs-pos-row.dragging{opacity:.3}
+.rs-pos-code{font-size:13px;font-weight:800;color:var(--text-1);min-width:80px;letter-spacing:.02em}
+.rs-pos-typ select,.rs-add-panel select,.rs-add-panel input{
+  background:var(--bg-4);border:1px solid var(--border-2);color:var(--text-2);
+  border-radius:5px;padding:5px 8px;font-size:11px;font-weight:600;
+  font-family:var(--font);outline:none;
+}
+.rs-add-panel{
+  background:var(--bg-3);border:1px solid var(--border);
+  border-radius:8px;padding:14px;margin-top:10px;
+}
+.rs-add-panel label{font-size:10px;font-weight:700;color:var(--text-4);letter-spacing:.08em;text-transform:uppercase}
+.rs-add-panel input,.rs-add-panel select{width:100%}
+
+/* Regelstudio section labels */
+.rs-section-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase;margin:16px 0 8px}
+
+/* Profile header */
+.rs-profile-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--bg-3);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;margin-bottom:12px;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -6140,14 +6174,14 @@ function renderCasesList(){
         <div style="display:flex;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:2px;width:fit-content">
           <button onclick="toggleWorkflow(${c.id},'digital')"
             style="padding:3px 10px;border:none;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;letter-spacing:.02em;
-            background:${(c.workflow||'analog')==='digital'?'var(--text-primary)':'transparent'};
-            color:${(c.workflow||'analog')==='digital'?'#fff':'var(--text-muted)'}">
+            background:${(c.workflow||'analog')==='digital'?'var(--accent)':'transparent'};
+            color:${(c.workflow||'analog')==='digital'?'#0A0E18':'rgba(255,255,255,.35)'};font-weight:${(c.workflow||'analog')==='digital'?'800':'600'}">
             Digital
           </button>
           <button onclick="toggleWorkflow(${c.id},'analog')"
             style="padding:3px 10px;border:none;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;letter-spacing:.02em;
-            background:${(c.workflow||'analog')==='analog'?'var(--text-primary)':'transparent'};
-            color:${(c.workflow||'analog')==='analog'?'#fff':'var(--text-muted)'}">
+            background:${(c.workflow||'analog')==='analog'?'var(--accent)':'transparent'};
+            color:${(c.workflow||'analog')==='analog'?'#0A0E18':'rgba(255,255,255,.35)'};font-weight:${(c.workflow||'analog')==='analog'?'800':'600'}">
             Analog
           </button>
         </div>
@@ -7067,7 +7101,7 @@ function renderAllResults(results, combined, cases){
       </div>
       <div id="output-lines-container" class="global-lines"></div>
       <div class="global-btns">
-        <button class="copy-btn-global" onclick="copyOutputLines('inline', this)">⎘ Einzeilig kopieren</button>
+        <button class="copy-btn-global" onclick="copyOutputLines('inline', this)">Kopieren</button>
       </div>
     </div>
   `;
@@ -7302,7 +7336,7 @@ function refreshToothIcon(n){
 function buildLegend(){
   document.getElementById("legend").innerHTML=
     Object.entries(BEFUND_KUERZEL).map(([k,v])=>
-      `<span class="leg" style="color:${v.color};background:${v.color}14;border:1px solid ${v.color}28;cursor:default"
+      `<span class="leg" style="color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);cursor:default"
         title="${v.label}">
         <strong>${k}</strong>&nbsp;<span style="color:var(--brown-400);font-weight:400">${v.label}</span>
       </span>`).join("")+
@@ -8431,7 +8465,7 @@ function renderRsFallContent(){
           <label style="font-size:10px;color:var(--text-3);font-weight:600">Nur wenn (optional)</label>
           <select id="rs-add-cond">${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select>
         </div>
-        <button onclick="rsAddPositionOrRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">Hinzufügen</button>
+        <button onclick="rsAddPositionOrRule(_rsActiveFall)" style="font-size:12px;font-weight:700;padding:8px 18px;align-self:flex-end;background:var(--accent);color:#0A0E18;border:none;border-radius:6px;cursor:pointer;font-family:var(--font)">Hinzufügen</button>
       </div>
     </div>
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>

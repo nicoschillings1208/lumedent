@@ -236,37 +236,42 @@ main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-dir
 
 /* ── REGELSTUDIO ── */
 .rs-pos-row{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;border-radius:6px;
+  display:flex;align-items:center;gap:10px;
+  padding:7px 10px;border-radius:6px;
   border:1px solid var(--border);background:var(--bg-3);
-  transition:all .12s;cursor:grab;
+  transition:all .12s;cursor:grab;min-height:38px;
 }
-.rs-pos-row:hover{border-color:var(--border-2);background:var(--bg-4)}
-.rs-pos-row.disabled{opacity:.35}
+.rs-pos-row:hover{border-color:var(--border-2)}
+.rs-pos-row.disabled{opacity:.3}
 .rs-pos-row.drag-over{border-color:var(--accent)!important;background:var(--accent-dim)!important}
-.rs-pos-row.dragging{opacity:.3}
-.rs-pos-code{font-size:13px;font-weight:800;color:var(--text-1);min-width:80px;letter-spacing:.02em}
-.rs-pos-typ select,.rs-add-panel select,.rs-add-panel input{
-  background:var(--bg-4);border:1px solid var(--border-2);color:var(--text-2);
-  border-radius:5px;padding:5px 8px;font-size:11px;font-weight:600;
-  font-family:var(--font);outline:none;
-}
+.rs-pos-row.dragging{opacity:.25}
+.rs-drag{font-size:12px;color:var(--text-4);flex-shrink:0;cursor:grab;user-select:none}
+.rs-code{font-size:13px;font-weight:800;color:var(--text-1);min-width:72px;letter-spacing:.02em;flex-shrink:0}
+.rs-typ-nachbar{background:var(--accent-dim);color:var(--accent);font-size:9px;font-weight:800;letter-spacing:.08em;padding:2px 7px;border-radius:20px;border:1px solid var(--accent-border);flex-shrink:0}
+.rs-toggle{width:28px;height:16px;border-radius:20px;border:none;cursor:pointer;transition:all .15s;flex-shrink:0;position:relative}
+.rs-toggle.on{background:var(--accent)}
+.rs-toggle.off{background:rgba(255,255,255,.12)}
+.rs-toggle::after{content:'';position:absolute;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:all .15s}
+.rs-toggle.on::after{left:14px}
+.rs-toggle.off::after{left:2px}
+.rs-btn-del{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text-4);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.rs-btn-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.rs-typ-select{font-size:10px;padding:3px 6px;border-radius:5px;border:1px solid var(--border);background:var(--bg-4);color:var(--text-3);font-family:var(--font);cursor:pointer;outline:none;font-weight:600}
 .rs-add-panel{
   background:var(--bg-3);border:1px solid var(--border);
   border-radius:8px;padding:14px;margin-top:10px;
 }
-.rs-add-panel label{font-size:10px;font-weight:700;color:var(--text-4);letter-spacing:.08em;text-transform:uppercase}
-.rs-add-panel input,.rs-add-panel select{width:100%}
-
-/* Regelstudio section labels */
-.rs-section-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase;margin:16px 0 8px}
-
-/* Profile header */
-.rs-profile-bar{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  background:var(--bg-3);border:1px solid var(--border);
-  border-radius:8px;padding:10px 14px;margin-bottom:12px;
+.rs-add-panel label{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:5px}
+.rs-add-panel input,.rs-add-panel select{
+  width:100%;background:var(--bg-4);border:1px solid var(--border-2);
+  color:var(--text-2);border-radius:5px;padding:6px 9px;font-size:12px;
+  font-family:var(--font);outline:none;font-weight:500;
 }
+.rs-add-panel input:focus,.rs-add-panel select:focus{border-color:var(--accent-border)}
+.rs-hinzufuegen{padding:8px 16px;background:var(--accent);color:#0A0E18;border:none;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);transition:all .14s;align-self:flex-end}
+.rs-hinzufuegen:hover{background:var(--accent-light)}
+.rs-section-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase;margin:16px 0 8px}
+.rs-profile-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:12px}
 
 /* Scrollbar */
 ::-webkit-scrollbar{width:6px;height:6px}
@@ -8396,7 +8401,7 @@ function renderRsFallContent(){
         <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
       </div>`;
     } else {
-      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:var(--bg-2);color:var(--text-2);font-family:var(--font);cursor:pointer">
+      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" class="rs-typ-select">
         ${TYP_OPTIONS.map(([v,l])=>`<option value="${v}"${p.typ===v?" selected":""}>${l}</option>`).join("")}
       </select>`;
       return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}${p._isZem?" ":""}${p._isZem?'style="border-left:2px solid var(--accent-glow)"':''}" draggable="true" data-code="${p.code}" data-uid="${uid}" data-idx="${i}"
@@ -8465,7 +8470,7 @@ function renderRsFallContent(){
           <label style="font-size:10px;color:var(--text-3);font-weight:600">Nur wenn (optional)</label>
           <select id="rs-add-cond">${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select>
         </div>
-        <button onclick="rsAddPositionOrRule(_rsActiveFall)" style="font-size:12px;font-weight:700;padding:8px 18px;align-self:flex-end;background:var(--accent);color:#0A0E18;border:none;border-radius:6px;cursor:pointer;font-family:var(--font)">Hinzufügen</button>
+        <button onclick="rsAddPositionOrRule(_rsActiveFall)" class="rs-hinzufuegen">Hinzufügen</button>
       </div>
     </div>
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>
@@ -8477,7 +8482,7 @@ function renderRsFallContent(){
         <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Code</label><input id="rs-hint-code" placeholder="z.B. 0001" style="width:90px"/></div>
         <div style="flex:1;display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Beschreibung</label><input id="rs-hint-text" placeholder="z.B. Modell je Kiefer"/></div>
         <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Anzahl</label><input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/></div>
-        <button onclick="rsAddHint(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">Hinzufügen</button>
+        <button onclick="rsAddHint(_rsActiveFall)" class="rs-hinzufuegen">Hinzufügen</button>
       </div>
     </div>
   `;

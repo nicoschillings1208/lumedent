@@ -8,742 +8,238 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* Brand */
-  --accent:#C9A84C;       /* gold */
-  --accent-light:#E8C96A;
-  --accent-dark:#A07828;
-  --accent-glow:rgba(201,168,76,.18);
-
-  /* Neutrals */
-  --bg:#F4F6F9;
-  --surface:#FFFFFF;
-  --surface-2:#F9FAFB;
-  --border:#E5E8EF;
-  --border-strong:#D0D4DF;
-
-  /* Text */
-  --text-primary:#0F1523;
-  --text-secondary:#4B5568;
-  --text-muted:#8C94A6;
-  --text-inverse:#FFFFFF;
-
-  /* Status */
-  --blue:#2563EB;
-  --blue-bg:#EFF6FF;
-  --blue-border:#BFDBFE;
-  --purple:#7C3AED;
-  --purple-bg:#F5F3FF;
-  --purple-border:#DDD6FE;
-  --green:#059669;
-  --green-bg:#ECFDF5;
-  --red:#DC2626;
-  --red-bg:#FEF2F2;
-
-  /* Dark surface (Ergebnis) */
-  --dark:#0A0E1A;
-  --dark-2:#111827;
-  --dark-border:rgba(255,255,255,.08);
-  --dark-text:#F1F5F9;
-  --dark-muted:#6B7280;
-
-  /* Radii + Shadows */
-  --r:12px;
-  --r-sm:8px;
-  --r-lg:16px;
-  --sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
-  --sh-lg:0 4px 24px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.06);
-
-  /* Fonts */
+  --accent:#C9A84C;
+  --accent-dim:rgba(201,168,76,.1);
+  --accent-border:rgba(201,168,76,.3);
+  --bg:#0A0E18;
+  --bg-2:#0F1421;
+  --bg-3:#141924;
+  --bg-4:#1A2030;
+  --border:rgba(255,255,255,.07);
+  --border-2:rgba(255,255,255,.13);
+  --text-1:#FFFFFF;
+  --text-2:rgba(255,255,255,.65);
+  --text-3:rgba(255,255,255,.35);
+  --text-4:rgba(255,255,255,.18);
+  --red:#F04444;
+  --red-bg:rgba(240,68,68,.12);
+  --blue:#4B8EF0;
+  --blue-bg:rgba(75,142,240,.1);
+  --green:#34C97A;
+  --green-bg:rgba(52,201,122,.1);
+  --purple:#9D6EF5;
+  --purple-bg:rgba(157,110,245,.1);
+  --r:8px;--r-sm:6px;--r-lg:12px;
   --font:'Inter','Helvetica Neue',sans-serif;
-  --font-h:'Outfit','Inter',sans-serif;
+  --font-h:'Inter','Helvetica Neue',sans-serif;
+  /* legacy compat */
+  --surface:var(--bg-2);--surface-2:var(--bg-3);
+  --border-strong:var(--border-2);
+  --text-primary:var(--text-1);--text-secondary:var(--text-2);--text-muted:var(--text-3);
+  --text-inverse:#0A0E18;
+  --dark:var(--bg);--dark-2:var(--bg-2);--dark-border:var(--border);
+  --dark-text:var(--text-1);--dark-muted:var(--text-3);
+  --accent-light:#E8C96A;--accent-dark:#A07828;--accent-glow:var(--accent-dim);
+  --sh:0 1px 3px rgba(0,0,0,.4);--sh-lg:0 4px 24px rgba(0,0,0,.5);
+  --blue-border:rgba(75,142,240,.25);--purple-border:rgba(157,110,245,.25);
+  --green-bg:rgba(52,201,122,.1);--red-bg:rgba(240,68,68,.12);
+  --brown-100:var(--border);--brown-400:var(--text-3);
 }
-
 html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:4px}
+body{font-family:var(--font);background:var(--bg);color:var(--text-1);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.45)}
+*{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.25) transparent}
 
-/* ── HEADER ────────────────────────────────────────────────── */
+/* ── HEADER ── */
 header{
-  background:var(--dark);
-  padding:0 32px;height:60px;
+  background:var(--bg);padding:0 24px;height:50px;
   display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:300;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
 }
 .logo{display:flex;align-items:baseline;gap:0;text-decoration:none}
-.logo-lume{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:900;color:var(--accent);letter-spacing:-0.5px}
-.logo-dent{font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:300;color:#fff;letter-spacing:2px}
-.logo-tag{font-size:10px;color:var(--dark-muted);letter-spacing:.06em;margin-top:1px}
-.hpill{
-  font-size:10px;color:var(--dark-muted);
-  border:1px solid rgba(255,255,255,.1);border-radius:20px;
-  padding:4px 12px;letter-spacing:.06em;
-}
+.logo-lume{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-.4px;font-family:Georgia,serif}
+.logo-dent{font-size:17px;font-weight:300;color:rgba(255,255,255,.3);letter-spacing:2px;font-family:Georgia,serif}
+.logo-tag{font-size:10px;color:var(--text-4);letter-spacing:.06em}
+.hpill{font-size:10px;color:var(--text-4);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.04em}
 
-/* ── NAV ───────────────────────────────────────────────────── */
-.nav-tabs{
-  background:var(--dark);
-  display:flex;gap:0;padding:0 32px;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
+/* ── NAV ── */
+.nav-tabs{background:var(--bg-2);display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border)}
 .nav-tab{
-  padding:0 22px;height:42px;display:flex;align-items:center;gap:6px;
-  font-family:var(--font);font-size:12px;font-weight:500;
-  color:rgba(255,255,255,.35);letter-spacing:.04em;text-transform:uppercase;
+  padding:0 18px;height:40px;display:flex;align-items:center;gap:6px;
+  font-family:var(--font);font-size:10px;font-weight:700;
+  color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;
   border:none;background:transparent;cursor:pointer;
-  transition:color .15s;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .15s;border-bottom:2px solid transparent;margin-bottom:-1px;
 }
-.nav-tab:hover{color:rgba(255,255,255,.65)}
-.nav-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.nav-tab:hover{color:var(--text-2)}
+.nav-tab.on{color:var(--accent);border-bottom-color:var(--accent)}
 .view{display:none}.view.on{display:block}
 
-/* ── LAYOUT ────────────────────────────────────────────────── */
-main{max-width:1100px;margin:0 auto;padding:24px 32px 80px;display:flex;flex-direction:column;gap:16px}
-.card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-lg);padding:24px;box-shadow:var(--sh);
-}
-.card-hd{display:flex;align-items:center;gap:8px;margin-bottom:20px}
-.cdot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--accent);flex-shrink:0;
-}
-.ctitle{
-  font-family:var(--font-h);font-size:11px;font-weight:600;
-  color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;
-}
-.slabel{
-  font-size:11px;font-weight:600;color:var(--text-muted);
-  letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
-}
+/* ── LAYOUT ── */
+main{max-width:1060px;margin:0 auto;padding:20px 24px 80px;display:flex;flex-direction:column;gap:10px}
 
-/* ── ZAHNSCHEMA ────────────────────────────────────────────── */
-.srow-lbl{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+/* ── CARD ── */
+.card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.card-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.cdot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.ctitle{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase}
+.slabel{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+
+/* ── ZAHNSCHEMA ── */
+.srow-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
 .trow{display:flex;gap:3px;flex-wrap:nowrap;margin-bottom:4px;overflow-x:auto}
-.sdiv{border:none;border-top:1px solid var(--border);margin:12px 0}
+.sdiv{border:none;border-top:1px solid var(--border);margin:10px 0}
 .tcell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .1s}
 .tcell:hover{transform:translateY(-2px)}
 .ticon{
-  width:32px;height:32px;border-radius:7px;
-  border:1.5px solid var(--border);background:var(--surface-2);
+  width:28px;height:28px;border-radius:5px;
+  border:1px solid var(--border);background:var(--bg-3);
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:600;color:var(--text-muted);
+  font-size:10px;font-weight:700;color:var(--text-4);
   transition:all .12s;user-select:none;
 }
-.ticon:hover{border-color:var(--accent);color:var(--accent);background:#FFFBF0}
-.ticon.incase{border-color:var(--accent)!important;background:#FFFBF0!important;color:var(--accent-dark)!important}
-.tnum{font-size:8px;color:var(--text-muted);transition:color .1s}
+.ticon:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-dim)}
+.ticon.incase{border:2px solid var(--accent)!important;background:var(--accent-dim)!important;color:var(--accent)!important;font-weight:800!important}
+.tnum{font-size:8px;color:var(--text-4);transition:color .1s}
 .rdot{width:14px;height:4px;border-radius:2px;background:var(--border);display:flex;gap:1px;align-items:center;justify-content:center;overflow:hidden}
-.rseg{width:3px;height:3px;border-radius:1px;background:var(--border-strong);flex-shrink:0}
+.rseg{width:3px;height:3px;border-radius:1px;background:var(--border-2);flex-shrink:0}
 
-/* ── LEGEND ────────────────────────────────────────────────── */
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.leg{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:10px;font-weight:600;border-radius:20px;
-  padding:3px 10px;font-family:var(--font);
-}
+/* ── LEGEND ── */
+.legend{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.leg{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;border-radius:20px;padding:3px 10px;font-family:var(--font)}
 
-/* ── VERSICHERUNG ──────────────────────────────────────────── */
-.tgroup{
-  background:var(--surface-2);border:1px solid var(--border);
-  border-radius:10px;padding:3px;display:inline-flex;margin-bottom:16px;
-}
-.tbtn{
-  padding:7px 22px;border:none;border-radius:8px;
-  font-size:13px;font-weight:400;cursor:pointer;
-  transition:all .15s;font-family:var(--font);
-  background:transparent;color:var(--text-muted);
-}
-.tbtn.on{
-  background:var(--surface);color:var(--text-primary);
-  font-weight:600;box-shadow:0 1px 6px rgba(0,0,0,.09);
-}
+/* ── VERSICHERUNG TOGGLE ── */
+.tgroup{background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:3px;display:inline-flex;margin-bottom:14px}
+.tbtn{padding:7px 20px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--font);background:transparent;color:var(--text-4)}
+.tbtn.on{background:var(--accent);color:#0A0E18;font-weight:800}
 
-/* ── BEHANDLUNGSFÄLLE ──────────────────────────────────────── */
-.cases-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+/* ── BEHANDLUNGSFÄLLE ── */
+.cases-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .case-row{
   display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
-  background:var(--surface-2);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px 16px;
-  transition:border-color .15s,box-shadow .15s;
+  background:var(--bg-3);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px 14px;transition:border-color .15s;
 }
-.case-row:hover{border-color:var(--border-strong);box-shadow:var(--sh)}
-.case-num{
-  font-size:10px;font-weight:700;color:var(--text-muted);
-  letter-spacing:.08em;text-transform:uppercase;
-  min-width:42px;flex-shrink:0;margin-top:2px;
-}
+.case-row:hover{border-color:var(--border-2)}
+.case-num{font-size:9px;font-weight:800;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;min-width:42px;flex-shrink:0;margin-top:2px}
 .case-tooth-select{display:flex;gap:3px;flex-wrap:wrap;flex:1;min-width:0}
-.case-tooth-btn{min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;min-width:32px;width:32px;justify-content:center;
-  padding:4px 9px;border:1px solid var(--border);border-radius:6px;
-  background:var(--surface);color:var(--text-muted);font-size:11px;
-  font-weight:500;cursor:pointer;transition:all .1s;font-family:var(--font);
+.case-tooth-btn{
+  min-width:28px;width:28px;padding:4px;
+  border:1px solid var(--border);border-radius:5px;
+  background:var(--bg-4);color:var(--text-4);font-size:10px;
+  font-weight:700;cursor:pointer;transition:all .1s;font-family:var(--font);
+  display:flex;align-items:center;justify-content:center;
 }
-.case-tooth-btn:hover{border-color:var(--accent);color:var(--accent)}
-.case-tooth-btn.on{
-  border-color:var(--accent);background:#FFFBF0;
-  color:var(--accent-dark);font-weight:700;
-  box-shadow:0 0 0 2px var(--accent-glow);
-}
+.case-tooth-btn:hover{border-color:var(--accent-border);color:var(--accent)}
+.case-tooth-btn.on{border:2px solid var(--accent);background:var(--accent-dim);color:var(--accent);font-weight:800}
 .case-tooth-btn.miss{border-color:var(--red)!important;color:var(--red)!important}
-.case-fall-btns{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.case-fall-btns{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
 .case-fall-btn{
-  padding:5px 13px;border:1px solid var(--border);border-radius:6px;
-  background:var(--surface);color:var(--text-secondary);
-  font-size:12px;font-weight:500;cursor:pointer;
-  transition:all .12s;font-family:var(--font);
+  padding:5px 11px;border:1px solid var(--border);border-radius:5px;
+  background:var(--bg-4);color:var(--text-3);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;font-family:var(--font);
 }
-.case-fall-btn:hover{border-color:var(--accent);color:var(--accent)}
-.case-fall-btn.on{
-  background:var(--accent);border-color:var(--accent);
-  color:#fff;font-weight:600;
-  box-shadow:0 2px 8px rgba(201,168,76,.3);
-}
-.case-del{
-  padding:5px 9px;border:1px solid var(--border);border-radius:6px;
-  background:transparent;color:var(--text-muted);font-size:11px;
-  cursor:pointer;transition:all .1s;flex-shrink:0;
-}
+.case-fall-btn:hover{border-color:var(--accent-border);color:var(--accent)}
+.case-fall-btn.on{background:var(--accent);border-color:var(--accent);color:#0A0E18;font-weight:800}
+.case-del{padding:5px 8px;border:1px solid var(--border);border-radius:5px;background:transparent;color:var(--text-4);font-size:11px;cursor:pointer;transition:all .1s;flex-shrink:0}
 .case-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 .case-add-btn{
   display:flex;align-items:center;gap:8px;padding:10px 16px;
-  border:1.5px dashed var(--border-strong);border-radius:var(--r-sm);
-  background:transparent;color:var(--text-muted);font-size:12px;
+  border:1px dashed var(--border-2);border-radius:var(--r-sm);
+  background:transparent;color:var(--text-3);font-size:12px;
   cursor:pointer;transition:all .14s;font-family:var(--font);
   flex:1;justify-content:center;
 }
-.case-add-btn:hover{
-  border-color:var(--accent);color:var(--accent);
-  background:var(--accent-glow);
-}
+.case-add-btn:hover{border-color:var(--accent-border);color:var(--accent);background:var(--accent-dim)}
 
-/* ── BUTTONS ───────────────────────────────────────────────── */
+/* ── BUTTONS ── */
 .bp{
-  padding:11px 28px;
-  background:var(--text-primary);color:#fff;
+  padding:12px 24px;
+  background:var(--accent);color:#0A0E18;
   border:none;border-radius:var(--r-sm);
-  font-size:13px;font-weight:600;cursor:pointer;
-  font-family:var(--font);letter-spacing:.01em;
-  box-shadow:0 1px 3px rgba(0,0,0,.2);
+  font-size:13px;font-weight:800;cursor:pointer;
+  font-family:var(--font);letter-spacing:.02em;
   transition:all .15s;
 }
-.bp:hover{background:#1e2940;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.bp:hover{background:var(--accent-light);transform:translateY(-1px)}
 .bs{
-  padding:11px 20px;background:var(--surface);
-  color:var(--text-secondary);border:1px solid var(--border);
-  border-radius:var(--r-sm);font-size:12px;font-weight:500;
+  padding:11px 18px;background:var(--bg-3);
+  color:var(--text-2);border:1px solid var(--border-2);
+  border-radius:var(--r-sm);font-size:12px;font-weight:600;
   cursor:pointer;font-family:var(--font);transition:all .12s;
 }
-.bs:hover{border-color:var(--border-strong);color:var(--text-primary)}
-.arow{display:flex;gap:10px;flex-wrap:wrap}
+.bs:hover{border-color:var(--accent-border);color:var(--accent)}
+.arow{display:flex;gap:8px;flex-wrap:wrap}
 
-/* ── ERGEBNIS – Dark Premium ───────────────────────────────── */
-.result-outer{
-  background:var(--dark);
-  border:1px solid var(--dark-border);
-  border-radius:var(--r-lg);
-  padding:24px;
-  box-shadow:0 8px 40px rgba(0,0,0,.25);
-}
-
-/* Gesamtkopie */
-.total-copy-box{margin-bottom:20px}
-.total-copy-lbl{
-  font-size:10px;font-weight:700;color:rgba(255,255,255,.3);
-  letter-spacing:.1em;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;
-}
-.total-copy-text{
-  font-family:var(--font);font-size:12px;color:rgba(255,255,255,.45);
-  background:rgba(255,255,255,.03);border:1px solid var(--dark-border);
-  border-radius:var(--r-sm);padding:12px 14px;line-height:2;
-  white-space:pre-wrap;word-break:break-all;
-}
+/* ── ERGEBNIS ── */
+.result-outer{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.total-copy-box{margin-bottom:16px}
+.total-copy-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.total-copy-text{font-family:var(--font);font-size:12px;color:var(--text-2);background:var(--bg-3);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;line-height:2;white-space:pre-wrap;word-break:break-all}
 .copy-btns-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.copy-btn-primary{
-  padding:9px 20px;
-  border:none;border-radius:var(--r-sm);
-  background:var(--accent);
-  color:#0A0E1A;font-size:12px;font-weight:700;
-  cursor:pointer;font-family:var(--font);letter-spacing:.02em;
-  transition:all .15s;
-}
-.copy-btn-primary:hover{background:var(--accent-light);transform:translateY(-1px)}
-.copy-btn-inline{
-  padding:9px 16px;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);
-  background:transparent;color:rgba(255,255,255,.4);font-size:11px;font-weight:500;
-  cursor:pointer;font-family:var(--font);transition:all .14s;
-}
-.copy-btn-inline:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7)}
+.copy-btn-primary{padding:10px 18px;border:none;border-radius:var(--r-sm);background:var(--accent);color:#0A0E18;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);letter-spacing:.02em;transition:all .15s}
+.copy-btn-primary:hover{background:var(--accent-light)}
+.copy-btn-inline{padding:10px 14px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s}
+.copy-btn-inline:hover{border-color:var(--accent-border);color:var(--accent)}
 
-/* Global-Box */
-.global-box{
-  background:rgba(255,255,255,.03);
-  border:1px solid rgba(201,168,76,.2);
-  border-radius:var(--r);padding:20px;margin-bottom:20px;
-}
-.global-box-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.global-box{background:var(--bg-3);border:1px solid var(--accent-border);border-radius:var(--r);padding:18px;margin-bottom:18px}
+.global-box-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
 .global-box-title{display:flex;align-items:center;gap:8px}
-.global-box-icon{
-  width:26px;height:26px;border-radius:7px;
-  background:linear-gradient(135deg,var(--accent-dark),var(--accent-light));
-  display:flex;align-items:center;justify-content:center;font-size:12px;
-}
-.global-box-lbl{font-size:11px;font-weight:700;color:var(--accent-light);letter-spacing:.1em;text-transform:uppercase;}
-.global-box-sub{font-size:10px;color:var(--dark-muted);margin-top:1px}
-.global-lines{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
-.gline{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.03);border:1px solid var(--dark-border);
-  border-radius:7px;padding:9px 12px;transition:background .1s;
-}
-.gline:hover{background:rgba(255,255,255,.06)}
-.gline-tag{
-  font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  min-width:52px;flex-shrink:0;padding:2px 6px;border-radius:4px;text-align:center;
-}
-.glt-area {background:rgba(201,168,76,.15);color:var(--accent-light)}
-.glt-clean{background:rgba(37,99,235,.15);color:#93C5FD}
-.glt-fill {background:rgba(124,58,237,.15);color:#C4B5FD}
-.gline-text{
-  font-family:var(--font);font-size:14px;font-weight:600;
-  color:var(--dark-text);letter-spacing:.02em;flex:1;
-}
-.gline-meta{font-size:9px;color:var(--dark-muted);flex-shrink:0}
-.global-raw{
-  font-family:var(--font);font-size:12px;color:rgba(255,255,255,.3);
-  background:rgba(0,0,0,.25);border:1px solid var(--dark-border);
-  border-radius:7px;padding:10px 14px;line-height:2;
-  white-space:pre-wrap;word-break:break-all;margin-bottom:12px;
-}
-.global-raw-lbl{font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:600}
-.global-btns{display:flex;gap:8px;flex-wrap:wrap}
-.copy-btn-global{
-  padding:9px 22px;border:none;border-radius:var(--r-sm);
-  background:var(--accent);color:#0A0E1A;
-  font-size:12px;font-weight:700;cursor:pointer;
-  font-family:var(--font);letter-spacing:.02em;
-  transition:all .14s;
-}
-.copy-btn-global:hover{background:var(--accent-light);transform:translateY(-1px)}
-.copy-btn-global-sec{
-  padding:9px 16px;border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);
-  background:transparent;color:rgba(255,255,255,.4);font-size:11px;
-  cursor:pointer;font-family:var(--font);transition:all .14s;
-}
-.copy-btn-global-sec:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7)}
-.section-divider{display:flex;align-items:center;gap:10px;margin:18px 0}
-.section-divider-line{flex:1;height:1px;background:var(--dark-border)}
-.section-divider-lbl{font-size:9px;font-weight:700;color:var(--dark-muted);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
-
-/* Einzelfall */
-.case-result-block{border-top:1px solid var(--dark-border);padding-top:18px;margin-top:18px}
-.case-result-block:first-child{border-top:none;padding-top:0;margin-top:0}
-.case-result-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.case-result-badge{
-  font-size:9px;font-weight:700;color:#0A0E1A;
-  background:var(--accent);border-radius:5px;
-  padding:2px 8px;letter-spacing:.06em;text-transform:uppercase;
-}
-.case-result-title{font-family:var(--font-h);font-size:15px;font-weight:600;color:var(--dark-text)}
-.case-lines{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
-.cline{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.03);border:1px solid var(--dark-border);
-  border-radius:7px;padding:8px 12px;
-}
-.cline-tag{
-  font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  min-width:50px;flex-shrink:0;padding:2px 5px;border-radius:4px;text-align:center;
-}
-.clt-area {background:rgba(201,168,76,.15);color:var(--accent-light)}
-.clt-clean{background:rgba(37,99,235,.15);color:#93C5FD}
-.clt-fill {background:rgba(124,58,237,.15);color:#C4B5FD}
-.cline-text{font-family:var(--font);font-size:14px;font-weight:500;color:var(--dark-text);flex:1;letter-spacing:.01em}
-.cline-hint{font-size:9px;color:var(--dark-muted);margin-left:8px}
-.case-ctx{margin-top:6px}
-.case-ctx-toggle{font-size:9px;color:var(--dark-muted);cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-weight:600;display:inline-flex;align-items:center;gap:3px;background:none;border:none;padding:0;font-family:var(--font);transition:color .1s}
-.case-ctx-toggle:hover{color:rgba(255,255,255,.5)}
-.case-ctx-body{display:none;margin-top:6px;flex-wrap:wrap;gap:5px}
-.case-ctx-body.open{display:flex}
-.dbadge{font-size:10px;background:rgba(255,255,255,.05);border:1px solid var(--dark-border);border-radius:5px;padding:3px 8px;color:var(--dark-muted)}
-.dbadge strong{color:rgba(255,255,255,.6);font-weight:600}
-.warn{font-size:11px;color:#FCD34D;background:rgba(252,211,77,.08);border:1px solid rgba(252,211,77,.15);border-radius:6px;padding:8px 12px;margin-top:6px}
-
-/* ── KATALOG ───────────────────────────────────────────────── */
-.kat-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-.kat-search{
-  flex:1;min-width:200px;padding:9px 14px;
-  border:1px solid var(--border);border-radius:var(--r-sm);
-  font-family:var(--font);font-size:13px;color:var(--text-primary);
-  background:var(--surface);outline:none;transition:border-color .14s;
-}
-.kat-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-.kat-search::placeholder{color:var(--text-muted)}
-.kat-filters{display:flex;gap:5px;flex-wrap:wrap}
-.kfbtn{
-  padding:6px 14px;border:1px solid var(--border);border-radius:20px;
-  background:var(--surface);color:var(--text-muted);font-size:11px;
-  font-weight:500;cursor:pointer;transition:all .12s;font-family:var(--font);
-}
-.kfbtn:hover{border-color:var(--border-strong);color:var(--text-secondary)}
-.kfbtn.on{font-weight:700}
-.kfbtn[data-sys="BEMA"].on{border-color:var(--blue);background:var(--blue-bg);color:var(--blue)}
-.kfbtn[data-sys="GOZ"].on{border-color:var(--purple);background:var(--purple-bg);color:var(--purple)}
-.kfbtn[data-sys="BEB"].on{border-color:var(--green);background:var(--green-bg);color:var(--green)}
-.kfbtn[data-sys="ALL"].on{border-color:var(--accent);background:#FFFBF0;color:var(--accent-dark)}
-.kat-count{font-size:11px;color:var(--text-muted);margin-left:auto;white-space:nowrap}
-.kat-grid{display:flex;flex-direction:column;gap:6px}
-.kat-item{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden;cursor:pointer;
-  transition:border-color .14s,box-shadow .14s;
-}
-.kat-item:hover{border-color:var(--border-strong);box-shadow:var(--sh)}
-.kat-item.open{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-.kat-item-hd{display:flex;align-items:center;gap:12px;padding:13px 16px}
-.kat-item-code{font-family:var(--font-h);font-size:16px;font-weight:700;color:var(--text-primary);min-width:64px}
-.kat-item-sys{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:5px;flex-shrink:0}
-.sys-BEMA{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
-.sys-GOZ{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border)}
-.sys-BEB{background:var(--green-bg);color:var(--green);border:1px solid rgba(5,150,105,.2)}
-.kat-item-title{font-size:13px;font-weight:500;color:var(--text-secondary);flex:1;line-height:1.4}
-.kat-item-chevron{color:var(--border-strong);font-size:13px;transition:transform .18s;flex-shrink:0}
-.kat-item.open .kat-item-chevron{transform:rotate(180deg);color:var(--accent)}
-.kat-item-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);background:var(--surface-2)}
-.kat-item.open .kat-item-body{display:block}
-.kat-detail-desc{font-size:13px;color:var(--text-secondary);line-height:1.7;padding-top:12px;margin-bottom:12px}
-.kat-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
-.kat-detail-field{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
-.kat-detail-field-lbl{font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-.kat-detail-field-val{font-size:12px;color:var(--text-secondary);line-height:1.5}
-.kat-detail-field-val.empty{color:var(--border-strong);font-style:italic}
-.kat-no-results{text-align:center;padding:48px 24px;color:var(--text-muted);font-size:14px}
-
-/* ── PROFIL ────────────────────────────────────────────────── */
-.profil-item{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;transition:.1s;border-radius:8px;margin:2px 6px}
-.profil-item:hover{background:var(--surface-2)}
-.profil-item.active{background:var(--blue-bg)}
-.profil-item .pi-name{font-size:13px;color:var(--text-primary);font-weight:500;flex:1}
-.profil-item .pi-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border)}
-.profil-item .pi-del{font-size:13px;color:var(--text-muted);cursor:pointer;opacity:0}
-.profil-item:hover .pi-del{opacity:1}
-
-/* ── POSITIONS-EDITOR ──────────────────────────────────────── */
-.pe-pos-row{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 10px;border-radius:var(--r-sm);
-  border:1px solid var(--border);background:var(--surface);
-  margin-bottom:4px;font-size:12px;
-  transition:border-color .1s;
-}
-.pe-pos-row:hover{border-color:var(--border-strong)}
-.pe-pos-row.inactive{opacity:.4;background:var(--surface-2)}
-.pe-pos-row.dragging{opacity:.3;border-color:var(--accent)}
-.pe-pos-row.drag-over{border-color:var(--accent);background:#FFFBF0;box-shadow:0 0 0 2px var(--accent-glow)}
-.pe-drag{color:var(--border-strong);cursor:grab;font-size:14px;flex-shrink:0}
-.pe-code{font-weight:700;color:var(--text-primary);min-width:72px}
-.pe-typ{font-size:10px;color:var(--text-muted);flex:1}
-.pe-rule{font-size:10px;color:var(--accent-dark);margin-left:4px;font-style:italic}
-.pe-del{color:var(--red);cursor:pointer;font-size:12px;opacity:.4;flex-shrink:0;transition:opacity .1s}
-.pe-del:hover{opacity:1}
-.pe-move{color:var(--border-strong);cursor:pointer;font-size:12px;flex-shrink:0;transition:color .1s}
-.pe-move:hover{color:var(--accent)}
-.konfig-fall-tab{padding:5px 12px;border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;background:var(--surface);color:var(--text-muted);transition:.14s}
-.konfig-fall-tab.on{background:var(--text-primary);color:#fff;border-color:var(--text-primary);font-weight:600}
-.konfig-pos-list,.konfig-pos-item,.konfig-pos-toggle,.konfig-add-row,.konfig-section-label{display:none} /* legacy hidden */
-/* ── Regelstudio ───────────────────────────────────────────── */
-.rs-profile-tab{
-  padding:6px 16px;border:1px solid var(--border);border-radius:20px;
-  font-size:12px;font-weight:500;cursor:pointer;transition:all .14s;
-  background:var(--surface);color:var(--text-muted);font-family:var(--font);
-}
-.rs-profile-tab:hover{border-color:var(--border-strong);color:var(--text-primary)}
-.rs-profile-tab.active{background:var(--text-primary);color:#fff;border-color:var(--text-primary);font-weight:600}
-.rs-fall-tab{
-  padding:10px 18px;border:none;border-bottom:2px solid transparent;
-  font-size:12px;font-weight:500;cursor:pointer;transition:all .14s;
-  background:transparent;color:var(--text-muted);font-family:var(--font);
-  white-space:nowrap;
-}
-.rs-fall-tab:hover{color:var(--text-primary)}
-.rs-fall-tab.active{color:var(--text-primary);border-bottom-color:var(--accent);font-weight:700}
-.rs-fall-group-label{
-  font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.1em;
-  text-transform:uppercase;padding:0 6px;display:flex;align-items:center;
-}
-/* Positions-Karten */
-.rs-pos-list{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
-.rs-pos-row{
-  display:flex;align-items:center;gap:8px;padding:9px 12px;
-  border:1px solid var(--border);border-radius:var(--r-sm);
-  background:var(--surface);transition:all .12s;
-}
-.rs-pos-row:hover{border-color:var(--border-strong);box-shadow:var(--sh)}
-.rs-pos-row.disabled{opacity:.4;background:var(--surface-2)}
-.rs-pos-row.custom{border-color:rgba(37,99,235,.3);background:var(--blue-bg)}
-.rs-pos-row.dragging{opacity:.3;border-color:var(--accent)}
-.rs-pos-row.drag-over{border-color:var(--accent);background:#FFFBF0;box-shadow:0 0 0 2px var(--accent-glow)}
-.rs-drag{color:var(--border-strong);cursor:grab;font-size:15px;flex-shrink:0;user-select:none}
-.rs-drag:active{cursor:grabbing}
-.rs-code{
-  font-family:var(--font-h);font-size:14px;font-weight:700;
-  color:var(--text-primary);min-width:80px;flex-shrink:0;
-}
-.rs-typ{
-  font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;
-  flex-shrink:0;
-}
-.rs-typ-bereich{background:rgba(201,168,76,.15);color:var(--accent-dark)}
-.rs-typ-behandlung{background:var(--blue-bg);color:var(--blue)}
-.rs-typ-einmalig{background:var(--purple-bg);color:var(--purple)}
-.rs-typ-global{background:var(--green-bg);color:var(--green)}
-.rs-typ-nachbar{background:rgba(220,38,38,.1);color:var(--red)}
-.rs-typ-other{background:var(--surface-2);color:var(--text-muted)}
-.rs-desc{font-size:12px;color:var(--text-muted);flex:1;line-height:1.4}
-.rs-rule-badge{
-  font-size:10px;color:var(--accent-dark);background:#FFFBF0;
-  border:1px solid var(--accent-glow);border-radius:5px;
-  padding:2px 7px;white-space:nowrap;flex-shrink:0;
-}
-.rs-toggle{
-  width:36px;height:20px;border-radius:10px;cursor:pointer;
-  border:none;position:relative;transition:background .15s;flex-shrink:0;
-}
-.rs-toggle.on{background:var(--accent)}
-.rs-toggle.off{background:var(--border-strong)}
-.rs-toggle::after{
-  content:"";position:absolute;top:2px;width:16px;height:16px;
-  border-radius:50%;background:#fff;transition:left .15s;
-}
-.rs-toggle.on::after{left:18px}
-.rs-toggle.off::after{left:2px}
-.rs-btn-sm{
-  padding:4px 10px;border:1px solid var(--border);border-radius:6px;
-  background:var(--surface);color:var(--text-muted);font-size:11px;
-  cursor:pointer;transition:all .1s;font-family:var(--font);
-}
-.rs-btn-sm:hover{border-color:var(--border-strong);color:var(--text-primary)}
-.rs-btn-del{padding:4px 8px;border:1px solid transparent;border-radius:6px;
-  background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;
-  transition:all .1s;flex-shrink:0}
-.rs-btn-del:hover{color:var(--red);background:var(--red-bg);border-color:rgba(220,38,38,.2)}
-/* Add-Position Panel */
-.rs-add-panel{
-  background:var(--surface-2);border:1.5px dashed var(--border-strong);
-  border-radius:var(--r);padding:14px 16px;margin-top:8px;
-}
-.rs-add-panel input,.rs-add-panel select{
-  padding:7px 10px;border:1px solid var(--border);border-radius:7px;
-  font-size:12px;font-family:var(--font);color:var(--text-primary);
-  background:var(--surface);outline:none;transition:border-color .14s;
-}
-.rs-add-panel input:focus,.rs-add-panel select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-/* Regeln */
-.rs-rule-row{
-  display:flex;align-items:center;gap:8px;padding:8px 12px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--r-sm);font-size:12px;
-}
-.rs-rule-if{font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
-.rs-section-title{
-  font-size:11px;font-weight:700;color:var(--text-muted);
-  letter-spacing:.08em;text-transform:uppercase;
-  display:flex;align-items:center;gap:8px;margin:16px 0 8px;
-}
-.rs-section-title::after{content:"";flex:1;height:1px;background:var(--border)}
-.info-hinweis{
-  display:flex;align-items:flex-start;gap:10px;padding:8px 0;
-  border-bottom:1px solid var(--border);font-size:12px;
-}
-.info-hinweis:last-child{border-bottom:none}
-.info-hinweis-code{
-  font-family:var(--font-h);font-weight:700;font-size:13px;
-  color:var(--text-primary);min-width:60px;flex-shrink:0;
-}
-.info-hinweis-text{flex:1;color:var(--text-secondary);line-height:1.5}
-.info-hinweis-anzahl{
-  font-size:11px;font-weight:700;color:var(--accent-dark);
-  background:#FFFBF0;border:1px solid var(--accent-glow);
-  border-radius:5px;padding:2px 8px;flex-shrink:0;
-}
-.err-box{background:var(--red-bg);border:1px solid rgba(220,38,38,.2);border-radius:var(--r-sm);padding:14px 18px;color:var(--red);font-size:13px}
-
-/* KATALOG */
-.kat-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
-.kat-search{flex:1;min-width:200px;padding:10px 16px;border:1.5px solid var(--brown-100);border-radius:9px;font-family:var(--font-u);font-size:13px;color:var(--brown-700);background:#fff;outline:none;transition:border-color .15s}
-.kat-search:focus{border-color:var(--gold)}
-.kat-search::placeholder{color:var(--brown-300)}
-.kat-filters{display:flex;gap:6px;flex-wrap:wrap}
-.kfbtn{padding:7px 16px;border:1.5px solid var(--brown-100);border-radius:20px;background:#fff;color:var(--brown-400);font-size:11px;font-weight:500;cursor:pointer;transition:all .14s;font-family:var(--font-u);letter-spacing:.04em}
-.kfbtn:hover{border-color:var(--gold);color:var(--gold)}
-.kfbtn.on{font-weight:700}
-.kfbtn[data-sys="BEMA"].on{border-color:#254a60;background:#f0f8ff;color:#254a60}
-.kfbtn[data-sys="GOZ"].on {border-color:#4a2060;background:#f8f0ff;color:#4a2060}
-.kfbtn[data-sys="BEB"].on {border-color:#1a4030;background:#f0fff8;color:#1a4030}
-.kfbtn[data-sys="ALL"].on {border-color:var(--gold);background:var(--brown-50);color:var(--gold-d)}
-.kat-count{font-size:11px;color:var(--brown-300);margin-left:auto;white-space:nowrap}
-.kat-grid{display:flex;flex-direction:column;gap:8px}
-.kat-item{background:#fff;border:1.5px solid var(--brown-100);border-radius:11px;padding:0;overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
-.kat-item:hover{border-color:var(--brown-200);box-shadow:0 3px 16px rgba(44,31,14,.09)}
-.kat-item.open{border-color:var(--gold)}
-.kat-item-hd{display:flex;align-items:center;gap:14px;padding:14px 18px}
-.kat-item-code{font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--brown-800);min-width:72px;letter-spacing:.04em}
-.kat-item-sys{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:5px;flex-shrink:0}
-.sys-BEMA{background:#e8f4fc;color:#254a60;border:1px solid #c0dff0}
-.sys-GOZ {background:#f0e8fc;color:#4a2060;border:1px solid #d8c0f0}
-.sys-BEB {background:#e8f8f0;color:#1a4030;border:1px solid #b0e0c8}
-.kat-item-title{font-size:13px;font-weight:500;color:var(--brown-700);flex:1;line-height:1.4}
-.kat-item-chevron{color:var(--brown-200);font-size:14px;transition:transform .2s;flex-shrink:0}
-.kat-item.open .kat-item-chevron{transform:rotate(180deg);color:var(--gold)}
-.kat-item-body{display:none;padding:0 18px 18px;border-top:1px solid var(--brown-100);background:linear-gradient(to bottom,var(--brown-50),#fff)}
-.kat-item.open .kat-item-body{display:block}
-.kat-detail-desc{font-size:13px;color:var(--brown-600);line-height:1.7;padding-top:14px;margin-bottom:14px}
-.kat-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.kat-detail-field{background:#fff;border:1px solid var(--brown-100);border-radius:8px;padding:10px 14px}
-.kat-detail-field-lbl{font-size:9px;font-weight:700;color:var(--brown-300);letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
-.kat-detail-field-val{font-size:12px;color:var(--brown-600);line-height:1.5}
-.kat-detail-field-val.empty{color:var(--brown-200);font-style:italic}
-.kat-no-results{text-align:center;padding:48px 24px;color:var(--brown-300);font-size:14px}
-
-/* ═══════════════════════════════════════
-   GLOBALER ABRECHNUNGSTEXT
-   ═══════════════════════════════════════ */
-.global-box{
-  background:linear-gradient(140deg,#0e0a04,#1a1006);
-  border:1.5px solid rgba(184,149,42,.38);border-radius:var(--r);
-  padding:24px 28px;margin-bottom:24px;
-  box-shadow:0 6px 40px rgba(0,0,0,.45);
-  position:relative;overflow:hidden;
-}
-.global-box::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(184,149,42,.05) 0%,transparent 60%);
-  pointer-events:none;
-}
-.global-box-hd{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;gap:12px;flex-wrap:wrap;
-}
-.global-box-title{
-  display:flex;align-items:center;gap:10px;
-}
-.global-box-icon{
-  width:28px;height:28px;border-radius:7px;
-  background:linear-gradient(135deg,var(--gold-d),var(--gold-l));
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;flex-shrink:0;
-  box-shadow:0 2px 10px rgba(184,149,42,.35);
-}
-.global-box-lbl{
-  font-size:11px;font-weight:700;color:var(--gold-l);
-  letter-spacing:.2em;text-transform:uppercase;
-}
-.global-box-sub{
-  font-size:10px;color:#5a4020;letter-spacing:.06em;margin-top:2px;
-}
-.global-lines{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
-.gline{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  border-radius:8px;padding:10px 14px;
-  transition:background .12s;
-}
-.gline:hover{background:rgba(255,255,255,.06)}
-.gline-tag{
-  font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-  min-width:58px;flex-shrink:0;padding:3px 7px;border-radius:4px;text-align:center;
-}
-.glt-area {background:rgba(184,149,42,.22);color:var(--gold-l)}
-.glt-clean{background:rgba(128,184,216,.2);color:var(--blue-l)}
-.glt-fill {background:rgba(176,144,208,.2);color:var(--purple-l)}
-.gline-text{
-  font-family:var(--font-d);font-size:16px;font-weight:600;
-  color:#f5ead0;letter-spacing:.06em;flex:1;
-}
-.gline-meta{
-  font-size:9px;color:rgba(184,149,42,.4);
-  font-family:var(--font-u);flex-shrink:0;letter-spacing:.04em;
-}
-.global-raw{
-  font-family:var(--font-d);font-size:13px;color:#a88c50;
-  background:rgba(0,0,0,.3);border:1px solid rgba(184,149,42,.12);
-  border-radius:7px;padding:12px 16px;line-height:2.1;
-  letter-spacing:.04em;white-space:pre-wrap;word-break:break-all;
-  margin-bottom:14px;
-}
-.global-raw-lbl{
-  font-size:9px;color:#4a3418;letter-spacing:.14em;text-transform:uppercase;
-  margin-bottom:6px;font-weight:600;
-}
-.global-btns{display:flex;gap:8px;flex-wrap:wrap}
-.copy-btn-global{
-  padding:10px 26px;
-  border:1.5px solid var(--gold);border-radius:8px;
-  background:linear-gradient(135deg,var(--gold-d),var(--gold-l));
-  color:#1a0e04;font-size:13px;font-weight:700;cursor:pointer;
-  font-family:var(--font-u);letter-spacing:.07em;transition:all .15s;
-  box-shadow:0 3px 14px rgba(184,149,42,.35);
-}
-.copy-btn-global:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(184,149,42,.45)}
-.copy-btn-global-sec{
-  padding:10px 20px;border:1px solid rgba(184,149,42,.3);border-radius:8px;
-  background:transparent;color:#8a7040;font-size:11px;font-weight:500;
-  cursor:pointer;font-family:var(--font-u);transition:all .15s;
-}
-.copy-btn-global-sec:hover{border-color:var(--gold);color:var(--gold-l)}
-
-/* Trenner zwischen global und Einzelfälle */
-.section-divider{
-  display:flex;align-items:center;gap:12px;
-  margin:20px 0 20px;
-}
-.section-divider-line{flex:1;height:1px;background:rgba(255,255,255,.07)}
-.section-divider-lbl{
-  font-size:9px;font-weight:700;color:rgba(184,149,42,.35);
-  letter-spacing:.18em;text-transform:uppercase;white-space:nowrap;
-}
-
-/* ── NEUE TAG-FARBEN für Privat-Positionen ── */
-/* Paro */
-.clt-paro    {background:rgba(22,160,133,.22);color:#1abc9c}
-.glt-paro    {background:rgba(22,160,133,.22);color:#1abc9c}
-/* Behandlung (Anästhesie, 0070, 2060D) */
-.clt-behandlung{background:rgba(52,152,219,.22);color:#5dade2}
-.glt-behandlung{background:rgba(52,152,219,.22);color:#5dade2}
-/* Nachbar (2130, 2320) */
-.clt-nachbar {background:rgba(155,89,182,.22);color:#c39bd3}
-.glt-nachbar {background:rgba(155,89,182,.22);color:#c39bd3}
-/* Material (M100, M4025) */
-.clt-material{background:rgba(149,165,166,.22);color:#aab7b8}
-.glt-material{background:rgba(149,165,166,.22);color:#aab7b8}
-/* Basis (Ä1, Ä5, 0708) */
-.clt-basis   {background:rgba(243,156,18,.22);color:#f39c12}
-.glt-basis   {background:rgba(243,156,18,.22);color:#f39c12}
-/* Kiefer (4020F) */
-.clt-kiefer  {background:rgba(231,76,60,.22);color:#e74c3c}
-.glt-kiefer  {background:rgba(231,76,60,.22);color:#e74c3c}
-
-footer{text-align:center;font-size:9px;color:var(--brown-200);letter-spacing:.14em;padding-bottom:32px;text-transform:uppercase;font-family:var(--font-u)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ani{animation:fadeIn .28s ease forwards}
-/* ── Scrollbar ─────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.6); }
-* { scrollbar-width: thin; scrollbar-color: rgba(201,168,76,0.3) transparent; }
-/* Output Drag & Drop */
-.gline-drag{font-size:14px;color:var(--text-muted);cursor:grab;flex-shrink:0;padding:0 4px;user-select:none;transition:color .12s}
-.gline:hover .gline-drag{color:var(--text-secondary)}
-.gline.drag-over{border-color:var(--accent)!important;background:#FFFBF0!important}
+.global-box-icon{width:22px;height:22px;border-radius:5px;background:var(--accent-dim);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:11px}
+.global-box-lbl{font-size:9px;font-weight:800;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}
+.global-box-sub{font-size:10px;color:var(--text-3);margin-top:1px}
+.global-lines{display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.gline{display:flex;align-items:center;gap:8px;background:var(--bg-4);border:1px solid var(--border);border-radius:6px;padding:9px 12px;transition:all .1s}
+.gline:hover{background:rgba(255,255,255,.04);border-color:var(--border-2)}
+.gline-drag{font-size:13px;color:var(--text-4);cursor:grab;flex-shrink:0;padding:0 2px;user-select:none;transition:color .12s}
+.gline:hover .gline-drag{color:var(--text-3)}
+.gline.drag-over{border-color:var(--accent)!important;background:var(--accent-dim)!important}
 .gline.dragging{opacity:.4}
+.gline-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;min-width:50px;flex-shrink:0;padding:2px 6px;border-radius:4px;text-align:center}
+.glt-area{background:var(--accent-dim);color:var(--accent)}
+.glt-clean{background:rgba(75,142,240,.1);color:#4B8EF0}
+.glt-fill{background:rgba(157,110,245,.1);color:#9D6EF5}
+.glt-paro{background:rgba(52,201,122,.1);color:#34C97A}
+.glt-behandlung{background:rgba(75,142,240,.1);color:#4B8EF0}
+.glt-nachbar{background:rgba(240,68,68,.1);color:#F04444}
+.glt-material{background:rgba(201,168,76,.1);color:#C9A84C}
+.glt-basis{background:rgba(255,255,255,.06);color:var(--text-3)}
+.glt-kiefer{background:rgba(157,110,245,.1);color:#9D6EF5}
+.gline-text{font-family:var(--font);font-size:14px;font-weight:800;color:var(--text-1);letter-spacing:.02em;flex:1}
+.gline-meta{font-size:9px;color:var(--text-4);flex-shrink:0}
+.global-raw{font-family:var(--font);font-size:11px;color:var(--text-3);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;line-height:2;white-space:pre-wrap;word-break:break-all;margin-bottom:10px}
+.global-raw-lbl{font-size:9px;color:var(--text-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.global-btns{display:flex;gap:8px;flex-wrap:wrap}
+.copy-btn-global{padding:11px 22px;border:none;border-radius:var(--r-sm);background:var(--accent);color:#0A0E18;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);letter-spacing:.02em;transition:all .14s}
+.copy-btn-global:hover{background:var(--accent-light);transform:translateY(-1px)}
+.copy-btn-global-sec{padding:11px 16px;border:1px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s}
+.copy-btn-global-sec:hover{border-color:var(--accent-border);color:var(--accent)}
+.section-divider{display:flex;align-items:center;gap:10px;margin:16px 0}
+.section-divider-line{flex:1;height:1px;background:var(--border)}
+.section-divider-lbl{font-size:9px;font-weight:700;color:var(--text-4);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+
+.case-result-block{border-top:1px solid var(--border);padding-top:14px;margin-top:14px}
+.case-result-block:first-child{border-top:none;padding-top:0;margin-top:0}
+.case-result-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.case-result-badge{font-size:9px;font-weight:800;color:#0A0E18;background:var(--accent);padding:2px 7px;border-radius:4px;letter-spacing:.06em}
+
+/* Output Drag & Drop */
+.gline-drag{font-size:14px;color:var(--text-4);cursor:grab;flex-shrink:0;padding:0 4px;user-select:none;transition:color .12s}
+.gline:hover .gline-drag{color:var(--text-3)}
+.gline.drag-over{border-color:var(--accent)!important;background:var(--accent-dim)!important}
+.gline.dragging{opacity:.4}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.6)}
+*{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -866,7 +362,7 @@ function showKickedOverlay() {
   el.innerHTML = `
     <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
     <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;">Sitzung beendet</div>
-    <div style="font-size:15px;color:#6E849E;margin-bottom:28px;text-align:center;max-width:340px;line-height:1.6;">
+    <div style="font-size:15px;color:rgba(255,255,255,.35);margin-bottom:28px;text-align:center;max-width:340px;line-height:1.6;">
       Du wurdest abgemeldet, weil sich ein anderes Gerät mit deinem Konto angemeldet hat.
     </div>
     <button onclick="window.location.href='/auth.html'" style="background:#C9A84C;color:#08111F;border:none;padding:13px 32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">Neu anmelden</button>
@@ -1058,7 +554,7 @@ localStorage.setItem = function(key, value) {
         <span style="font-size:10px;opacity:.5">▾</span>
       </button>
       <div id="profil-menu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.08);min-width:210px;z-index:200;overflow:hidden;border:1px solid var(--border)">
-        <div style="padding:12px 16px 6px;font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600">Profile</div>
+        <div style="padding:12px 16px 6px;font-size:10px;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;font-weight:600">Profile</div>
         <div id="profil-list"></div>
         <div style="border-top:1px solid var(--brown-100);padding:8px">
           <button onclick="openProfilEditor(null)" style="width:100%;text-align:left;padding:8px 14px;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;border-radius:7px;font-weight:500;transition:.1s" onmouseover="this.style.background='var(--blue-bg)'" onmouseout="this.style.background='none'">+ Neues Profil</button>
@@ -1080,10 +576,10 @@ localStorage.setItem = function(key, value) {
 </header>
 
 <div id="checkout-overlay" style="display:none;position:fixed;inset:0;background:rgba(8,17,31,0.85);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#0F1E35;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:48px 44px;max-width:460px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+  <div style="background:var(--bg-2);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:48px 44px;max-width:460px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
     <div style="font-family:Georgia,serif;font-size:28px;font-weight:900;color:#C9A84C;letter-spacing:-0.5px;margin-bottom:4px;">Lume<span style="font-weight:300;color:#fff;letter-spacing:2px;">DENT</span></div>
     <div style="font-size:20px;font-weight:700;color:#fff;margin:16px 0 8px;">Willkommen!</div>
-    <div style="font-size:14px;color:#6E849E;line-height:1.6;margin-bottom:32px;">Deine 14-tägige Testphase hat begonnen.<br>Du hast vollen Zugriff auf alle Funktionen.</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.35);line-height:1.6;margin-bottom:32px;">Deine 14-tägige Testphase hat begonnen.<br>Du hast vollen Zugriff auf alle Funktionen.</div>
     <button onclick="document.getElementById('checkout-overlay').style.display='none'" style="background:#C9A84C;color:#08111F;border:none;padding:14px 40px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;">Los geht's →</button>
   </div>
 </div>
@@ -1111,7 +607,7 @@ localStorage.setItem = function(key, value) {
   <!-- ZAHNSCHEMA -->
   <div class="card">
     <div class="card-hd"><div class="cdot"></div><span class="ctitle">Zahnschema &amp; Minibefund</span>
-    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:#FFFBF0;color:var(--accent-dark);margin-left:8px;font-weight:500;border:1px solid var(--accent-glow)"></span>
+    <span id="aktiv-profil-badge" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent-dark);margin-left:8px;font-weight:500;border:1px solid var(--accent-glow)"></span>
   </div>
     <div class="legend" id="legend"></div>
     <div class="srow-lbl">Oberkiefer</div>
@@ -1135,7 +631,7 @@ localStorage.setItem = function(key, value) {
     <div class="cases-list" id="cases-list"></div>
     <div style="display:flex;gap:8px;align-items:stretch">
       <button class="case-add-btn" onclick="addCase()">+ Fall hinzufügen</button>
-      <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Fall vorschlagen</button>
+      <button onclick="openFallVorschlag()" style="background:transparent;border:1px solid var(--border);color:var(--text-3);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;font-family:var(--font);letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Fall vorschlagen</button>
     </div>
   </div>
 
@@ -1973,7 +1469,7 @@ function renderInfoHinweise(results){
 
   card.style.display = "block";
   inner.innerHTML = `
-    <div style="font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">
+    <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">
       ℹ Hinweise zur Abrechnung
     </div>
     ${hinweise.map(h=>`
@@ -6541,7 +6037,7 @@ function renderCasesList(){
               font-family:var(--font);cursor:pointer;font-weight:${gruppe===currentKat?'600':'400'};
               transition:all .12s;min-width:100px;"
           >
-            <option value="" disabled ${gruppe!==currentKat?'selected':''} style="color:#999">${gruppe}</option>
+            <option value="" disabled ${gruppe!==currentKat?'selected':''} style="color:rgba(255,255,255,.3)">${gruppe}</option>
             ${items.map(([k,v])=>`<option value="${k}" ${c.caseType===k?'selected':''} style="background:#1a1a2e;color:#fff">${v.label} – ${v.desc}</option>`).join('')}
           </select>
           <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:9px;color:${gruppe===currentKat?'rgba(255,255,255,.7)':'var(--text-muted)'}">▾</span>
@@ -6607,21 +6103,21 @@ function renderCasesList(){
 
       privatOptHTML = `
       <details style="margin-top:8px">
-        <summary style="font-size:11px;color:var(--text-muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;user-select:none;padding:4px 0">
+        <summary style="font-size:11px;color:var(--text-3);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px;user-select:none;padding:4px 0">
           <span style="font-size:10px;color:var(--accent)">▾</span>
           <span style="font-weight:600;letter-spacing:.04em">Optionen</span>
-          <span style="font-size:10px;color:var(--text-muted);margin-left:2px">(${aktiv}/${uniqueDefs.length} aktiv)</span>
+          <span style="font-size:10px;color:var(--text-3);margin-left:2px">(${aktiv}/${uniqueDefs.length} aktiv)</span>
         </summary>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;padding:10px 12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;padding:10px 12px;background:var(--bg-3);border-radius:8px;border:1px solid var(--border)">
           ${uniqueDefs.map(d=>{
             const code = d.label;
             const baseKey = d.baseKey || d.key;
             const isOff = _rsChipOff.has(code); // vom Regelstudio deaktiviert
             const active = !isOff && (baseKey in opt ? opt[baseKey]!==false : true);
             const safeKey = encodeURIComponent(baseKey);
-            const lborder = isOff?'var(--border-strong)':active?'var(--accent)':'var(--border)';
-            const lbg = isOff?'var(--surface-2)':active?'#FFFBF0':'var(--surface)';
-            const lcolor = isOff?'var(--text-muted)':active?'var(--text-primary)':'var(--text-muted)';
+            const lborder = isOff?'var(--border-2)':active?'var(--accent)':'var(--border)';
+            const lbg = isOff?'var(--bg-4)':active?'var(--accent-dim)':'var(--surface)';
+            const lcolor = isOff?'var(--text-4)':active?'var(--text-1)':'var(--text-3)';
             const lweight = active?'600':'400';
             const lOpacity = isOff?'0.45':'1';
             return '<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:'+lcolor+';cursor:'+(isOff?'not-allowed':'pointer')+';padding:3px 8px;border-radius:6px;border:1px solid '+lborder+';background:'+lbg+';transition:all .12s;white-space:nowrap;opacity:'+lOpacity+';'+(isOff?'text-decoration:line-through;':'')+'">'
@@ -6629,7 +6125,7 @@ function renderCasesList(){
               +' data-case-id="'+c.id+'" data-opt-key="'+safeKey+'"'
               +' class="privat-opt-cb" style="accent-color:var(--accent);width:13px;height:13px"/>'
               +'<span style="font-weight:'+lweight+'">'+code.replace(/^OK,UK\s+/,'')+'</span>'
-              +(isOff?'<span style="font-size:9px;margin-left:3px;color:var(--text-muted)">[off]</span>':'')
+              +(isOff?'<span style="font-size:9px;margin-left:3px;color:var(--text-3)">[off]</span>':'')
               +'</label>';
           }).join("")}
         </div>
@@ -6641,7 +6137,7 @@ function renderCasesList(){
       <div class="case-row" id="caserow-${c.id}">
         <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
         <span class="case-num">Fall ${i+1}</span>
-        <div style="display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:2px;width:fit-content">
+        <div style="display:flex;background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:2px;width:fit-content">
           <button onclick="toggleWorkflow(${c.id},'digital')"
             style="padding:3px 10px;border:none;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;transition:all .12s;letter-spacing:.02em;
             background:${(c.workflow||'analog')==='digital'?'var(--text-primary)':'transparent'};
@@ -7590,7 +7086,7 @@ function renderAllResults(results, combined, cases){
     <div class="total-copy-box">
       <div class="total-copy-lbl">
         <span>Einzelfälle – Kopiertext</span>
-        <span style="font-size:9px;color:#5a4020;font-weight:400">${results.length} Fall${results.length>1?"":""}${kassentyp==="kasse"?" · GKV":" · PKV"}</span>
+        <span style="font-size:9px;color:var(--accent);font-weight:400">${results.length} Fall${results.length>1?"":""}${kassentyp==="kasse"?" · GKV":" · PKV"}</span>
       </div>
       <div class="total-copy-text">${escHtml(combined)}</div>
       <div class="copy-btns-row">
@@ -8079,7 +7575,7 @@ function renderProfilMenu(){
 
   profiles.forEach(p=>{
     html += `<div class="profil-item${activeId===p.id?" active":""}" onclick="selectProfil('${p.id}')">
-      <span class="pi-name" style="display:flex;align-items:center;gap:6px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);font-size:9px;font-weight:700;color:var(--text-muted);flex-shrink:0;">${escHtml(p.name).charAt(0).toUpperCase()}</span>${escHtml(p.name)}</span>
+      <span class="pi-name" style="display:flex;align-items:center;gap:6px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--bg-3);border:1px solid var(--border);font-size:9px;font-weight:700;color:var(--text-3);flex-shrink:0;">${escHtml(p.name).charAt(0).toUpperCase()}</span>${escHtml(p.name)}</span>
       <span class="pi-del" onclick="event.stopPropagation();rs_deleteProfilById('${p.id}')" title="Löschen">🗑</span>
     </div>`;
   });
@@ -8773,9 +8269,9 @@ function renderRsProfileTabs(){
   const name = active ? active.name : 'Standard';
   // Nur aktuell aktives Profil anzeigen — kein separates Tab-System
   el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;">
-    <span style="font-size:13px;color:var(--text-muted);">Regelkonfig für:</span>
-    <span style="font-size:13px;font-weight:600;color:var(--text-primary);background:var(--surface-2);padding:4px 12px;border-radius:20px;border:1px solid var(--border)" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>${name}</span>
-    <span style="font-size:11px;color:var(--text-muted);margin-left:4px;">Profil oben rechts wechseln ↗</span>
+    <span style="font-size:13px;color:var(--text-3);">Regelkonfig für:</span>
+    <span style="font-size:13px;font-weight:600;color:var(--text-1);background:var(--bg-3);padding:4px 12px;border-radius:20px;border:1px solid var(--border)" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>${name}</span>
+    <span style="font-size:11px;color:var(--text-3);margin-left:4px;">Profil oben rechts wechseln ↗</span>
   </div>`;
 }
 
@@ -8791,7 +8287,7 @@ function renderRsFallTabs(){
   if(!rsGetActiveId()){
     selectEl.innerHTML = "<option>— Kein Profil —</option>";
     document.getElementById("rs-fall-content").innerHTML = `
-      <div style="text-align:center;padding:40px 20px;color:var(--text-muted)">
+      <div style="text-align:center;padding:40px 20px;color:var(--text-3)">
         <div style="font-size:32px;margin-bottom:12px">⚙</div>
         <div style="font-size:14px;font-weight:600;margin-bottom:6px">Kein Profil ausgewählt</div>
         <div style="font-size:12px">Erstelle ein neues Profil um loszulegen</div>
@@ -8861,12 +8357,12 @@ function renderRsFallContent(){
         <span class="rs-drag">⠿</span>
         <span class="rs-code">${escHtml(p.code)}</span>
         <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
-        <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-        ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
+        <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
+        ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
         <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isDisabled})"></button>
       </div>`;
     } else {
-      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-secondary);font-family:var(--font);cursor:pointer">
+      const typSelect = `<select onchange="rsChangeTyp('${fall}','${escHtml(p.code)}',this.value)" style="font-size:10px;padding:2px 5px;border:1px solid var(--border);border-radius:5px;background:var(--bg-2);color:var(--text-2);font-family:var(--font);cursor:pointer">
         ${TYP_OPTIONS.map(([v,l])=>`<option value="${v}"${p.typ===v?" selected":""}>${l}</option>`).join("")}
       </select>`;
       return `<div class="rs-pos-row${!p.active?" disabled":""}${!p.isBase?" custom":""}${p._isZem?" ":""}${p._isZem?'style="border-left:2px solid var(--accent-glow)"':''}" draggable="true" data-code="${p.code}" data-uid="${uid}" data-idx="${i}"
@@ -8892,8 +8388,8 @@ function renderRsFallContent(){
       <span class="rs-drag">⠿</span>
       <span class="rs-code">${escHtml(code)}</span>
       <span class="rs-typ rs-typ-nachbar" style="font-size:10px;flex-shrink:0">WENN</span>
-      <span style="font-size:11px;color:var(--text-secondary);flex:1">${escHtml(rule.label)}</span>
-      ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-muted);margin-right:6px">✗</span>`:""}
+      <span style="font-size:11px;color:var(--text-2);flex:1">${escHtml(rule.label)}</span>
+      ${met===true?`<span style="font-size:10px;font-weight:700;color:#3DB87A;margin-right:6px">✓</span>`:met===false?`<span style="font-size:10px;color:var(--text-3);margin-right:6px">✗</span>`:""}
       <button class="rs-toggle ${isDisabled?"off":"on"}" onclick="rsToggleRule('${fall}','${rule.id}',${!isDisabled})"></button>
       ${ci===0?`<button class="rs-btn-del" onclick="rsRemoveCustomRule('${fall}',${idx})">✕</button>`:`<span style="width:20px"></span>`}
     </div>`).join("");
@@ -8906,23 +8402,23 @@ function renderRsFallContent(){
   el.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <div>
-        <span style="font-size:14px;font-weight:700;color:var(--text-primary)">${FALL_LABELS[fall]||fall}</span>
-        <span style="font-size:11px;color:var(--text-muted);margin-left:8px">${activeCount}/${totalCount} aktiv</span>
+        <span style="font-size:14px;font-weight:700;color:var(--text-1)">${FALL_LABELS[fall]||fall}</span>
+        <span style="font-size:11px;color:var(--text-3);margin-left:8px">${activeCount}/${totalCount} aktiv</span>
       </div>
       ${hasOverride?`<button class="rs-btn-sm" onclick="rsResetFall('${fall}')" style="color:var(--red)">↺ Zurücksetzen</button>`:""}
     </div>
     <div class="rs-section-title">Positionen</div>
     <div class="rs-pos-list" id="rs-pos-list">${allRowsHtml}</div>
     <div class="rs-add-panel" style="margin-top:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Position / Befundregel hinzufügen</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Position / Befundregel hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="flex-direction:column;display:flex;gap:4px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label>
+          <label style="font-size:10px;color:var(--text-3);font-weight:600">Code</label>
           <input id="rs-add-code" list="rs-code-datalist" placeholder="z.B. 2320" style="width:110px"/>
           <datalist id="rs-code-datalist">${Object.keys(POSITIONEN||{}).sort().map(k=>`<option value="${k}">`).join("")}</datalist>
         </div>
         <div style="flex-direction:column;display:flex;gap:4px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Kategorie</label>
+          <label style="font-size:10px;color:var(--text-3);font-weight:600">Kategorie</label>
           <select id="rs-add-typ">
             <option value="behandlung">Behandlungszahn</option>
             <option value="bereich">Behandlungszahn + Nachbar</option>
@@ -8932,21 +8428,21 @@ function renderRsFallContent(){
           </select>
         </div>
         <div style="flex-direction:column;display:flex;gap:4px;min-width:160px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Nur wenn (optional)</label>
+          <label style="font-size:10px;color:var(--text-3);font-weight:600">Nur wenn (optional)</label>
           <select id="rs-add-cond">${COND_OPTIONS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select>
         </div>
         <button onclick="rsAddPositionOrRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 18px;align-self:flex-end">Hinzufügen</button>
       </div>
     </div>
     <div class="rs-section-title" style="margin-top:20px">ℹ Abrechnungshinweise</div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Erscheinen unter dem generierten Output.</div>
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:10px">Erscheinen unter dem generierten Output.</div>
     <div id="rs-hints-list" style="display:flex;flex-direction:column;gap:5px">${rsRenderHints(fall)}</div>
     <div class="rs-add-panel" style="margin-top:8px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Hinweis hinzufügen</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Hinweis hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Code</label><input id="rs-hint-code" placeholder="z.B. 0001" style="width:90px"/></div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Beschreibung</label><input id="rs-hint-text" placeholder="z.B. Modell je Kiefer"/></div>
-        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-muted);font-weight:600">Anzahl</label><input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Code</label><input id="rs-hint-code" placeholder="z.B. 0001" style="width:90px"/></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Beschreibung</label><input id="rs-hint-text" placeholder="z.B. Modell je Kiefer"/></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:10px;color:var(--text-3);font-weight:600">Anzahl</label><input id="rs-hint-anzahl" placeholder="2× (OK+UK)" style="width:100px"/></div>
         <button onclick="rsAddHint(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">Hinzufügen</button>
       </div>
     </div>
@@ -9173,8 +8669,8 @@ function rsRenderRules(fall){
     return `<div class="rs-rule-row">
       <span style="font-size:10px;font-weight:700;color:var(--accent-dark);min-width:22px;flex-shrink:0">${rule.nr}</span>
       <span class="rs-rule-if">WENN</span>
-      <span style="font-size:12px;color:var(--text-secondary);flex:1">${rule.label}</span>
-      <span style="font-size:10px;color:var(--text-muted);margin-right:8px">→ <strong>${rule.pos}</strong></span>
+      <span style="font-size:12px;color:var(--text-2);flex:1">${rule.label}</span>
+      <span style="font-size:10px;color:var(--text-3);margin-right:8px">→ <strong>${rule.pos}</strong></span>
       <button class="rs-toggle ${isActive?"on":"off"}"
         onclick="rsToggleRule('${fall}','${rule.id||rule.nr}',${!isActive})"
         title="${isActive?"Deaktivieren":"Aktivieren"}"></button>
@@ -9184,11 +8680,11 @@ function rsRenderRules(fall){
 
   return rows + `
     <div class="rs-add-panel" style="margin-top:8px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Befundregel hinzufügen</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">+ Befundregel hinzufügen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
         <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:160px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Wenn (Bedingung)</label>
-          <select id="rs-rule-cond" style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font);background:var(--surface);color:var(--text-primary)">
+          <label style="font-size:10px;color:var(--text-3);font-weight:600">Wenn (Bedingung)</label>
+          <select id="rs-rule-cond" style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font);background:var(--bg-2);color:var(--text-1)">
             <option value="neighborKrone">Nachbar = Krone/Keramik</option>
 <option value="neighborKunststoff">Nachbar = Kunststoff</option>
 <option value="neighborImplantat">Nachbar = Implantat</option>
@@ -9200,7 +8696,7 @@ function rsRenderRules(fall){
           </select>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;min-width:100px">
-          <label style="font-size:10px;color:var(--text-muted);font-weight:600">Dann (Code)</label>
+          <label style="font-size:10px;color:var(--text-3);font-weight:600">Dann (Code)</label>
           <input id="rs-rule-pos" placeholder="z.B. 4025"/>
         </div>
         <button onclick="rsAddCustomRule(_rsActiveFall)" class="bp" style="font-size:12px;padding:8px 16px;align-self:flex-end">
@@ -9443,11 +8939,11 @@ function rsChangeTyp(fall, code, newTyp){
 function rsRenderHints(fall){
   const override = rsGetOverride(fall);
   const hints = override?.infoHinweise || [];
-  if(hints.length === 0) return `<div style="font-size:12px;color:var(--text-muted);padding:8px 0">Noch keine Hinweise.</div>`;
+  if(hints.length === 0) return `<div style="font-size:12px;color:var(--text-3);padding:8px 0">Noch keine Hinweise.</div>`;
   return hints.map((h,i)=>`
     <div class="rs-rule-row">
       <span class="rs-code" style="font-size:12px;min-width:60px">${escHtml(h.code)}</span>
-      <span style="font-size:12px;flex:1;color:var(--text-secondary)">${escHtml(h.text)}</span>
+      <span style="font-size:12px;flex:1;color:var(--text-2)">${escHtml(h.text)}</span>
       <span class="rs-rule-badge">${escHtml(h.anzahl||"1×")}</span>
       <button class="rs-toggle ${h.visible===false?"off":"on"}"
         onclick="rsToggleHint('${fall}',${i})" title="Ein/Ausblenden"></button>
@@ -9685,8 +9181,8 @@ document.addEventListener("DOMContentLoaded",()=>{
   <!-- Header -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
     <div>
-      <h2 style="font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:4px">Regelstudio</h2>
-      <p style="font-size:12px;color:var(--text-muted)">Passe die Abrechnungslogik für jede Behandlung individuell an</p>
+      <h2 style="font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--text-1);margin-bottom:4px">Regelstudio</h2>
+      <p style="font-size:12px;color:var(--text-3)">Passe die Abrechnungslogik für jede Behandlung individuell an</p>
     </div>
     <div style="display:flex;gap:8px">
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -9707,7 +9203,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   <!-- Profil-Auswahl -->
   <div class="card" style="padding:16px 20px">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Aktives Profil</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Aktives Profil</div>
       <div id="rs-profile-tabs" style="display:flex;gap:6px;flex-wrap:wrap;flex:1"></div>
       <div style="display:flex;gap:6px">
         <button onclick="rs_deleteProfile()" class="bs" style="font-size:11px;padding:6px 12px;color:var(--red)" title="Profil löschen">✕</button>
@@ -9718,9 +9214,9 @@ document.addEventListener("DOMContentLoaded",()=>{
   <!-- Falltyp-Navigation -->
   <div class="card" style="padding:0;overflow:hidden">
     <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Behandlungsfall</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">Behandlungsfall</div>
       <select id="rs-fall-select" onchange="rsOnFallSelectChange(this.value)"
-        style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text-primary);font-size:13px;font-family:var(--font);cursor:pointer;outline:none">
+        style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-2);color:var(--text-1);font-size:13px;font-family:var(--font);cursor:pointer;outline:none">
       </select>
     </div>
     <div id="rs-fall-tabs" style="display:none"></div>
@@ -9741,18 +9237,18 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 <!-- ── FALLVORSCHLAG MODAL ───────────────────────────── -->
 <div id="fallvorschlag-modal" style="display:none;position:fixed;inset:0;background:rgba(8,17,31,0.85);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#0F1E35;border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+  <div style="background:var(--bg-2);border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
     <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;">Behandlungsfall vorschlagen</div>
-    <div style="font-size:13px;color:#6E849E;margin-bottom:24px;line-height:1.5;">Fehlt ein Behandlungsfall? Wir bauen ihn ein. Beschreibe kurz was du benötigst.</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.35);margin-bottom:24px;line-height:1.5;">Fehlt ein Behandlungsfall? Wir bauen ihn ein. Beschreibe kurz was du benötigst.</div>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div>
-        <label style="font-size:11px;font-weight:700;color:#6E849E;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Fallbezeichnung</label>
+        <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Fallbezeichnung</label>
         <input id="fv-name" type="text" placeholder="z.B. Teleskopkrone, Stiftaufbau, Implantat-Krone …"
           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none;box-sizing:border-box;"
           onfocus="this.style.borderColor='rgba(201,168,76,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"/>
       </div>
       <div>
-        <label style="font-size:11px;font-weight:700;color:#6E849E;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Beschreibung / Positionen (optional)</label>
+        <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px;">Beschreibung / Positionen (optional)</label>
         <textarea id="fv-desc" placeholder="z.B. Welche GOZ-Positionen sollen enthalten sein, GKV oder PKV, besondere Bedingungen …"
           rows="4" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;font-family:var(--font);outline:none;resize:vertical;box-sizing:border-box;"
           onfocus="this.style.borderColor='rgba(201,168,76,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
